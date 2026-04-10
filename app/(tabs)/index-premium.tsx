@@ -1,20 +1,27 @@
-import React, { useState } from "react";
+'use client';
+import 'react-native-reanimated';
+import React, { useState } from 'react';
 import {
   View,
   Text,
   ScrollView,
   Pressable,
   StyleSheet,
-  Modal,
-  TextInput,
-} from "react-native";
-import { useRouter } from "expo-router";
-import { ScreenContainer } from "@/components/screen-container";
-import { useColors } from "@/hooks/use-colors";
-import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
-import { ProgressRing } from "@/components/ui/progress-ring";
-import { XPBar } from "@/components/ui/xp-bar";
-import * as Haptics from "expo-haptics";
+} from 'react-native';
+import { useRouter } from 'expo-router';
+import { ScreenContainer } from '@/components/screen-container';
+import { useColors } from '@/hooks/use-colors';
+import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from '@/lib/app-context';
+import { AnimatedMoodPicker } from '@/components/animated-mood-picker';
+import { AnimatedProgressRing } from '@/components/animated-progress-ring';
+import { AnimatedStreakFire } from '@/components/animated-streak-fire';
+import { XPBar } from '@/components/ui/xp-bar';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withSpring,
+} from 'react-native-reanimated';
+import * as Haptics from 'expo-haptics';
 
 function getGreeting(name: string): string {
   const hour = new Date().getHours();
@@ -24,25 +31,57 @@ function getGreeting(name: string): string {
 }
 
 function formatDate(): string {
-  return new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
   });
 }
 
-export default function HomeScreen() {
+function AnimatedPressable({
+  children,
+  onPress,
+  style,
+}: {
+  children: React.ReactNode;
+  onPress: () => void;
+  style?: any;
+}) {
+  const scaleValue = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scaleValue.value }],
+  }));
+
+  return (
+    <Pressable
+      onPress={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        scaleValue.value = withSpring(0.96, { damping: 8, mass: 1 });
+        setTimeout(() => {
+          scaleValue.value = withSpring(1, { damping: 8, mass: 1 });
+        }, 50);
+        onPress();
+      }}
+    >
+      <Animated.View style={[animatedStyle, style]}>
+        {children}
+      </Animated.View>
+    </Pressable>
+  );
+}
+
+export default function HomeScreenPremium() {
   const colors = useColors();
   const router = useRouter();
   const { state, dispatch, todayCompletions, todayProgress, rank } = useApp();
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [selectedMood, setSelectedMood] = useState<MoodLevel | null>(null);
 
-  const todayStr = new Date().toISOString().split("T")[0];
+  const todayStr = new Date().toISOString().split('T')[0];
   const hasMoodToday = !!state.todayMood;
 
   const handleMoodSelect = (level: MoodLevel) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelectedMood(level);
   };
 
@@ -50,7 +89,7 @@ export default function HomeScreen() {
     if (!selectedMood) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     dispatch({
-      type: "SET_MOOD",
+      type: 'SET_MOOD',
       payload: {
         id: `mood_${Date.now()}`,
         date: todayStr,
@@ -59,8 +98,8 @@ export default function HomeScreen() {
         timestamp: Date.now(),
       },
     });
-    dispatch({ type: "ADD_XP", payload: 5 });
-    dispatch({ type: "UPDATE_STREAK" });
+    dispatch({ type: 'ADD_XP', payload: 5 });
+    dispatch({ type: 'UPDATE_STREAK' });
     setShowMoodPicker(false);
     setSelectedMood(null);
   };
@@ -77,25 +116,21 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View>
             <Text style={[styles.greeting, { color: colors.foreground }]}>
-              {getGreeting(state.userName || "Friend")}
+              {getGreeting(state.userName || 'Friend')}
             </Text>
             <Text style={[styles.date, { color: colors.muted }]}>{formatDate()}</Text>
           </View>
-          <View style={[styles.streakBadge, { backgroundColor: "#F9731620" }]}>
-            <Text style={styles.streakFire}>🔥</Text>
-            <Text style={[styles.streakCount, { color: "#F97316" }]}>{state.streak}</Text>
-          </View>
+          <AnimatedStreakFire streak={state.streak} isIncreasing={false} />
         </View>
 
         {/* Progress Ring + Stats */}
         <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
           <View style={styles.ringSection}>
-            <ProgressRing
+            <AnimatedProgressRing
               progress={todayProgress}
               size={150}
               strokeWidth={14}
               color={colors.primary}
-              label="Daily Progress"
             >
               <Text style={[styles.ringPercent, { color: colors.foreground }]}>
                 {Math.round(todayProgress * 100)}%
@@ -103,7 +138,7 @@ export default function HomeScreen() {
               <Text style={[styles.ringLabel, { color: colors.muted }]}>
                 {todayCompletions.length}/{state.habits.length}
               </Text>
-            </ProgressRing>
+            </AnimatedProgressRing>
 
             <View style={styles.statsColumn}>
               <View style={styles.statItem}>
@@ -137,14 +172,13 @@ export default function HomeScreen() {
 
         {/* Mood Check-in */}
         {!hasMoodToday ? (
-          <Pressable
+          <AnimatedPressable
             onPress={() => setShowMoodPicker(true)}
-            style={({ pressed }) => [
+            style={[
               styles.moodBanner,
               {
-                backgroundColor: colors.primary + "12",
-                borderColor: colors.primary + "40",
-                transform: [{ scale: pressed ? 0.98 : 1 }],
+                backgroundColor: colors.primary + '12',
+                borderColor: colors.primary + '40',
               },
             ]}
           >
@@ -158,9 +192,17 @@ export default function HomeScreen() {
               </Text>
             </View>
             <Text style={[styles.moodBannerArrow, { color: colors.primary }]}>›</Text>
-          </Pressable>
+          </AnimatedPressable>
         ) : (
-          <View style={[styles.moodDone, { backgroundColor: colors.success + "12", borderColor: colors.success + "40" }]}>
+          <View
+            style={[
+              styles.moodDone,
+              {
+                backgroundColor: colors.success + '12',
+                borderColor: colors.success + '40',
+              },
+            ]}
+          >
             <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
             <View style={styles.moodBannerText}>
               <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
@@ -177,11 +219,11 @@ export default function HomeScreen() {
         <View style={styles.quickActions}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Quick Actions</Text>
           <View style={styles.actionGrid}>
-            <Pressable
-              onPress={() => router.push("/(tabs)/routine" as never)}
-              style={({ pressed }) => [
+            <AnimatedPressable
+              onPress={() => router.push('/(tabs)/routine' as never)}
+              style={[
                 styles.actionCard,
-                { backgroundColor: "#3B82F620", transform: [{ scale: pressed ? 0.96 : 1 }] },
+                { backgroundColor: '#3B82F620' },
               ]}
             >
               <Text style={styles.actionEmoji}>🏃</Text>
@@ -191,13 +233,13 @@ export default function HomeScreen() {
               <Text style={[styles.actionSub, { color: colors.muted }]}>
                 {todayCompletions.length}/{state.habits.length} done
               </Text>
-            </Pressable>
+            </AnimatedPressable>
 
-            <Pressable
-              onPress={() => router.push("/(tabs)/journal" as never)}
-              style={({ pressed }) => [
+            <AnimatedPressable
+              onPress={() => router.push('/(tabs)/journal' as never)}
+              style={[
                 styles.actionCard,
-                { backgroundColor: "#10B98120", transform: [{ scale: pressed ? 0.96 : 1 }] },
+                { backgroundColor: '#10B98120' },
               ]}
             >
               <Text style={styles.actionEmoji}>✍️</Text>
@@ -207,13 +249,13 @@ export default function HomeScreen() {
               <Text style={[styles.actionSub, { color: colors.muted }]}>
                 {state.journalEntries.length} entries
               </Text>
-            </Pressable>
+            </AnimatedPressable>
 
-            <Pressable
-              onPress={() => router.push("/(tabs)/insights" as never)}
-              style={({ pressed }) => [
+            <AnimatedPressable
+              onPress={() => router.push('/(tabs)/insights' as never)}
+              style={[
                 styles.actionCard,
-                { backgroundColor: "#8B5CF620", transform: [{ scale: pressed ? 0.96 : 1 }] },
+                { backgroundColor: '#8B5CF620' },
               ]}
             >
               <Text style={styles.actionEmoji}>🧠</Text>
@@ -223,7 +265,7 @@ export default function HomeScreen() {
               <Text style={[styles.actionSub, { color: colors.muted }]}>
                 AI analysis
               </Text>
-            </Pressable>
+            </AnimatedPressable>
           </View>
         </View>
 
@@ -234,12 +276,15 @@ export default function HomeScreen() {
             {recentEntries.map((entry) => (
               <View
                 key={entry.id}
-                style={[styles.entryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
+                style={[
+                  styles.entryCard,
+                  { backgroundColor: colors.surface, borderColor: colors.border },
+                ]}
               >
                 <Text style={[styles.entryDate, { color: colors.muted }]}>
-                  {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
+                  {new Date(entry.createdAt).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
                   })}
                 </Text>
                 <Text
@@ -254,72 +299,13 @@ export default function HomeScreen() {
         )}
       </ScrollView>
 
-      {/* Mood Picker Modal */}
-      <Modal
+      {/* Animated Mood Picker Modal */}
+      <AnimatedMoodPicker
         visible={showMoodPicker}
-        transparent
-        animationType="slide"
-        onRequestClose={() => setShowMoodPicker(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
-            <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>
-              How are you feeling?
-            </Text>
-            <Text style={[styles.modalSub, { color: colors.muted }]}>
-              Select your mood for today
-            </Text>
-
-            <View style={styles.moodGrid}>
-              {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
-                <Pressable
-                  key={level}
-                  onPress={() => handleMoodSelect(level)}
-                  style={({ pressed }) => [
-                    styles.moodOption,
-                    {
-                      backgroundColor:
-                        selectedMood === level ? colors.primary + "20" : colors.surface,
-                      borderColor:
-                        selectedMood === level ? colors.primary : colors.border,
-                      transform: [{ scale: pressed ? 0.92 : selectedMood === level ? 1.05 : 1 }],
-                    },
-                  ]}
-                >
-                  <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
-                  <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
-                    {MOOD_LABELS[level]}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-
-            <Pressable
-              onPress={handleMoodSave}
-              disabled={!selectedMood}
-              style={({ pressed }) => [
-                styles.saveMoodButton,
-                {
-                  backgroundColor: selectedMood ? colors.primary : colors.border,
-                  transform: [{ scale: pressed ? 0.97 : 1 }],
-                },
-              ]}
-            >
-              <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
-                Save Mood
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => setShowMoodPicker(false)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
-            >
-              <Text style={[styles.cancelText, { color: colors.muted }]}>Cancel</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+        onClose={() => setShowMoodPicker(false)}
+        onSelect={handleMoodSelect}
+        selectedMood={selectedMood}
+      />
     </ScreenContainer>
   );
 }
@@ -332,35 +318,20 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
   },
   greeting: {
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: -0.3,
     lineHeight: 28,
   },
   date: {
     fontSize: 14,
-    fontWeight: "400",
+    fontWeight: '400',
     marginTop: 2,
-  },
-  streakBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  streakFire: {
-    fontSize: 18,
-  },
-  streakCount: {
-    fontSize: 18,
-    fontWeight: "800",
   },
   card: {
     borderRadius: 20,
@@ -369,54 +340,54 @@ const styles = StyleSheet.create({
     gap: 16,
   },
   ringSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 20,
   },
   ringPercent: {
     fontSize: 28,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: -0.5,
   },
   ringLabel: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   statsColumn: {
     flex: 1,
     gap: 10,
   },
   statItem: {
-    alignItems: "center",
+    alignItems: 'center',
   },
   statValue: {
     fontSize: 20,
-    fontWeight: "800",
+    fontWeight: '800',
     letterSpacing: -0.3,
   },
   statLabel: {
     fontSize: 11,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   statDivider: {
     height: 1,
-    width: "80%",
-    alignSelf: "center",
+    width: '80%',
+    alignSelf: 'center',
   },
   xpSection: {
     paddingTop: 4,
   },
   moodBanner: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
     gap: 12,
   },
   moodDone: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     borderRadius: 16,
     borderWidth: 1,
@@ -430,7 +401,7 @@ const styles = StyleSheet.create({
   },
   moodBannerTitle: {
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: '700',
   },
   moodBannerSub: {
     fontSize: 13,
@@ -438,18 +409,18 @@ const styles = StyleSheet.create({
   },
   moodBannerArrow: {
     fontSize: 24,
-    fontWeight: "300",
+    fontWeight: '300',
   },
   quickActions: {
     gap: 12,
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "700",
+    fontWeight: '700',
     letterSpacing: -0.2,
   },
   actionGrid: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 10,
   },
   actionCard: {
@@ -457,19 +428,19 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     padding: 14,
     gap: 6,
-    alignItems: "center",
+    alignItems: 'center',
   },
   actionEmoji: {
     fontSize: 28,
   },
   actionLabel: {
     fontSize: 13,
-    fontWeight: "700",
-    textAlign: "center",
+    fontWeight: '700',
+    textAlign: 'center',
   },
   actionSub: {
     fontSize: 11,
-    textAlign: "center",
+    textAlign: 'center',
   },
   recentSection: {
     gap: 10,
@@ -482,76 +453,10 @@ const styles = StyleSheet.create({
   },
   entryDate: {
     fontSize: 12,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   entryContent: {
     fontSize: 14,
     lineHeight: 20,
-  },
-  // Modal
-  modalOverlay: {
-    flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
-  },
-  modalSheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 40,
-    gap: 12,
-    alignItems: "center",
-  },
-  modalHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    marginBottom: 8,
-  },
-  modalTitle: {
-    fontSize: 24,
-    fontWeight: "800",
-    letterSpacing: -0.3,
-  },
-  modalSub: {
-    fontSize: 15,
-    marginBottom: 8,
-  },
-  moodGrid: {
-    flexDirection: "row",
-    gap: 10,
-    marginVertical: 8,
-  },
-  moodOption: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 58,
-    height: 72,
-    borderRadius: 16,
-    borderWidth: 2,
-    gap: 4,
-  },
-  moodEmoji: {
-    fontSize: 28,
-  },
-  moodLevelLabel: {
-    fontSize: 10,
-    fontWeight: "600",
-  },
-  saveMoodButton: {
-    width: "100%",
-    height: 52,
-    borderRadius: 14,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
-  },
-  saveMoodText: {
-    fontSize: 17,
-    fontWeight: "700",
-  },
-  cancelText: {
-    fontSize: 15,
-    fontWeight: "500",
   },
 });

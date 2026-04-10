@@ -6,7 +6,7 @@ import type { ExpoConfig } from "expo/config";
 // e.g., "my-app" created at 2024-01-15 10:30:45 -> "space.manus.my.app.t20240115103045"
 // Bundle ID can only contain letters, numbers, and dots
 // Android requires each dot-separated segment to start with a letter
-const rawBundleId = "space.manus.risegrind.t20260410130618";
+const rawBundleId = "space.manus.risegrind.t20260410080735";
 const bundleId =
   rawBundleId
     .replace(/[-_]/g, ".") // Replace hyphens/underscores with dots
@@ -32,7 +32,7 @@ const env = {
   appSlug: "risegrind",
   // S3 URL of the app logo - set this to the URL returned by generate_image when creating custom logo
   // Leave empty to use the default icon from assets/images/icon.png
-  logoUrl: "",
+  logoUrl: "https://d2xsxph8kpxj0f.cloudfront.net/310519663538462597/hq4JQNxQjFZSoaNVLb964J/risegrind-icon-S7v3Rr9ijMGoR9DP5NLrZH.png",
   scheme: schemeFromBundleId,
   iosBundleId: bundleId,
   androidPackage: bundleId,
@@ -117,6 +117,10 @@ const config: ExpoConfig = {
         android: {
           buildArchs: ["armeabi-v7a", "arm64-v8a"],
           minSdkVersion: 24,
+        },
+        ios: {
+          // RevenueCat and Superwall require iOS 15.1+
+          deploymentTarget: "15.1",
         },
       },
     ],
