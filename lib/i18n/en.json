@@ -1,9 +1,5 @@
 {
-  "lang": {
-    "en": "English",
-    "fr": "Français",
-    "pt": "Português"
-  },
+  "lang": { "en": "English", "fr": "Français", "pt": "Português" },
   "langScreen": {
     "title": "Choose Your Language",
     "subtitle": "Select the language for your Ghost Mode experience.",
@@ -58,6 +54,7 @@
     "journal": "Journal",
     "intel": "Intel",
     "quests": "Quests",
+    "community": "Community",
     "profile": "Profile"
   },
   "home": {
@@ -113,7 +110,20 @@
     "delete": "Delete Entry",
     "recording": "Recording...",
     "tapToStop": "Tap to stop",
-    "transcribing": "Transcribing..."
+    "transcribing": "Transcribing...",
+    "emptyTitle": "Go Ghost. Start Writing.",
+    "emptySubtitle": "Your journal is your private space to build in silence. No audience. Just you and your growth.",
+    "writeFirst": "Write First Entry",
+    "ghostPrompt": "Ghost Prompt",
+    "newPrompt": "New",
+    "cancel": "Cancel",
+    "newEntryTitle": "New Entry",
+    "deleteTitle": "Delete Entry",
+    "deleteMsg": "Are you sure you want to delete this journal entry?",
+    "permissionTitle": "Permission needed",
+    "permissionMsg": "Microphone access is required for voice journaling.",
+    "transcribeError": "Transcription failed",
+    "transcribeErrorMsg": "Could not transcribe audio. Please try again."
   },
   "insights": {
     "title": "Ghost Intel",
@@ -122,10 +132,33 @@
     "currentStreak": "Streak",
     "totalXP": "Total XP",
     "habitsCompleted": "Habits Done",
-    "moodTrend": "Mood Trend (7 days)",
-    "aiReview": "AI Weekly Review",
+    "moodTrend": "Mood Trend",
+    "activityCalendar": "Activity Calendar",
+    "last28": "Last 28 days",
+    "aiReview": "Ghost Mode Intel",
+    "aiSubtitle": "Your data. Your edge.",
+    "analyze": "Analyze",
     "generating": "Generating your Ghost Intel...",
-    "noData": "Complete at least 3 days to unlock your AI review."
+    "noData": "Tap \"Analyze\" to get your Ghost Mode debrief — built from your habits, mood, and journal entries.",
+    "ghostDirectives": "Ghost Directives",
+    "filters": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month",
+      "year": "Year"
+    },
+    "correlation": {
+      "title": "Habit × Mood Correlation",
+      "subtitle": "Bar height = habits done · Color = mood",
+      "noData": "Complete habits and log moods to see your correlation chart."
+    },
+    "moods": {
+      "1": "Low",
+      "2": "Meh",
+      "3": "OK",
+      "4": "Good",
+      "5": "Great"
+    }
   },
   "quests": {
     "title": "Side Quests",
@@ -138,7 +171,49 @@
     "markComplete": "Mark Complete",
     "abandon": "Abandon Quest",
     "inProgress": "IN PROGRESS",
-    "done": "COMPLETED"
+    "done": "COMPLETED",
+    "xpReward": "XP",
+    "emptyTitle": "No quests here.",
+    "emptySubtitle": "Switch to Available to start a new mission."
+  },
+  "community": {
+    "title": "Ghost Community",
+    "subtitle": "Compete in silence. Rise together.",
+    "yourCode": "Your Ghost Code",
+    "shareCode": "Share Code",
+    "addFriend": "Add Friend",
+    "addFriendPlaceholder": "Enter friend's Ghost Code",
+    "addFriendBtn": "Add",
+    "leaderboard": "Leaderboard",
+    "noFriends": "No ghosts yet.",
+    "noFriendsSubtitle": "Share your code and invite friends to compete.",
+    "streak": "day streak",
+    "you": "You",
+    "rank": "Rank",
+    "codeHint": "Share this code with friends so they can add you.",
+    "codeCopied": "Code copied!",
+    "friendAdded": "Ghost added to your squad!",
+    "friendNotFound": "No ghost found with that code.",
+    "invalidCode": "Invalid code. Ghost codes are 6 characters.",
+    "shareTitle": "Join me on RiseGrind — Ghost Mode",
+    "shareMsg": "I'm building in silence on RiseGrind. Add me with code: "
+  },
+  "notifications": {
+    "title": "Notifications",
+    "dailyReminder": "Daily Habit Reminder",
+    "dailyReminderDesc": "Morning push to start your routine",
+    "reminderTime": "Reminder Time",
+    "inactivityAlert": "Inactivity Alert",
+    "inactivityDesc": "Alert after 2 days without journaling",
+    "rankUpAlert": "Rank-Up Celebration",
+    "rankUpDesc": "Celebrate when you reach a new rank",
+    "permissionDenied": "Notifications are disabled. Enable them in Settings.",
+    "rankUpTitle": "New Rank Unlocked! 🏆",
+    "rankUpBody": "You've reached {{rank}}. Ghost Mode level up.",
+    "inactivityTitle": "Don't break the silence. 👻",
+    "inactivityBody": "You're losing your edge. Get back into Ghost Mode.",
+    "reminderTitle": "Ghost Mode Activated. ⚡",
+    "reminderBody": "Your morning routine is waiting. Show up today."
   },
   "profile": {
     "title": "Ghost Profile",
@@ -149,16 +224,42 @@
     "upgrade": "Upgrade to Premium",
     "manage": "Manage Subscription",
     "achievements": "Achievements",
-    "stats": "Stats",
+    "stats": "Your Stats",
     "resetData": "Reset All Data",
-    "resetConfirm": "This will erase all your progress. Are you sure?",
-    "language": "Language"
+    "resetTitle": "Reset All Data",
+    "resetMsg": "This will permanently delete all your habits, journal entries, moods, and progress. This cannot be undone.",
+    "resetConfirm": "Reset",
+    "language": "Language",
+    "settings": "Settings",
+    "appearance": "Appearance",
+    "dark": "Dark",
+    "light": "Light",
+    "restore": "Restore",
+    "appInfo": "RiseGrind v1.0.0 · Built with ❤️",
+    "dayStreak": "Day Streak",
+    "totalXP": "Total XP",
+    "habitsDone": "Habits Done",
+    "journalEntries": "Journal Entries",
+    "xpToNext": "XP to",
+    "namePlaceholder": "Enter your name",
+    "save": "Save",
+    "cancel": "Cancel"
   },
   "ranks": {
     "Early Riser": "Early Riser",
     "Morning Warrior": "Morning Warrior",
     "Grind Master": "Grind Master",
     "Grind Legend": "Grind Legend"
+  },
+  "achievements": {
+    "first_entry": { "title": "First Entry", "description": "Write your first journal entry" },
+    "streak_3": { "title": "3-Day Streak", "description": "Maintain a 3-day streak" },
+    "streak_7": { "title": "Week Warrior", "description": "Maintain a 7-day streak" },
+    "streak_30": { "title": "30-Day Ghost", "description": "Maintain a 30-day streak" },
+    "habits_10": { "title": "Habit Builder", "description": "Complete 10 habits total" },
+    "habits_50": { "title": "Discipline Engine", "description": "Complete 50 habits total" },
+    "xp_500": { "title": "XP Hunter", "description": "Earn 500 XP" },
+    "xp_1000": { "title": "Ghost Operator", "description": "Earn 1000 XP" }
   },
   "common": {
     "cancel": "Cancel",
@@ -167,6 +268,9 @@
     "confirm": "Confirm",
     "loading": "Loading...",
     "error": "Something went wrong",
-    "retry": "Retry"
+    "retry": "Retry",
+    "share": "Share",
+    "copy": "Copy",
+    "close": "Close"
   }
 }

@@ -1,9 +1,5 @@
 {
-  "lang": {
-    "en": "English",
-    "fr": "Français",
-    "pt": "Português"
-  },
+  "lang": { "en": "English", "fr": "Français", "pt": "Português" },
   "langScreen": {
     "title": "Choisissez votre langue",
     "subtitle": "Sélectionnez la langue pour votre expérience Ghost Mode.",
@@ -12,45 +8,45 @@
   "onboarding": {
     "skip": "Passer",
     "continue": "Continuer",
-    "getStarted": "Activer Ghost Mode",
+    "getStarted": "Entrer en Ghost Mode",
     "slide1": {
       "tag": "LA VISION",
-      "title": "Disparais du bruit.\nDeviens invisible.",
+      "title": "Deviens fantôme.\nDisparaît du bruit.",
       "body": "Pendant que tout le monde se disperse, toi tu construis en silence. Ghost Mode est fait pour ceux qui choisissent la discipline plutôt que les applaudissements."
     },
     "slide2": {
       "tag": "LA MÉTHODE",
-      "title": "Discipline tracée.\nMentor IA chaque matin.",
-      "body": "Verrouille ta routine matinale et parle à ton mentor IA chaque jour pour gagner en clarté, direction et élan inarrêtable."
+      "title": "Trace ta discipline.\nParle à ton mentor IA.",
+      "body": "Verrouille ta routine matinale et écris dans ton journal avec ton mentor IA chaque jour pour gagner en clarté, en direction et en élan irrésistible."
     },
     "slide3": {
       "tag": "LES RÉSULTATS",
       "title": "90 jours.\nUne version de toi qu'ils ne reconnaîtront pas.",
-      "body": "Concentration accrue. Meilleur contrôle émotionnel. Une routine matinale en béton. Construis la version de toi-même que les autres ne peuvent pas ignorer."
+      "body": "Plus de concentration. Meilleur contrôle émotionnel. Une routine matinale en béton. Construis la version de toi-même que les autres ne peuvent pas ignorer."
     },
     "slide4": {
       "tag": "PRÊT ?",
       "title": "Prêt à entrer\nen Ghost Mode ?",
-      "body": "Ta transformation commence maintenant. Pas d'excuses. Pas de bruit. Juste toi, ta discipline, et le travail."
+      "body": "Ta transformation commence maintenant. Pas d'excuses. Pas de bruit. Juste toi, ta discipline et le travail."
     }
   },
   "paywall": {
-    "badge": "3 JOURS GRATUITS",
+    "badge": "3 JOURS D'ESSAI GRATUIT",
     "title": "Débloquer Ghost Mode",
-    "subtitle": "Tout ce qu'il faut pour bâtir une routine matinale indestructible.",
+    "subtitle": "Tout ce qu'il vous faut pour bâtir une routine matinale indestructible.",
     "feature1": "Mentor IA Journal — clarté et direction quotidiennes",
-    "feature2": "Ghost Intel — tendances d'humeur et analyses d'habitudes",
+    "feature2": "Ghost Intel — tendances d'humeur et analytiques",
     "feature3": "Quêtes secondaires — défis de discipline bonus",
-    "feature4": "Protection des séries & montées de rang",
-    "trialNote": "3 jours gratuits, puis",
+    "feature4": "Protection des séries et montées en rang",
+    "trialNote": "Gratuit pendant 3 jours, puis",
     "monthly": "Mensuel",
     "yearly": "Annuel",
-    "save": "Économisez 33%",
+    "save": "Économisez 33 %",
     "perMonth": "/mois",
     "perYear": "/an",
     "startTrial": "Commencer l'essai gratuit",
     "restore": "Restaurer les achats",
-    "terms": "Annulez à tout moment. Facturé après l'essai gratuit."
+    "terms": "Annulez à tout moment. Facturation après la fin de l'essai."
   },
   "tabs": {
     "home": "Accueil",
@@ -58,42 +54,43 @@
     "journal": "Journal",
     "intel": "Intel",
     "quests": "Quêtes",
+    "community": "Communauté",
     "profile": "Profil"
   },
   "home": {
     "greeting_morning": "Bonjour",
     "greeting_afternoon": "Bon après-midi",
     "greeting_evening": "Bonsoir",
-    "slogan": "Deviens invisible. Construis en silence.",
+    "slogan": "Deviens fantôme. Construis en silence.",
     "todayMission": "Mission du jour",
     "checkIn": "Comment tu te sens ?",
     "streak": "Jours consécutifs",
     "rank": "Rang",
-    "progress": "Progression du jour",
+    "progress": "Progrès du jour",
     "quickActions": "Actions rapides",
-    "startRoutine": "Lancer la routine",
+    "startRoutine": "Démarrer la routine",
     "openJournal": "Ouvrir le journal",
-    "viewIntel": "Voir Intel"
+    "viewIntel": "Voir l'Intel"
   },
   "routine": {
-    "title": "Routine matinale",
+    "title": "Routine Matinale",
     "subtitle": "Construis ta discipline, une habitude à la fois.",
     "addHabit": "Ajouter une habitude",
     "complete": "Routine terminée",
     "completeMsg": "Ghost Mode activé. Tu t'es présenté aujourd'hui.",
-    "habitDone": "Habitude accomplie",
+    "habitDone": "Habitude complétée",
     "habits": {
       "Wake Up Early": "Se lever tôt",
       "Hydrate": "S'hydrater",
       "Meditate": "Méditer",
-      "Exercise": "Faire du sport",
+      "Exercise": "Faire de l'exercice",
       "Read": "Lire",
       "Cold Shower": "Douche froide",
       "Gratitude": "Gratitude"
     }
   },
   "journal": {
-    "title": "Journal Ghost",
+    "title": "Journal Fantôme",
     "subtitle": "Écris en silence. Grandis en privé.",
     "newEntry": "Nouvelle entrée",
     "voiceEntry": "Entrée vocale",
@@ -105,32 +102,68 @@
       "Quelle peur te retient en ce moment ? Nomme-la.",
       "Que ferais-tu aujourd'hui si tu savais que personne ne regardait ?",
       "Écris sur un moment cette semaine où tu as choisi la discipline plutôt que le confort.",
-      "Quelle habitude, si pratiquée pendant 90 jours, changerait ta vie ?"
+      "Quelle habitude, si elle était faite de manière constante pendant 90 jours, changerait ta vie ?"
     ],
-    "aiSystemPrompt": "Tu es le mentor IA Ghost Mode — un coach direct et sans détour qui parle avec clarté et intensité. Tu aides l'utilisateur à construire la discipline, la force mentale et une puissante routine matinale. Réponds en français. Garde les réponses sous 120 mots. Sois direct, motivant et brutalement honnête. Pas de remplissage.",
+    "aiSystemPrompt": "Tu es le mentor IA Ghost Mode — un coach direct, sans fioritures, qui parle avec clarté et intensité. Tu aides l'utilisateur à construire la discipline, la force mentale et une puissante routine matinale. Réponds en français. Garde les réponses sous 120 mots. Sois direct, motivant et brutalement honnête. Pas de remplissage.",
     "placeholder": "Écris tes pensées ici...",
     "save": "Sauvegarder",
     "delete": "Supprimer",
     "recording": "Enregistrement...",
     "tapToStop": "Appuyer pour arrêter",
-    "transcribing": "Transcription en cours..."
+    "transcribing": "Transcription...",
+    "emptyTitle": "Deviens fantôme. Commence à écrire.",
+    "emptySubtitle": "Ton journal est ton espace privé pour construire en silence. Pas d'audience. Juste toi et ta croissance.",
+    "writeFirst": "Première entrée",
+    "ghostPrompt": "Invite Fantôme",
+    "newPrompt": "Nouveau",
+    "cancel": "Annuler",
+    "newEntryTitle": "Nouvelle entrée",
+    "deleteTitle": "Supprimer l'entrée",
+    "deleteMsg": "Es-tu sûr de vouloir supprimer cette entrée de journal ?",
+    "permissionTitle": "Permission requise",
+    "permissionMsg": "L'accès au microphone est requis pour le journal vocal.",
+    "transcribeError": "Transcription échouée",
+    "transcribeErrorMsg": "Impossible de transcrire l'audio. Veuillez réessayer."
   },
   "insights": {
     "title": "Ghost Intel",
-    "subtitle": "Les données ne mentent pas. Tes schémas disent la vérité.",
+    "subtitle": "Les données ne mentent pas. Tes patterns disent la vérité.",
     "daysWon": "Jours gagnés",
     "currentStreak": "Série",
     "totalXP": "XP total",
     "habitsCompleted": "Habitudes faites",
-    "moodTrend": "Tendance d'humeur (7 jours)",
-    "aiReview": "Bilan IA de la semaine",
-    "generating": "Génération de ton Ghost Intel...",
-    "noData": "Complète au moins 3 jours pour débloquer ton bilan IA."
+    "moodTrend": "Tendance d'humeur",
+    "activityCalendar": "Calendrier d'activité",
+    "last28": "28 derniers jours",
+    "aiReview": "Intel Ghost Mode",
+    "aiSubtitle": "Tes données. Ton avantage.",
+    "analyze": "Analyser",
+    "generating": "Génération de ton Intel Ghost...",
+    "noData": "Appuie sur « Analyser » pour obtenir ton bilan Ghost Mode — basé sur tes habitudes, ton humeur et ton journal.",
+    "ghostDirectives": "Directives Fantôme",
+    "filters": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois",
+      "year": "Année"
+    },
+    "correlation": {
+      "title": "Corrélation Habitudes × Humeur",
+      "subtitle": "Hauteur = habitudes faites · Couleur = humeur",
+      "noData": "Complète des habitudes et enregistre des humeurs pour voir ton graphique."
+    },
+    "moods": {
+      "1": "Bas",
+      "2": "Moyen",
+      "3": "OK",
+      "4": "Bien",
+      "5": "Super"
+    }
   },
   "quests": {
     "title": "Quêtes secondaires",
     "subtitle": "Missions bonus. XP supplémentaire. Ghost Mode débloqué.",
-    "active": "En cours",
+    "active": "Actif",
     "available": "Disponible",
     "completed": "Terminé",
     "all": "Tout",
@@ -138,10 +171,52 @@
     "markComplete": "Marquer comme terminé",
     "abandon": "Abandonner la quête",
     "inProgress": "EN COURS",
-    "done": "TERMINÉ"
+    "done": "TERMINÉ",
+    "xpReward": "XP",
+    "emptyTitle": "Pas de quêtes ici.",
+    "emptySubtitle": "Passe à Disponible pour commencer une nouvelle mission."
+  },
+  "community": {
+    "title": "Communauté Fantôme",
+    "subtitle": "Compétez en silence. Montez ensemble.",
+    "yourCode": "Ton code Fantôme",
+    "shareCode": "Partager le code",
+    "addFriend": "Ajouter un ami",
+    "addFriendPlaceholder": "Entrer le code Fantôme de l'ami",
+    "addFriendBtn": "Ajouter",
+    "leaderboard": "Classement",
+    "noFriends": "Pas encore de fantômes.",
+    "noFriendsSubtitle": "Partage ton code et invite des amis à concourir.",
+    "streak": "jours consécutifs",
+    "you": "Toi",
+    "rank": "Rang",
+    "codeHint": "Partage ce code avec tes amis pour qu'ils puissent t'ajouter.",
+    "codeCopied": "Code copié !",
+    "friendAdded": "Fantôme ajouté à ton équipe !",
+    "friendNotFound": "Aucun fantôme trouvé avec ce code.",
+    "invalidCode": "Code invalide. Les codes Fantôme font 6 caractères.",
+    "shareTitle": "Rejoins-moi sur RiseGrind — Ghost Mode",
+    "shareMsg": "Je construis en silence sur RiseGrind. Ajoute-moi avec le code : "
+  },
+  "notifications": {
+    "title": "Notifications",
+    "dailyReminder": "Rappel quotidien d'habitudes",
+    "dailyReminderDesc": "Notification matinale pour démarrer ta routine",
+    "reminderTime": "Heure du rappel",
+    "inactivityAlert": "Alerte d'inactivité",
+    "inactivityDesc": "Alerte après 2 jours sans journalisation",
+    "rankUpAlert": "Célébration de montée en rang",
+    "rankUpDesc": "Célèbre quand tu atteins un nouveau rang",
+    "permissionDenied": "Les notifications sont désactivées. Active-les dans les Réglages.",
+    "rankUpTitle": "Nouveau rang débloqué ! 🏆",
+    "rankUpBody": "Tu as atteint {{rank}}. Ghost Mode niveau supérieur.",
+    "inactivityTitle": "Ne brise pas le silence. 👻",
+    "inactivityBody": "Tu perds ton avantage. Reviens en Ghost Mode.",
+    "reminderTitle": "Ghost Mode activé. ⚡",
+    "reminderBody": "Ta routine matinale t'attend. Présente-toi aujourd'hui."
   },
   "profile": {
-    "title": "Profil Ghost",
+    "title": "Profil Fantôme",
     "editName": "Modifier le nom",
     "subscription": "Abonnement",
     "premium": "Ghost Mode Premium",
@@ -149,16 +224,42 @@
     "upgrade": "Passer au Premium",
     "manage": "Gérer l'abonnement",
     "achievements": "Succès",
-    "stats": "Statistiques",
-    "resetData": "Réinitialiser les données",
-    "resetConfirm": "Cela effacera toute ta progression. Es-tu sûr ?",
-    "language": "Langue"
+    "stats": "Tes stats",
+    "resetData": "Réinitialiser toutes les données",
+    "resetTitle": "Réinitialiser toutes les données",
+    "resetMsg": "Cela supprimera définitivement toutes tes habitudes, entrées de journal, humeurs et progrès. Cette action est irréversible.",
+    "resetConfirm": "Réinitialiser",
+    "language": "Langue",
+    "settings": "Paramètres",
+    "appearance": "Apparence",
+    "dark": "Sombre",
+    "light": "Clair",
+    "restore": "Restaurer",
+    "appInfo": "RiseGrind v1.0.0 · Fait avec ❤️",
+    "dayStreak": "Jours consécutifs",
+    "totalXP": "XP total",
+    "habitsDone": "Habitudes faites",
+    "journalEntries": "Entrées de journal",
+    "xpToNext": "XP vers",
+    "namePlaceholder": "Entrer ton prénom",
+    "save": "Sauvegarder",
+    "cancel": "Annuler"
   },
   "ranks": {
     "Early Riser": "Lève-tôt",
     "Morning Warrior": "Guerrier du matin",
     "Grind Master": "Maître du Grind",
     "Grind Legend": "Légende du Grind"
+  },
+  "achievements": {
+    "first_entry": { "title": "Première entrée", "description": "Écris ta première entrée de journal" },
+    "streak_3": { "title": "Série de 3 jours", "description": "Maintiens une série de 3 jours" },
+    "streak_7": { "title": "Guerrier de la semaine", "description": "Maintiens une série de 7 jours" },
+    "streak_30": { "title": "Fantôme 30 jours", "description": "Maintiens une série de 30 jours" },
+    "habits_10": { "title": "Bâtisseur d'habitudes", "description": "Complète 10 habitudes au total" },
+    "habits_50": { "title": "Moteur de discipline", "description": "Complète 50 habitudes au total" },
+    "xp_500": { "title": "Chasseur de XP", "description": "Gagne 500 XP" },
+    "xp_1000": { "title": "Opérateur Fantôme", "description": "Gagne 1000 XP" }
   },
   "common": {
     "cancel": "Annuler",
@@ -167,6 +268,9 @@
     "confirm": "Confirmer",
     "loading": "Chargement...",
     "error": "Une erreur s'est produite",
-    "retry": "Réessayer"
+    "retry": "Réessayer",
+    "share": "Partager",
+    "copy": "Copier",
+    "close": "Fermer"
   }
 }

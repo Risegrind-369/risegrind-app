@@ -146,3 +146,37 @@
 - [ ] Add language to app-context state (persist with AsyncStorage)
 - [ ] Update OnboardingGuard to show language screen first if no language set
 - [ ] Localize profile screen and settings labels
+
+## Advanced Analytics, Community, Notifications & Full i18n
+
+### Full i18n Coverage
+- [ ] Expand EN/FR/PT translation files with community, notifications, analytics, filter keys
+- [ ] Wire t() into tab labels, rank names, achievement titles, habit suggestions
+- [ ] Ensure AI system prompt uses localized language instruction from i18n
+- [ ] Remove all hardcoded English strings from all screens
+
+### Advanced Analytics (Insights Screen Rebuild)
+- [ ] Add daily/weekly/monthly/yearly filter tabs to Insights screen
+- [ ] Build correlation bar chart (bar height = habits completed, bar color = mood)
+- [ ] Wire chart to filter selection (aggregate data by period)
+- [ ] AI insight text box below chart with pattern explanation
+
+### Ghost Community Tab
+- [ ] Add Friend type and community state to app-context
+- [ ] Create community.tsx tab screen with friend code display
+- [ ] Add friend via unique code flow
+- [ ] Leaderboard showing friends' streaks and ranks
+- [ ] Add community tab to tab layout with icon
+
+### Viral Share Image
+- [ ] Install react-native-view-shot for screenshot capture
+- [ ] Build ShareCard component (dark aesthetic, badge icon, slogan, QR)
+- [ ] Trigger share sheet on badge unlock and rank-up
+- [ ] Generate QR code linking to app
+
+### Smart Push Notifications
+- [ ] Request notification permissions on app launch
+- [ ] Schedule daily habit reminder (customizable time)
+- [ ] Trigger rank-up celebration notification
+- [ ] Schedule inactivity warning after 2 days without journal entry
+- [ ] Add notification settings to Profile screen

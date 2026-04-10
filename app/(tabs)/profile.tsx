@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { router } from "expo-router";
 import {
   View,
   Text,
@@ -249,6 +250,17 @@ export default function ProfileScreen() {
               {colorScheme === "dark" ? "Dark" : "Light"}
             </Text>
           </View>
+
+          <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
+
+          <Pressable
+            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/notifications" as any); }}
+            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={styles.settingEmoji}>🔔</Text>
+            <Text style={[styles.settingLabel, { color: colors.foreground }]}>Notifications</Text>
+            <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
+          </Pressable>
 
           <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 

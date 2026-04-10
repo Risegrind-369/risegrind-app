@@ -60,6 +60,14 @@ export interface SideQuest {
 
 export type Rank = "Early Riser" | "Morning Warrior" | "Grind Master" | "Grind Legend";
 
+export interface GhostFriend {
+  code: string;
+  name: string;
+  streak: number;
+  xp: number;
+  addedAt: number;
+}
+
 export interface AppState {
   // Onboarding
   isOnboarded: boolean;
@@ -84,6 +92,9 @@ export interface AppState {
   achievements: Achievement[];
   sideQuests: SideQuest[];
 
+  // Community
+  ghostCode: string;
+  friends: GhostFriend[];
   // UI
   isLoading: boolean;
 }
@@ -104,6 +115,8 @@ export type AppAction =
   | { type: "START_SIDE_QUEST"; payload: string }
   | { type: "COMPLETE_SIDE_QUEST"; payload: string }
   | { type: "ABANDON_SIDE_QUEST"; payload: string }
+  | { type: "ADD_FRIEND"; payload: GhostFriend }
+  | { type: "REMOVE_FRIEND"; payload: string }
   | { type: "LOAD_STATE"; payload: Partial<AppState> }
   | { type: "SET_LOADING"; payload: boolean };
 
@@ -257,6 +270,11 @@ export const ALL_ACHIEVEMENTS: Achievement[] = [
 
 // ─── Initial State ────────────────────────────────────────────────────────────
 
+function generateGhostCode(): string {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  return Array.from({ length: 6 }, () => chars[Math.floor(Math.random() * chars.length)]).join("");
+}
+
 const INITIAL_STATE: AppState = {
   isOnboarded: false,
   userName: "",
@@ -271,6 +289,8 @@ const INITIAL_STATE: AppState = {
   lastActiveDate: null,
   achievements: ALL_ACHIEVEMENTS,
   sideQuests: ALL_SIDE_QUESTS,
+  ghostCode: generateGhostCode(),
+  friends: [],
   isLoading: true,
 };
 
@@ -368,6 +388,13 @@ function appReducer(state: AppState, action: AppAction): AppState {
         xp: state.xp + (quest?.xpReward ?? 0),
       };
     }
+
+    case "ADD_FRIEND":
+      if (state.friends.some((f) => f.code === action.payload.code)) return state;
+      return { ...state, friends: [...state.friends, action.payload] };
+
+    case "REMOVE_FRIEND":
+      return { ...state, friends: state.friends.filter((f) => f.code !== action.payload) };
 
     case "ABANDON_SIDE_QUEST": {
       const quests = state.sideQuests.map((q) =>

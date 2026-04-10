@@ -18,6 +18,7 @@ const MAPPING = {
   "book.fill": "menu-book",
   "chart.bar.fill": "bar-chart",
   "person.fill": "person",
+  "person.2.fill": "group",
   // Actions
   "plus": "add",
   "plus.circle.fill": "add-circle",
