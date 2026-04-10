@@ -8,6 +8,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, type SideQuest } from "@/lib/app-context";
@@ -120,7 +121,10 @@ function QuestCard({
 export default function QuestsScreen() {
   const colors = useColors();
   const { state, dispatch } = useApp();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
   const [selectedQuest, setSelectedQuest] = useState<SideQuest | null>(null);
+  const [shareQuest, setShareQuest] = useState<SideQuest | null>(null);
   const [filter, setFilter] = useState<"all" | "active" | "available" | "completed">("all");
 
   const quests = state.sideQuests ?? [];
@@ -145,16 +149,17 @@ export default function QuestsScreen() {
 
   const handleComplete = (quest: SideQuest) => {
     Alert.alert(
-      "Mark as Complete?",
-      `Complete "${quest.title}" and earn ${quest.xpReward} XP?`,
+      lang === "fr" ? "Marquer comme terminé ?" : lang === "pt" ? "Marcar como concluído?" : "Mark as Complete?",
+      `${lang === "fr" ? "Terminer" : lang === "pt" ? "Concluir" : "Complete"} "${quest.title}" ${lang === "fr" ? "et gagner" : lang === "pt" ? "e ganhar" : "and earn"} ${quest.xpReward} XP?`,
       [
-        { text: "Not yet", style: "cancel" },
+        { text: lang === "fr" ? "Pas encore" : lang === "pt" ? "Ainda não" : "Not yet", style: "cancel" },
         {
-          text: "Complete",
+          text: lang === "fr" ? "Terminer" : lang === "pt" ? "Concluir" : "Complete",
           onPress: () => {
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             dispatch({ type: "COMPLETE_SIDE_QUEST", payload: quest.id });
             setSelectedQuest(null);
+            setShareQuest(quest);
           },
         },
       ]
@@ -163,12 +168,12 @@ export default function QuestsScreen() {
 
   const handleAbandon = (quest: SideQuest) => {
     Alert.alert(
-      "Abandon Quest?",
-      "Your progress will be lost. Ghost Mode doesn't quit — but the choice is yours.",
+      lang === "fr" ? "Abandonner la mission ?" : lang === "pt" ? "Abandonar a missão?" : "Abandon Quest?",
+      lang === "fr" ? "Votre progression sera perdue. Ghost Mode ne renonce pas — mais le choix est vôtre." : lang === "pt" ? "Seu progresso será perdido. Ghost Mode não desiste — mas a escolha é sua." : "Your progress will be lost. Ghost Mode doesn't quit — but the choice is yours.",
       [
-        { text: "Keep Going", style: "cancel" },
+        { text: lang === "fr" ? "Continuer" : lang === "pt" ? "Continuar" : "Keep Going", style: "cancel" },
         {
-          text: "Abandon",
+          text: lang === "fr" ? "Abandonner" : lang === "pt" ? "Abandonar" : "Abandon",
           style: "destructive",
           onPress: () => {
             dispatch({ type: "ABANDON_SIDE_QUEST", payload: quest.id });
@@ -180,10 +185,10 @@ export default function QuestsScreen() {
   };
 
   const FILTERS: { key: typeof filter; label: string; count: number }[] = [
-    { key: "all", label: "All", count: quests.length },
-    { key: "active", label: "Active", count: activeQuests.length },
-    { key: "available", label: "Available", count: availableQuests.length },
-    { key: "completed", label: "Done", count: completedQuests.length },
+    { key: "all", label: lang === "fr" ? "Tout" : lang === "pt" ? "Todos" : "All", count: quests.length },
+    { key: "active", label: lang === "fr" ? "Actif" : lang === "pt" ? "Ativo" : "Active", count: activeQuests.length },
+    { key: "available", label: lang === "fr" ? "Disponible" : lang === "pt" ? "Disponível" : "Available", count: availableQuests.length },
+    { key: "completed", label: lang === "fr" ? "Terminé" : lang === "pt" ? "Concluído" : "Done", count: completedQuests.length },
   ];
 
   return (
@@ -194,9 +199,9 @@ export default function QuestsScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>Side Quests</Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>{lang === "fr" ? "Missions Ghost" : lang === "pt" ? "Missões Ghost" : "Side Quests"}</Text>
           <Text style={[styles.headerSub, { color: colors.muted }]}>
-            Bonus missions. Extra XP. Ghost Mode unlocked.
+            {lang === "fr" ? "Missions bonus. XP supplémentaire. Ghost Mode activé." : lang === "pt" ? "Missões bônus. XP extra. Ghost Mode desbloqueado." : "Bonus missions. Extra XP. Ghost Mode unlocked."}
           </Text>
         </View>
 
@@ -205,26 +210,26 @@ export default function QuestsScreen() {
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.statEmoji}>⚡</Text>
             <Text style={[styles.statValue, { color: colors.foreground }]}>{activeQuests.length}</Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>Active</Text>
+            <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "Actif" : lang === "pt" ? "Ativo" : "Active"}</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.statEmoji}>✅</Text>
             <Text style={[styles.statValue, { color: colors.foreground }]}>{completedQuests.length}</Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>Completed</Text>
+            <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "Terminé" : lang === "pt" ? "Concluído" : "Completed"}</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.statEmoji}>🏆</Text>
             <Text style={[styles.statValue, { color: colors.foreground }]}>
               {completedQuests.reduce((sum, q) => sum + q.xpReward, 0)}
             </Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>XP Earned</Text>
+            <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "XP Gagné" : lang === "pt" ? "XP Ganho" : "XP Earned"}</Text>
           </View>
         </View>
 
         {/* Ghost Mode callout */}
         <View style={[styles.callout, { backgroundColor: colors.primary + "10", borderColor: colors.primary + "30" }]}>
           <Text style={[styles.calloutText, { color: colors.foreground }]}>
-            👻 <Text style={{ fontWeight: "700" }}>Ghost Mode missions</Text> are optional bonus challenges that push you beyond your daily routine. Complete them to earn extra XP and unlock exclusive badges.
+            👻 <Text style={{ fontWeight: "700" }}>{lang === "fr" ? "Missions Ghost Mode" : lang === "pt" ? "Missões Ghost Mode" : "Ghost Mode missions"}</Text> {lang === "fr" ? "sont des défis bonus optionnels qui vous poussent au-delà de votre routine quotidienne. Terminez-les pour gagner des XP supplémentaires et débloquer des badges exclusifs." : lang === "pt" ? "são desafios bônus opcionais que te empurram além da sua rotina diária. Conclua-os para ganhar XP extra e desbloquear badges exclusivos." : "are optional bonus challenges that push you beyond your daily routine. Complete them to earn extra XP and unlock exclusive badges."}
           </Text>
         </View>
 
@@ -264,12 +269,12 @@ export default function QuestsScreen() {
           <View style={[styles.emptyState, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.emptyEmoji}>🎯</Text>
             <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
-              {filter === "completed" ? "No completed quests yet" : "No quests here"}
+                {filter === "completed" ? (lang === "fr" ? "Aucune mission terminée" : lang === "pt" ? "Nenhuma missão concluída" : "No completed quests yet") : (lang === "fr" ? "Aucune mission ici" : lang === "pt" ? "Nenhuma missão aqui" : "No quests here")}
             </Text>
             <Text style={[styles.emptyDesc, { color: colors.muted }]}>
-              {filter === "completed"
-                ? "Complete a quest to see it here."
-                : "Switch to Available to start a quest."}
+                {filter === "completed"
+                ? (lang === "fr" ? "Terminez une mission pour la voir ici." : lang === "pt" ? "Conclua uma missão para vê-la aqui." : "Complete a quest to see it here.")
+                : (lang === "fr" ? "Passez à Disponible pour commencer une mission." : lang === "pt" ? "Mude para Disponível para iniciar uma missão." : "Switch to Available to start a quest.")}
             </Text>
           </View>
         ) : (
@@ -339,7 +344,7 @@ export default function QuestsScreen() {
                     onPress={() => handleStart(selectedQuest)}
                     style={[styles.actionBtn, { backgroundColor: colors.primary }]}
                   >
-                    <Text style={styles.actionBtnText}>⚡ Accept Mission</Text>
+                    <Text style={styles.actionBtnText}>⚡ {lang === "fr" ? "Accepter la mission" : lang === "pt" ? "Aceitar missão" : "Accept Mission"}</Text>
                   </Pressable>
                 )}
                 {selectedQuest.startedAt && !selectedQuest.completedAt && (
@@ -348,23 +353,85 @@ export default function QuestsScreen() {
                       onPress={() => handleComplete(selectedQuest)}
                       style={[styles.actionBtn, { backgroundColor: colors.success }]}
                     >
-                      <Text style={styles.actionBtnText}>✓ Mark Complete</Text>
+                      <Text style={styles.actionBtnText}>✓ {lang === "fr" ? "Marquer terminé" : lang === "pt" ? "Marcar concluído" : "Mark Complete"}</Text>
                     </Pressable>
                     <Pressable
                       onPress={() => handleAbandon(selectedQuest)}
                       style={[styles.abandonBtn, { borderColor: colors.error }]}
                     >
-                      <Text style={[styles.abandonBtnText, { color: colors.error }]}>Abandon Quest</Text>
+                      <Text style={[styles.abandonBtnText, { color: colors.error }]}>{lang === "fr" ? "Abandonner" : lang === "pt" ? "Abandonar" : "Abandon Quest"}</Text>
                     </Pressable>
                   </>
                 )}
                 {selectedQuest.completedAt && (
                   <View style={[styles.completedBanner, { backgroundColor: colors.success + "15" }]}>
                     <Text style={[styles.completedBannerText, { color: colors.success }]}>
-                      ✓ Quest completed · +{selectedQuest.xpReward} XP earned
+                      ✓ {lang === "fr" ? "Mission terminée" : lang === "pt" ? "Missão concluída" : "Quest completed"} · +{selectedQuest.xpReward} XP {lang === "fr" ? "gagné" : lang === "pt" ? "ganho" : "earned"}
                     </Text>
                   </View>
                 )}
+              </View>
+            </View>
+          )}
+        </View>
+      </Modal>
+
+      {/* Quest Completed Share Modal */}
+      <Modal
+        visible={!!shareQuest}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShareQuest(null)}
+      >
+        <View style={[styles.modalOverlay, { justifyContent: "center", paddingHorizontal: 24 }]}>
+          <Pressable style={[styles.modalBackdrop, { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }]} onPress={() => setShareQuest(null)} />
+          {shareQuest && (
+            <View style={[styles.shareCard, { backgroundColor: "#0D0D0F", borderColor: "#333" }]}>
+              <Text style={{ fontSize: 60, textAlign: "center", marginBottom: 8 }}>{shareQuest.icon}</Text>
+              <Text style={{ fontSize: 11, fontWeight: "800", letterSpacing: 3, color: "#888", textAlign: "center", marginBottom: 4 }}>
+                {lang === "fr" ? "MISSION TERMINÉE" : lang === "pt" ? "MISSÃO CONCLUÍDA" : "QUEST COMPLETED"}
+              </Text>
+              <Text style={{ fontSize: 22, fontWeight: "900", color: "#fff", textAlign: "center", marginBottom: 4 }}>
+                {shareQuest.title}
+              </Text>
+              <Text style={{ fontSize: 13, color: "#888", textAlign: "center", marginBottom: 16 }}>
+                +{shareQuest.xpReward} XP · {lang === "fr" ? "Ghost Mode activé" : lang === "pt" ? "Ghost Mode ativo" : "Ghost Mode active"}
+              </Text>
+              <Text style={{ fontSize: 16, fontStyle: "italic", color: "#aaa", textAlign: "center", marginBottom: 24, lineHeight: 24 }}>
+                {lang === "fr" ? "“La discipline est la seule voie.”" : lang === "pt" ? "“A disciplina é o único caminho.”" : "“Discipline is the only way.”"}
+              </Text>
+              <Text style={{ fontSize: 11, color: "#555", textAlign: "center", marginBottom: 20 }}>risegrind.app</Text>
+              <View style={{ gap: 10 }}>
+                <Pressable
+                  onPress={() => {
+                    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+                    setShareQuest(null);
+                  }}
+                  style={({ pressed }) => ({
+                    backgroundColor: "#fff",
+                    paddingVertical: 14,
+                    borderRadius: 14,
+                    alignItems: "center",
+                    opacity: pressed ? 0.8 : 1,
+                  })}
+                >
+                  <Text style={{ color: "#000", fontSize: 16, fontWeight: "800" }}>
+                    📸 {lang === "fr" ? "Partager sur Stories" : lang === "pt" ? "Compartilhar nos Stories" : "Share to Stories"}
+                  </Text>
+                </Pressable>
+                <Pressable
+                  onPress={() => setShareQuest(null)}
+                  style={({ pressed }) => ({
+                    paddingVertical: 12,
+                    borderRadius: 14,
+                    alignItems: "center",
+                    opacity: pressed ? 0.6 : 1,
+                  })}
+                >
+                  <Text style={{ color: "#666", fontSize: 14 }}>
+                    {lang === "fr" ? "Fermer" : lang === "pt" ? "Fechar" : "Close"}
+                  </Text>
+                </Pressable>
               </View>
             </View>
           )}
@@ -624,5 +691,11 @@ const styles = StyleSheet.create({
   completedBannerText: {
     fontSize: 15,
     fontWeight: "700",
+  },
+  shareCard: {
+    borderRadius: 24,
+    padding: 28,
+    borderWidth: 1,
+    alignItems: "center",
   },
 });

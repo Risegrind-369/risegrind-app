@@ -10,7 +10,9 @@ import {
   Alert,
   TextInput,
   Modal,
+  Linking,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import {
@@ -48,6 +50,8 @@ export default function ProfileScreen() {
   const { isPremium, restorePurchases } = useRevenueCat();
   const colorScheme = useColorScheme();
   const { language, setLanguage } = useLanguage();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
   const [showNameEdit, setShowNameEdit] = useState(false);
   const [editName, setEditName] = useState(state.userName);
 
@@ -71,15 +75,15 @@ export default function ProfileScreen() {
 
   const handleResetData = () => {
     Alert.alert(
-      "Reset All Data",
-      "This will permanently delete all your habits, journal entries, moods, and progress. This cannot be undone.",
+      lang === "fr" ? "Réinitialiser" : lang === "pt" ? "Redefinir dados" : "Reset All Data",
+      lang === "fr" ? "Ceci supprimera définitivement tous vos progrès. Irréversible." : lang === "pt" ? "Isso excluirá permanentemente todo o seu progresso." : "This will permanently delete all your habits, journal entries, moods, and progress. This cannot be undone.",
       [
-        { text: "Cancel", style: "cancel" },
+        { text: lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel", style: "cancel" },
         {
-          text: "Reset",
+          text: lang === "fr" ? "Réinitialiser" : lang === "pt" ? "Redefinir" : "Reset",
           style: "destructive",
           onPress: () => {
-            Alert.alert("Feature", "Data reset would clear AsyncStorage in production.");
+            Alert.alert("OK", lang === "fr" ? "Réinitialisation en production." : lang === "pt" ? "Redefinição na produção." : "Data reset would clear AsyncStorage in production.");
           },
         },
       ]
@@ -103,7 +107,7 @@ export default function ProfileScreen() {
               style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={[styles.profileName, { color: colors.foreground }]}>
-                {state.userName || "Friend"} ✏️
+                {state.userName || (lang === "fr" ? "Ami" : lang === "pt" ? "Amigo" : "Friend")} ✏️
               </Text>
             </Pressable>
             <View style={[styles.rankBadge, { backgroundColor: rankColor }]}>
@@ -111,7 +115,7 @@ export default function ProfileScreen() {
             </View>
             {nextRank && (
               <Text style={[styles.nextRankText, { color: colors.muted }]}>
-                {nextXP - state.xp} XP to {nextRank.rank}
+                {nextXP - state.xp} XP {lang === "fr" ? "pour" : lang === "pt" ? "para" : "to"} {nextRank.rank}
               </Text>
             )}
           </View>
@@ -124,30 +128,30 @@ export default function ProfileScreen() {
 
         {/* Stats Grid */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Your Stats</Text>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Vos stats" : lang === "pt" ? "Suas estatísticas" : "Your Stats"}</Text>
           <View style={styles.statsGrid}>
             <View style={styles.statItem}>
               <Text style={styles.statEmoji}>🔥</Text>
               <Text style={[styles.statValue, { color: colors.foreground }]}>{state.streak}</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Day Streak</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "Série" : lang === "pt" ? "Sequência" : "Day Streak"}</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={styles.statEmoji}>⚡</Text>
               <Text style={[styles.statValue, { color: colors.foreground }]}>{state.xp.toLocaleString()}</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Total XP</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "XP Total" : lang === "pt" ? "XP Total" : "Total XP"}</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={styles.statEmoji}>✅</Text>
               <Text style={[styles.statValue, { color: colors.foreground }]}>{totalHabitsCompleted}</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Habits Done</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "Habitudes" : lang === "pt" ? "Hábitos" : "Habits Done"}</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
               <Text style={styles.statEmoji}>📖</Text>
               <Text style={[styles.statValue, { color: colors.foreground }]}>{state.journalEntries.length}</Text>
-              <Text style={[styles.statLabel, { color: colors.muted }]}>Journal Entries</Text>
+              <Text style={[styles.statLabel, { color: colors.muted }]}>{lang === "fr" ? "Entrées" : lang === "pt" ? "Entradas" : "Journal Entries"}</Text>
             </View>
           </View>
         </View>
@@ -155,7 +159,7 @@ export default function ProfileScreen() {
         {/* Achievements */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.cardTitle, { color: colors.foreground }]}>
-            Achievements ({unlockedAchievements.length}/{ALL_ACHIEVEMENTS.length})
+            {lang === "fr" ? "Succès" : lang === "pt" ? "Conquistas" : "Achievements"} ({unlockedAchievements.length}/{ALL_ACHIEVEMENTS.length})
           </Text>
           <View style={styles.achievementsGrid}>
             {ALL_ACHIEVEMENTS.map((achievement) => {
@@ -189,26 +193,50 @@ export default function ProfileScreen() {
 
         {/* Subscription */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Subscription</Text>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Abonnement" : lang === "pt" ? "Assinatura" : "Subscription"}</Text>
           <View style={styles.subscriptionRow}>
             <View style={[styles.premiumBadge, { backgroundColor: isPremium ? "#F59E0B20" : colors.border }]}>
               <Text style={styles.premiumBadgeEmoji}>{isPremium ? "👑" : "🔒"}</Text>
               <Text style={[styles.premiumBadgeText, { color: isPremium ? "#F59E0B" : colors.muted }]}>
-                {isPremium ? "Premium Active" : "Free Plan"}
+                {isPremium ? (lang === "fr" ? "Premium Actif" : lang === "pt" ? "Premium Ativo" : "Premium Active") : (lang === "fr" ? "Plan Gratuit" : lang === "pt" ? "Plano Gratuito" : "Free Plan")}
               </Text>
             </View>
             <Pressable
               onPress={() => restorePurchases()}
               style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
             >
-              <Text style={[styles.restoreText, { color: colors.primary }]}>Restore</Text>
+              <Text style={[styles.restoreText, { color: colors.primary }]}>{lang === "fr" ? "Restaurer" : lang === "pt" ? "Restaurar" : "Restore"}</Text>
             </Pressable>
           </View>
+          {isPremium && (
+            <Pressable
+              onPress={() => Linking.openURL("https://apps.apple.com/account/subscriptions")}
+              style={({ pressed }) => ([
+                {
+                  marginTop: 10,
+                  paddingVertical: 10,
+                  paddingHorizontal: 14,
+                  borderRadius: 12,
+                  borderWidth: 1,
+                  borderColor: colors.border,
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  opacity: pressed ? 0.6 : 1,
+                },
+              ])}
+            >
+              <Text style={{ color: colors.foreground, fontSize: 14, fontWeight: "600" }}>
+                {lang === "fr" ? "Gérer l'abonnement" : lang === "pt" ? "Gerenciar assinatura" : "Manage Subscription"}
+              </Text>
+              <Text style={{ color: colors.muted, fontSize: 14 }}>›</Text>
+            </Pressable>
+          )}
         </View>
 
         {/* Language */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Language</Text>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Langue" : lang === "pt" ? "Idioma" : "Language"}</Text>
           <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
             {SUPPORTED_LANGUAGES.map((lang) => (
               <Pressable
@@ -241,13 +269,13 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Settings</Text>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Paramètres" : lang === "pt" ? "Configurações" : "Settings"}</Text>
 
           <View style={styles.settingRow}>
             <Text style={styles.settingEmoji}>🌙</Text>
-            <Text style={[styles.settingLabel, { color: colors.foreground }]}>Appearance</Text>
+            <Text style={[styles.settingLabel, { color: colors.foreground }]}>{lang === "fr" ? "Apparence" : lang === "pt" ? "Aparência" : "Appearance"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>
-              {colorScheme === "dark" ? "Dark" : "Light"}
+              {colorScheme === "dark" ? (lang === "fr" ? "Sombre" : lang === "pt" ? "Escuro" : "Dark") : (lang === "fr" ? "Clair" : lang === "pt" ? "Claro" : "Light")}
             </Text>
           </View>
 
@@ -258,7 +286,7 @@ export default function ProfileScreen() {
             style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
           >
             <Text style={styles.settingEmoji}>🔔</Text>
-            <Text style={[styles.settingLabel, { color: colors.foreground }]}>Notifications</Text>
+            <Text style={[styles.settingLabel, { color: colors.foreground }]}>{lang === "fr" ? "Notifications" : lang === "pt" ? "Notificações" : "Notifications"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
           </Pressable>
 
@@ -269,7 +297,7 @@ export default function ProfileScreen() {
             style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
           >
             <Text style={styles.settingEmoji}>🗑️</Text>
-            <Text style={[styles.settingLabel, { color: colors.error }]}>Reset All Data</Text>
+            <Text style={[styles.settingLabel, { color: colors.error }]}>{lang === "fr" ? "Réinitialiser les données" : lang === "pt" ? "Redefinir dados" : "Reset All Data"}</Text>
           </Pressable>
         </View>
 
@@ -289,7 +317,7 @@ export default function ProfileScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>Edit Name</Text>
+            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{lang === "fr" ? "Modifier le nom" : lang === "pt" ? "Editar nome" : "Edit Name"}</Text>
             <TextInput
               style={[styles.nameInput, { backgroundColor: colors.surface, borderColor: colors.border, color: colors.foreground }]}
               value={editName}
@@ -305,13 +333,13 @@ export default function ProfileScreen() {
                 onPress={() => setShowNameEdit(false)}
                 style={[styles.modalCancel, { borderColor: colors.border }]}
               >
-                <Text style={[styles.modalCancelText, { color: colors.muted }]}>Cancel</Text>
+                <Text style={[styles.modalCancelText, { color: colors.muted }]}>{lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel"}</Text>
               </Pressable>
               <Pressable
                 onPress={handleSaveName}
                 style={[styles.modalSave, { backgroundColor: colors.primary }]}
               >
-                <Text style={styles.modalSaveText}>Save</Text>
+                <Text style={styles.modalSaveText}>{lang === "fr" ? "Enregistrer" : lang === "pt" ? "Salvar" : "Save"}</Text>
               </Pressable>
             </View>
           </View>

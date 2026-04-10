@@ -9,6 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
@@ -16,16 +17,40 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { XPBar } from "@/components/ui/xp-bar";
 import * as Haptics from "expo-haptics";
 
-const GHOST_SLOGANS = [
+const GHOST_SLOGANS_EN = [
   "Go Ghost. Build Yourself. Change Everything.",
   "Disappear from the noise.",
   "Quiet discipline. Loud results.",
   "Lock in and rebuild in silence.",
   "The grind doesn't need an audience.",
 ];
+const GHOST_SLOGANS_FR = [
+  "Deviens fantôme. Construis-toi. Change tout.",
+  "Disparaît du bruit.",
+  "Discipline silencieuse. Résultats bruyants.",
+  "Verrouille-toi et reconstruis en silence.",
+  "Le grind n'a pas besoin d'audience.",
+];
+const GHOST_SLOGANS_PT = [
+  "Vire fantasma. Construa-se. Mude tudo.",
+  "Desapareça do barulho.",
+  "Disciplina silenciosa. Resultados barulhentos.",
+  "Foque e reconstrua em silêncio.",
+  "O grind não precisa de audiência.",
+];
 
-function getGreeting(name: string): string {
+function getGreeting(name: string, lang: string): string {
   const hour = new Date().getHours();
+  if (lang === "fr") {
+    if (hour < 12) return `Lève-toi, ${name}`;
+    if (hour < 17) return `Concentre-toi, ${name}`;
+    return `Reste discipliné, ${name}`;
+  }
+  if (lang === "pt") {
+    if (hour < 12) return `Levanta, ${name}`;
+    if (hour < 17) return `Foca, ${name}`;
+    return `Mantém a disciplina, ${name}`;
+  }
   if (hour < 12) return `Rise up, ${name}`;
   if (hour < 17) return `Lock in, ${name}`;
   return `Stay disciplined, ${name}`;
@@ -55,10 +80,13 @@ function formatDate(): string {
 export default function HomeScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
+  const slogans = lang === "fr" ? GHOST_SLOGANS_FR : lang === "pt" ? GHOST_SLOGANS_PT : GHOST_SLOGANS_EN;
   const { state, dispatch, todayCompletions, todayProgress, rank } = useApp();
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [selectedMood, setSelectedMood] = useState<MoodLevel | null>(null);
-  const [sloganIndex] = useState(() => Math.floor(Math.random() * GHOST_SLOGANS.length));
+  const [sloganIndex] = useState(() => Math.floor(Math.random() * slogans.length));
   const sloganOpacity = useRef(new Animated.Value(0)).current;
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -109,7 +137,7 @@ export default function HomeScreen() {
         <View style={styles.header}>
           <View style={{ flex: 1 }}>
             <Text style={[styles.greeting, { color: colors.foreground }]}>
-              {getGreeting(state.userName || "Ghost")}
+              {getGreeting(state.userName || "Ghost", lang)}
             </Text>
             <Text style={[styles.date, { color: colors.muted }]}>{formatDate()}</Text>
           </View>
@@ -129,7 +157,7 @@ export default function HomeScreen() {
         >
           <Text style={styles.ghostIcon}>👻</Text>
           <Text style={[styles.sloganText, { color: colors.foreground }]}>
-            {GHOST_SLOGANS[sloganIndex]}
+            {slogans[sloganIndex]}
           </Text>
         </Animated.View>
 
@@ -141,7 +169,7 @@ export default function HomeScreen() {
               size={150}
               strokeWidth={14}
               color={colors.primary}
-              label="Daily Progress"
+              label={t("home.progress")}
             >
               <Text style={[styles.ringPercent, { color: colors.foreground }]}>
                 {Math.round(todayProgress * 100)}%
@@ -154,12 +182,12 @@ export default function HomeScreen() {
             <View style={styles.statsColumn}>
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: colors.foreground }]}>{state.streak}</Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>Day Streak</Text>
+                <Text style={[styles.statLabel, { color: colors.muted }]}>{t("home.streak")}</Text>
               </View>
               <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: "#F97316" }]}>{daysWon}</Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>Days Won</Text>
+                <Text style={[styles.statLabel, { color: colors.muted }]}>{t("insights.daysWon")}</Text>
               </View>
               <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
@@ -198,10 +226,10 @@ export default function HomeScreen() {
             <Text style={styles.moodBannerEmoji}>🧠</Text>
             <View style={styles.moodBannerText}>
               <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-                Check your mental state
+                {t("home.checkIn")}
               </Text>
               <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                Self-awareness is discipline too
+                {lang === "fr" ? "La conscience de soi est aussi de la discipline" : lang === "pt" ? "Autoconsciência também é disciplina" : "Self-awareness is discipline too"}
               </Text>
             </View>
             <Text style={[styles.moodBannerArrow, { color: colors.muted }]}>›</Text>
@@ -211,7 +239,7 @@ export default function HomeScreen() {
             <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
             <View style={styles.moodBannerText}>
           <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-              Mental state logged
+              {lang === "fr" ? "État mental enregistré" : lang === "pt" ? "Estado mental registrado" : "Mental state logged"}
             </Text>
             <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
               {MOOD_LABELS[state.todayMood?.level ?? 3]} · Keep going
@@ -222,12 +250,12 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Your Arsenal</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{lang === "fr" ? "Ton Arsenal" : lang === "pt" ? "Seu Arsenal" : "Your Arsenal"}</Text>
           <View style={styles.actionGrid}>
             {[
-              { emoji: "⚡", label: "Morning\nRoutine", sub: `${todayCompletions.length}/${state.habits.length} done`, route: "/(tabs)/routine", accent: colors.primary },
-              { emoji: "📓", label: "Ghost\nJournal", sub: `${state.journalEntries.length} entries`, route: "/(tabs)/journal", accent: "#8B5CF6" },
-              { emoji: "📊", label: "Deep\nInsights", sub: "Track your growth", route: "/(tabs)/insights", accent: "#10B981" },
+              { emoji: "⚡", label: t("tabs.routine"), sub: `${todayCompletions.length}/${state.habits.length} ${lang === "fr" ? "faites" : lang === "pt" ? "feitos" : "done"}`, route: "/(tabs)/routine", accent: colors.primary },
+              { emoji: "📓", label: t("tabs.journal"), sub: `${state.journalEntries.length} ${lang === "fr" ? "entrées" : lang === "pt" ? "entradas" : "entries"}`, route: "/(tabs)/journal", accent: "#8B5CF6" },
+              { emoji: "📊", label: t("tabs.intel"), sub: lang === "fr" ? "Suis ta croissance" : lang === "pt" ? "Acompanhe seu crescimento" : "Track your growth", route: "/(tabs)/insights", accent: "#10B981" },
             ].map((action) => (
               <Pressable
                 key={action.label}
@@ -255,16 +283,16 @@ export default function HomeScreen() {
 
         {/* Ghost Mode Motivational Block */}
         <View style={[styles.ghostBlock, { backgroundColor: colors.foreground + "06", borderColor: colors.foreground + "12" }]}>
-          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 Ghost Mode Active</Text>
+          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 {lang === "fr" ? "Ghost Mode Actif" : lang === "pt" ? "Ghost Mode Ativo" : "Ghost Mode Active"}</Text>
           <Text style={[styles.ghostBlockBody, { color: colors.muted }]}>
-            You're building in silence. Every habit completed, every entry written, every day won — it compounds. Stay invisible. Stay dangerous.
+            {lang === "fr" ? "Tu construis en silence. Chaque habitude, chaque entrée, chaque jour gagné — ça s'accumule. Reste invisible. Reste dangereux." : lang === "pt" ? "Você está construindo em silêncio. Cada hábito, cada entrada, cada dia ganho — acumula. Fique invisível. Fique perigoso." : "You're building in silence. Every habit completed, every entry written, every day won — it compounds. Stay invisible. Stay dangerous."}
           </Text>
         </View>
 
         {/* Recent Journal Entries */}
         {recentEntries.length > 0 && (
           <View style={styles.recentSection}>
-            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Recent Entries</Text>
+            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{lang === "fr" ? "Entrées récentes" : lang === "pt" ? "Entradas recentes" : "Recent Entries"}</Text>
             {recentEntries.map((entry) => (
               <View
                 key={entry.id}
@@ -297,8 +325,8 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>Mental State</Text>
-            <Text style={[styles.modalSub, { color: colors.muted }]}>How are you feeling right now?</Text>
+            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{lang === "fr" ? "État mental" : lang === "pt" ? "Estado mental" : "Mental State"}</Text>
+            <Text style={[styles.modalSub, { color: colors.muted }]}>{t("home.moodCheck")}</Text>
 
             <View style={styles.moodGrid}>
               {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
@@ -336,7 +364,7 @@ export default function HomeScreen() {
               ]}
             >
               <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
-                Log State
+                {lang === "fr" ? "Enregistrer" : lang === "pt" ? "Registrar" : "Log State"}
               </Text>
             </Pressable>
 
@@ -344,7 +372,7 @@ export default function HomeScreen() {
               onPress={() => setShowMoodPicker(false)}
               style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
             >
-              <Text style={[styles.cancelText, { color: colors.muted }]}>Cancel</Text>
+              <Text style={[styles.cancelText, { color: colors.muted }]}>{t("common.cancel")}</Text>
             </Pressable>
           </View>
         </View>

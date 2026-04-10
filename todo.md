@@ -180,3 +180,21 @@
 - [ ] Trigger rank-up celebration notification
 - [ ] Schedule inactivity warning after 2 days without journal entry
 - [ ] Add notification settings to Profile screen
+
+## Universal Translation & Critical Fixes (Sprint 4)
+- [ ] Fix RevenueCat/Superwall crash in Expo Go — wrap in Constants.executionEnvironment guard
+- [ ] Localize tab bar labels in _layout.tsx using t("tabs.*")
+- [ ] Wire AI system prompt per language in journal and insights screens
+- [ ] Add "tabs" key to all 3 translation files (en/fr/pt)
+- [ ] Add "shareCard" key to all 3 translation files for quest sharing
+- [ ] Add "manageSubscription" deep link button in profile
+- [ ] Add viral quest sharing modal in quests.tsx
+- [ ] Review Home screen — zero hardcoded strings
+- [ ] Review Routine screen — zero hardcoded strings
+- [ ] Review Journal screen — zero hardcoded strings
+- [ ] Review Intel screen — zero hardcoded strings
+- [ ] Review Quests screen — zero hardcoded strings
+- [ ] Review Crew screen — zero hardcoded strings
+- [ ] Review Profile screen — zero hardcoded strings
+- [ ] Review Notifications screen — zero hardcoded strings
+- [ ] Review Onboarding screens — zero hardcoded strings

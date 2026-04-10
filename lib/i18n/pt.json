@@ -174,7 +174,13 @@
     "done": "CONCLUÍDO",
     "xpReward": "XP",
     "emptyTitle": "Sem missões aqui.",
-    "emptySubtitle": "Mude para Disponível para iniciar uma nova missão."
+    "emptySubtitle": "Mude para Disponível para iniciar uma nova missão.",
+    "shareTitle": "Missão concluída! 👻",
+    "shareSlogan": "A disciplina é o único caminho.",
+    "shareBtn": "Compartilhar nos Stories",
+    "shareDismiss": "Talvez mais tarde",
+    "questCompleted": "Missão concluída!",
+    "questCompletedMsg": "Você ganhou {{xp}} XP. Ghost Mode nível acima."
   },
   "community": {
     "title": "Comunidade Fantasma",
@@ -243,7 +249,19 @@
     "xpToNext": "XP para",
     "namePlaceholder": "Digite seu nome",
     "save": "Salvar",
-    "cancel": "Cancelar"
+    "cancel": "Cancelar",
+    "manageHint": "Toque para gerenciar seu plano na App Store",
+    "expoGoNote": "Compras requerem um build de desenvolvimento",
+    "buildCmd": "npx eas build --profile development --platform ios",
+    "notifications": "Notificações"
+  },
+  "shareCard": {
+    "slogan": "A disciplina é o único caminho.",
+    "appName": "RiseGrind",
+    "ghostMode": "Ghost Mode",
+    "joinUs": "Junte-se ao Grupo Fantasma",
+    "questCompleted": "Missão concluída",
+    "rankUnlocked": "Rank desbloqueado"
   },
   "ranks": {
     "Early Riser": "Madrugador",

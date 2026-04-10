@@ -174,7 +174,13 @@
     "done": "COMPLETED",
     "xpReward": "XP",
     "emptyTitle": "No quests here.",
-    "emptySubtitle": "Switch to Available to start a new mission."
+    "emptySubtitle": "Switch to Available to start a new mission.",
+    "shareTitle": "Quest Completed! 👻",
+    "shareSlogan": "Discipline is the only way.",
+    "shareBtn": "Share to Stories",
+    "shareDismiss": "Maybe Later",
+    "questCompleted": "Quest Complete!",
+    "questCompletedMsg": "You earned {{xp}} XP. Ghost Mode level up."
   },
   "community": {
     "title": "Ghost Community",
@@ -243,7 +249,11 @@
     "xpToNext": "XP to",
     "namePlaceholder": "Enter your name",
     "save": "Save",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "manageHint": "Tap to manage your plan in the App Store",
+    "expoGoNote": "Purchases require a development build",
+    "buildCmd": "npx eas build --profile development --platform ios",
+    "notifications": "Notifications"
   },
   "ranks": {
     "Early Riser": "Early Riser",
@@ -260,6 +270,14 @@
     "habits_50": { "title": "Discipline Engine", "description": "Complete 50 habits total" },
     "xp_500": { "title": "XP Hunter", "description": "Earn 500 XP" },
     "xp_1000": { "title": "Ghost Operator", "description": "Earn 1000 XP" }
+  },
+  "shareCard": {
+    "slogan": "Discipline is the only way.",
+    "appName": "RiseGrind",
+    "ghostMode": "Ghost Mode",
+    "joinUs": "Join the Ghost Crew",
+    "questCompleted": "Quest Completed",
+    "rankUnlocked": "Rank Unlocked"
   },
   "common": {
     "cancel": "Cancel",

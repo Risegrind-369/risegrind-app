@@ -4,36 +4,42 @@
  * Initializes RevenueCat (react-native-purchases) and exposes subscription state
  * throughout the app via React Context.
  *
+ * IMPORTANT: react-native-purchases is a NATIVE MODULE.
+ * It requires a development build (EAS build) and will NOT work in:
+ *   - Expo Go (storeClient execution environment)
+ *   - Web browser
+ *
+ * To create a development build:
+ *   npx eas build --profile development --platform ios
+ *
  * HOW TO CONNECT:
  * 1. Set EXPO_PUBLIC_RC_API_KEY_IOS in your .env file (get from RevenueCat dashboard)
  * 2. Set EXPO_PUBLIC_RC_API_KEY_ANDROID in your .env file (for Android builds)
  * 3. In RevenueCat dashboard, create an entitlement named "premium"
  * 4. Attach your subscription products to that entitlement
- *
- * On web/simulator, falls back to mock state so the app remains functional.
  */
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Platform } from 'react-native';
-import Purchases, {
-  LOG_LEVEL,
-  type CustomerInfo,
-} from 'react-native-purchases';
+import Constants, { ExecutionEnvironment } from 'expo-constants';
 
 // ─── Environment Keys ────────────────────────────────────────────────────────
-// Set these in your .env file:
-//   EXPO_PUBLIC_RC_API_KEY_IOS=appl_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-//   EXPO_PUBLIC_RC_API_KEY_ANDROID=goog_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 const RC_API_KEY_IOS = process.env.EXPO_PUBLIC_RC_API_KEY_IOS || '';
 const RC_API_KEY_ANDROID = process.env.EXPO_PUBLIC_RC_API_KEY_ANDROID || '';
+
+// ─── Guard: only run native SDK in dev/production builds, not Expo Go or web ─
+const IS_NATIVE_BUILD =
+  Platform.OS !== 'web' &&
+  Constants.executionEnvironment !== ExecutionEnvironment.StoreClient;
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 export interface RevenueCatContextType {
   isLoading: boolean;
   isPremium: boolean;
-  customerInfo: CustomerInfo | null;
+  customerInfo: any | null;
   packages: any[] | null;
   offerings: any | null;
   error: string | null;
+  isNativeBuild: boolean;
   restorePurchases: () => Promise<void>;
   purchasePackage: (pkg: any) => Promise<boolean>;
   checkEntitlement: () => Promise<boolean>;
@@ -45,9 +51,9 @@ const RevenueCatContext = createContext<RevenueCatContextType | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function RevenueCatProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<
-    Omit<RevenueCatContextType, 'restorePurchases' | 'purchasePackage' | 'checkEntitlement'>
+    Omit<RevenueCatContextType, 'restorePurchases' | 'purchasePackage' | 'checkEntitlement' | 'isNativeBuild'>
   >({
-    isLoading: true,
+    isLoading: !IS_NATIVE_BUILD, // if not native, skip loading immediately
     isPremium: false,
     customerInfo: null,
     packages: null,
@@ -56,21 +62,21 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
   });
 
   useEffect(() => {
+    if (!IS_NATIVE_BUILD) {
+      // In Expo Go or web: skip SDK, set loading = false
+      setState((prev) => ({ ...prev, isLoading: false }));
+      return;
+    }
     initializeRevenueCat();
   }, []);
 
   const initializeRevenueCat = async () => {
     try {
-      // Web: skip native SDK, grant premium for demo purposes
-      if (Platform.OS === 'web') {
-        setState((prev) => ({ ...prev, isLoading: false, isPremium: false }));
-        return;
-      }
+      // Dynamically import to avoid bundler crash on web/Expo Go
+      const { default: Purchases, LOG_LEVEL } = await import('react-native-purchases');
 
-      // Enable debug logging (remove in production)
       await Purchases.setLogLevel(LOG_LEVEL.DEBUG);
 
-      // Select the correct API key for the platform
       const apiKey = Platform.OS === 'ios' ? RC_API_KEY_IOS : RC_API_KEY_ANDROID;
 
       if (!apiKey) {
@@ -86,24 +92,14 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
         return;
       }
 
-      // Initialize RevenueCat SDK
-      // appUserID: undefined → RevenueCat generates an anonymous ID automatically.
-      // To link to your own user system, pass your user's ID here after login.
-      await Purchases.configure({
-        apiKey,
-        appUserID: undefined,
-      });
+      await Purchases.configure({ apiKey, appUserID: undefined });
 
-      // Fetch initial customer info and offerings
       const [customerInfo, offerings] = await Promise.all([
         Purchases.getCustomerInfo(),
         Purchases.getOfferings(),
       ]);
 
-      // Check the "premium" entitlement — must match exactly what you named it in RevenueCat
       const isPremium = !!customerInfo.entitlements.active['premium'];
-
-      // Collect all packages from the current offering
       const allPackages: any[] = offerings.current?.availablePackages ?? [];
 
       setState({
@@ -115,7 +111,6 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
         error: null,
       });
 
-      // Listen for real-time subscription changes (e.g., renewal, cancellation)
       Purchases.addCustomerInfoUpdateListener((newCustomerInfo) => {
         const newIsPremium = !!newCustomerInfo.entitlements.active['premium'];
         setState((prev) => ({
@@ -132,10 +127,10 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ─── Restore Purchases ──────────────────────────────────────────────────────
   const restorePurchases = async () => {
-    if (Platform.OS === 'web') return;
+    if (!IS_NATIVE_BUILD) return;
     try {
+      const { default: Purchases } = await import('react-native-purchases');
       const customerInfo = await Purchases.restorePurchases();
       const isPremium = !!customerInfo.entitlements.active['premium'];
       setState((prev) => ({ ...prev, isPremium, customerInfo, error: null }));
@@ -145,13 +140,14 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ─── Purchase a Package ─────────────────────────────────────────────────────
   const purchasePackage = async (pkg: any): Promise<boolean> => {
-    if (Platform.OS === 'web') {
+    if (!IS_NATIVE_BUILD) {
+      // Demo mode: simulate purchase in Expo Go
       setState((prev) => ({ ...prev, isPremium: true }));
       return true;
     }
     try {
+      const { default: Purchases } = await import('react-native-purchases');
       const { customerInfo } = await Purchases.purchasePackage(pkg);
       const isPremium = !!customerInfo.entitlements.active['premium'];
       setState((prev) => ({ ...prev, isPremium, customerInfo, error: null }));
@@ -164,10 +160,10 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ─── Check Entitlement ──────────────────────────────────────────────────────
   const checkEntitlement = async (): Promise<boolean> => {
-    if (Platform.OS === 'web') return state.isPremium;
+    if (!IS_NATIVE_BUILD) return state.isPremium;
     try {
+      const { default: Purchases } = await import('react-native-purchases');
       const customerInfo = await Purchases.getCustomerInfo();
       return !!customerInfo.entitlements.active['premium'];
     } catch (error) {
@@ -178,7 +174,7 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
 
   return (
     <RevenueCatContext.Provider
-      value={{ ...state, restorePurchases, purchasePackage, checkEntitlement }}
+      value={{ ...state, isNativeBuild: IS_NATIVE_BUILD, restorePurchases, purchasePackage, checkEntitlement }}
     >
       {children}
     </RevenueCatContext.Provider>

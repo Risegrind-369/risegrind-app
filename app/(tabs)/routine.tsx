@@ -10,9 +10,10 @@ import {
   Alert,
   Animated,
 } from "react-native";
+import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
-import { useApp, type Habit, type HabitCompletion } from "@/lib/app-context";
+import { useApp, type Habit } from "@/lib/app-context";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import * as Haptics from "expo-haptics";
 
@@ -23,11 +24,13 @@ function HabitRow({
   isCompleted,
   onToggle,
   onDelete,
+  lang,
 }: {
   habit: Habit;
   isCompleted: boolean;
   onToggle: () => void;
   onDelete: () => void;
+  lang: string;
 }) {
   const colors = useColors();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -41,15 +44,20 @@ function HabitRow({
     onToggle();
   };
 
+  const removeLabel = lang === "fr" ? "Supprimer l'habitude" : lang === "pt" ? "Remover hábito" : "Remove Habit";
+  const removeMsg = `${lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove"} "${habit.name}"?`;
+  const cancelLabel = lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel";
+  const confirmLabel = lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove";
+
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
       <Pressable
         onPress={handleToggle}
         onLongPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-          Alert.alert("Remove Habit", `Remove "${habit.name}"?`, [
-            { text: "Cancel", style: "cancel" },
-            { text: "Remove", style: "destructive", onPress: onDelete },
+          Alert.alert(removeLabel, removeMsg, [
+            { text: cancelLabel, style: "cancel" },
+            { text: confirmLabel, style: "destructive", onPress: onDelete },
           ]);
         }}
         style={[
@@ -105,6 +113,8 @@ function HabitRow({
 
 export default function RoutineScreen() {
   const colors = useColors();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language || "en";
   const { state, dispatch, todayCompletions, todayProgress } = useApp();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newHabitName, setNewHabitName] = useState("");
@@ -126,7 +136,6 @@ export default function RoutineScreen() {
 
     if (!wasCompleted) {
       dispatch({ type: "ADD_XP", payload: 10 });
-      // Check if all habits are now done
       const newCount = todayCompletions.length + 1;
       if (newCount === state.habits.length) {
         dispatch({ type: "ADD_XP", payload: 50 });
@@ -161,14 +170,28 @@ export default function RoutineScreen() {
   const completedCount = todayCompletions.length;
   const totalCount = state.habits.length;
 
+  const ofLabel = lang === "fr" ? "sur" : lang === "pt" ? "de" : "of";
+  const completedLabel = lang === "fr" ? "terminées" : lang === "pt" ? "concluídas" : "completed";
+  const remainingLabel = lang === "fr" ? "restantes" : lang === "pt" ? "restantes" : "remaining";
+  const allDoneLabel = lang === "fr" ? "🎉 Tout fait !" : lang === "pt" ? "🎉 Tudo feito!" : "🎉 All done!";
+  const longPressLabel = lang === "fr" ? "Appui long pour supprimer" : lang === "pt" ? "Pressione longo para remover" : "Long press a habit to remove it";
+  const xpEarnedLabel = lang === "fr" ? "gagné aujourd'hui" : lang === "pt" ? "ganhos hoje" : "earned today";
+  const completionLabel = lang === "fr" ? "Routine terminée ! +50 XP Bonus" : lang === "pt" ? "Rotina completa! +50 XP Bônus" : "Routine Complete! +50 Bonus XP";
+  const addLabel = lang === "fr" ? "+ Ajouter" : lang === "pt" ? "+ Adicionar" : "+ Add";
+  const chooseIconLabel = lang === "fr" ? "Choisir une icône" : lang === "pt" ? "Escolher ícone" : "Choose Icon";
+  const habitNameLabel = lang === "fr" ? "Nom de l'habitude" : lang === "pt" ? "Nome do hábito" : "Habit Name";
+  const habitPlaceholder = lang === "fr" ? "ex. Marche matinale" : lang === "pt" ? "ex. Caminhada matinal" : "e.g., Morning Walk";
+  const durationLabel = lang === "fr" ? "Durée (minutes)" : lang === "pt" ? "Duração (minutos)" : "Duration (minutes)";
+  const addHabitLabel = lang === "fr" ? "Ajouter" : lang === "pt" ? "Adicionar" : "Add Habit";
+
   return (
     <ScreenContainer containerClassName="bg-background">
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>Morning Routine</Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>{t("routine.title")}</Text>
           <Text style={[styles.headerSub, { color: colors.muted }]}>
-            {completedCount} of {totalCount} completed
+            {completedCount} {ofLabel} {totalCount} {completedLabel}
           </Text>
         </View>
         <Pressable
@@ -178,7 +201,7 @@ export default function RoutineScreen() {
             { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.95 : 1 }] },
           ]}
         >
-          <Text style={styles.addButtonText}>+ Add</Text>
+          <Text style={styles.addButtonText}>{addLabel}</Text>
         </Pressable>
       </View>
 
@@ -197,16 +220,16 @@ export default function RoutineScreen() {
         <View style={styles.progressInfo}>
           <Text style={[styles.progressTitle, { color: colors.foreground }]}>
             {completedCount === totalCount && totalCount > 0
-              ? "🎉 All done!"
-              : `${totalCount - completedCount} remaining`}
+              ? allDoneLabel
+              : `${totalCount - completedCount} ${remainingLabel}`}
           </Text>
           <Text style={[styles.progressSub, { color: colors.muted }]}>
-            Long press a habit to remove it
+            {longPressLabel}
           </Text>
           {completedCount > 0 && (
             <View style={[styles.xpEarned, { backgroundColor: colors.warning + "20" }]}>
               <Text style={[styles.xpEarnedText, { color: colors.warning }]}>
-                ⚡ {completedCount * 10} XP earned today
+                ⚡ {completedCount * 10} XP {xpEarnedLabel}
               </Text>
             </View>
           )}
@@ -223,6 +246,7 @@ export default function RoutineScreen() {
             isCompleted={isCompleted(item.id)}
             onToggle={() => handleToggle(item)}
             onDelete={() => dispatch({ type: "DELETE_HABIT", payload: item.id })}
+            lang={lang}
           />
         )}
         contentContainerStyle={styles.listContent}
@@ -233,7 +257,7 @@ export default function RoutineScreen() {
       {/* Completion Banner */}
       {showComplete && (
         <View style={[styles.completionBanner, { backgroundColor: colors.success }]}>
-          <Text style={styles.completionText}>🎉 Routine Complete! +50 Bonus XP</Text>
+          <Text style={styles.completionText}>🎉 {completionLabel}</Text>
         </View>
       )}
 
@@ -247,10 +271,10 @@ export default function RoutineScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>Add New Habit</Text>
+            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{t("routine.addHabit")}</Text>
 
             {/* Icon Picker */}
-            <Text style={[styles.fieldLabel, { color: colors.muted }]}>Choose Icon</Text>
+            <Text style={[styles.fieldLabel, { color: colors.muted }]}>{chooseIconLabel}</Text>
             <View style={styles.iconGrid}>
               {HABIT_ICONS.map((icon) => (
                 <Pressable
@@ -272,7 +296,7 @@ export default function RoutineScreen() {
             </View>
 
             {/* Name Input */}
-            <Text style={[styles.fieldLabel, { color: colors.muted }]}>Habit Name</Text>
+            <Text style={[styles.fieldLabel, { color: colors.muted }]}>{habitNameLabel}</Text>
             <TextInput
               style={[
                 styles.input,
@@ -282,7 +306,7 @@ export default function RoutineScreen() {
                   color: colors.foreground,
                 },
               ]}
-              placeholder="e.g., Morning Walk"
+              placeholder={habitPlaceholder}
               placeholderTextColor={colors.muted}
               value={newHabitName}
               onChangeText={setNewHabitName}
@@ -291,7 +315,7 @@ export default function RoutineScreen() {
             />
 
             {/* Duration Input */}
-            <Text style={[styles.fieldLabel, { color: colors.muted }]}>Duration (minutes)</Text>
+            <Text style={[styles.fieldLabel, { color: colors.muted }]}>{durationLabel}</Text>
             <TextInput
               style={[
                 styles.input,
@@ -314,7 +338,7 @@ export default function RoutineScreen() {
                 onPress={() => setShowAddModal(false)}
                 style={[styles.cancelButton, { borderColor: colors.border }]}
               >
-                <Text style={[styles.cancelButtonText, { color: colors.muted }]}>Cancel</Text>
+                <Text style={[styles.cancelButtonText, { color: colors.muted }]}>{t("common.cancel")}</Text>
               </Pressable>
               <Pressable
                 onPress={handleAddHabit}
@@ -327,7 +351,7 @@ export default function RoutineScreen() {
                 ]}
               >
                 <Text style={[styles.saveButtonText, { color: newHabitName.trim() ? "#fff" : colors.muted }]}>
-                  Add Habit
+                  {addHabitLabel}
                 </Text>
               </Pressable>
             </View>
@@ -348,7 +372,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 0.5,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 22,
     fontWeight: "800",
     letterSpacing: -0.3,
   },
@@ -371,8 +395,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     gap: 20,
     padding: 20,
-    marginHorizontal: 20,
-    marginTop: 16,
+    marginHorizontal: 16,
+    marginTop: 12,
     borderRadius: 20,
   },
   progressPercent: {
@@ -384,7 +408,7 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   progressTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "700",
   },
   progressSub: {
@@ -402,8 +426,9 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   listContent: {
-    padding: 20,
+    paddingHorizontal: 16,
     paddingTop: 12,
+    paddingBottom: 32,
   },
   habitRow: {
     flexDirection: "row",
@@ -431,19 +456,18 @@ const styles = StyleSheet.create({
   },
   habitInfo: {
     flex: 1,
+    gap: 2,
   },
   habitName: {
     fontSize: 16,
     fontWeight: "600",
-    lineHeight: 22,
   },
   habitDuration: {
     fontSize: 12,
-    marginTop: 1,
   },
   xpBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
+    paddingVertical: 4,
     borderRadius: 10,
   },
   xpBadgeText: {
@@ -452,7 +476,7 @@ const styles = StyleSheet.create({
   },
   completionBanner: {
     position: "absolute",
-    bottom: 100,
+    bottom: 90,
     left: 20,
     right: 20,
     padding: 16,
@@ -462,9 +486,8 @@ const styles = StyleSheet.create({
   completionText: {
     color: "#fff",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "800",
   },
-  // Modal
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0,0,0,0.5)",
@@ -474,7 +497,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     padding: 24,
-    paddingBottom: 48,
+    paddingBottom: 40,
     gap: 12,
   },
   modalHandle: {
@@ -487,12 +510,11 @@ const styles = StyleSheet.create({
   modalTitle: {
     fontSize: 22,
     fontWeight: "800",
-    marginBottom: 4,
+    letterSpacing: -0.3,
   },
   fieldLabel: {
     fontSize: 13,
     fontWeight: "600",
-    letterSpacing: 0.3,
     marginTop: 4,
   },
   iconGrid: {
@@ -504,7 +526,7 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1.5,
     alignItems: "center",
     justifyContent: "center",
   },
@@ -514,10 +536,9 @@ const styles = StyleSheet.create({
   input: {
     height: 48,
     borderRadius: 12,
-    borderWidth: 1.5,
+    borderWidth: 1,
     paddingHorizontal: 14,
     fontSize: 16,
-    fontWeight: "500",
   },
   modalActions: {
     flexDirection: "row",
@@ -528,12 +549,12 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderRadius: 12,
-    borderWidth: 1.5,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
   },
   cancelButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "600",
   },
   saveButton: {
@@ -544,7 +565,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   saveButtonText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "700",
   },
 });
