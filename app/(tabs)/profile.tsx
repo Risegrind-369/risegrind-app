@@ -23,6 +23,8 @@ import {
 import { XPBar } from "@/components/ui/xp-bar";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useLanguage } from "@/lib/language-context";
+import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 import * as Haptics from "expo-haptics";
 
 const RANK_ICONS: Record<Rank, string> = {
@@ -44,6 +46,7 @@ export default function ProfileScreen() {
   const { state, dispatch } = useApp();
   const { isPremium, restorePurchases } = useRevenueCat();
   const colorScheme = useColorScheme();
+  const { language, setLanguage } = useLanguage();
   const [showNameEdit, setShowNameEdit] = useState(false);
   const [editName, setEditName] = useState(state.userName);
 
@@ -199,6 +202,39 @@ export default function ProfileScreen() {
             >
               <Text style={[styles.restoreText, { color: colors.primary }]}>Restore</Text>
             </Pressable>
+          </View>
+        </View>
+
+        {/* Language */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Text style={[styles.cardTitle, { color: colors.foreground }]}>Language</Text>
+          <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
+            {SUPPORTED_LANGUAGES.map((lang) => (
+              <Pressable
+                key={lang.code}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setLanguage(lang.code);
+                }}
+                style={({ pressed }) => ({
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 6,
+                  paddingHorizontal: 14,
+                  paddingVertical: 8,
+                  borderRadius: 20,
+                  borderWidth: 1.5,
+                  borderColor: language === lang.code ? colors.primary : colors.border,
+                  backgroundColor: language === lang.code ? colors.primary + "12" : "transparent",
+                  opacity: pressed ? 0.7 : 1,
+                })}
+              >
+                <Text style={{ fontSize: 18 }}>{lang.flag}</Text>
+                <Text style={{ fontSize: 14, fontWeight: language === lang.code ? "700" : "500", color: language === lang.code ? colors.primary : colors.foreground }}>
+                  {lang.label}
+                </Text>
+              </Pressable>
+            ))}
           </View>
         </View>
 

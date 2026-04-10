@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import {
   View,
   Text,
@@ -26,17 +27,8 @@ import {
 } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
 
-const ALL_PROMPTS = [
-  // Classic prompts
-  "What's one thing you're grateful for today?",
-  "What would make today a great day?",
-  "What's been on your mind lately?",
-  "Describe a challenge you're working through.",
-  "How did your morning routine go today?",
-  "Reflect on a recent win, big or small.",
-  "What would your future self thank you for doing today?",
-  "How are you taking care of yourself this week?",
-  // Ghost Mode prompts
+// Fallback EN prompts used before i18n loads
+const FALLBACK_PROMPTS = [
   "What did you do today that your future self will thank you for?",
   "What noise are you blocking out right now?",
   "Describe the version of yourself you're building in silence.",
@@ -45,11 +37,10 @@ const ALL_PROMPTS = [
   "What's the hardest thing you're working through right now?",
   "What's one habit that's quietly changing your life?",
   "What are you grateful for that you never talk about?",
-  "What does locking in look like for you today?",
 ];
 
-function getRandomPrompt(): string {
-  return ALL_PROMPTS[Math.floor(Math.random() * ALL_PROMPTS.length)];
+function getRandomFromList(list: string[]): string {
+  return list[Math.floor(Math.random() * list.length)];
 }
 
 function formatEntryDate(timestamp: number): string {
@@ -99,16 +90,25 @@ function JournalCard({ entry, onDelete }: { entry: JournalEntry; onDelete: () =>
 export default function JournalScreen() {
   const colors = useColors();
   const { state, dispatch } = useApp();
+  const { t } = useTranslation();
+  const localizedPrompts = useMemo(() => {
+    try {
+      const arr = t("journal.prompts", { returnObjects: true }) as string[];
+      return Array.isArray(arr) && arr.length > 0 ? arr : FALLBACK_PROMPTS;
+    } catch {
+      return FALLBACK_PROMPTS;
+    }
+  }, [t]);
   const [showEditor, setShowEditor] = useState(false);
   const [content, setContent] = useState("");
-  const [currentPrompt, setCurrentPrompt] = useState(getRandomPrompt());
+  const [currentPrompt, setCurrentPrompt] = useState(() => getRandomFromList(FALLBACK_PROMPTS));
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const transcribeMutation = trpc.voice.transcribe.useMutation();
 
   const handleNewEntry = () => {
-    setCurrentPrompt(getRandomPrompt());
+    setCurrentPrompt(getRandomFromList(localizedPrompts));
     setContent("");
     setShowEditor(true);
   };
@@ -133,7 +133,7 @@ export default function JournalScreen() {
 
   const refreshPrompt = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setCurrentPrompt(getRandomPrompt());
+    setCurrentPrompt(getRandomFromList(localizedPrompts));
   };
 
   const handleVoicePress = async () => {

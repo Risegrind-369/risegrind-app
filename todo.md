@@ -132,3 +132,17 @@
 - [ ] Update theme with Ghost Mode dark accent colors
 - [x] Add "Days Won" stat to Insights
 - [x] Add motivational micro-copy throughout all screens
+
+## Multi-Language + Ghost Mode Onboarding
+- [ ] Install i18next + react-i18next + AsyncStorage language persistence
+- [ ] Create translation files: en.json, fr.json, pt.json with all UI strings
+- [ ] Create LanguageContext provider wrapping the whole app
+- [ ] Build Language Selection screen (before onboarding) with EN/FR/PT-BR flags
+- [ ] Rewrite onboarding/index.tsx as 4-step Ghost Mode journey with Reanimated
+- [ ] Localize onboarding slides (EN/FR/PT-BR Ghost Mode copy)
+- [ ] Localize paywall screen copy (EN/FR/PT-BR)
+- [ ] Localize tab labels, habit names, and all UI strings
+- [ ] Wire AI journal prompt to send language instruction to LLM
+- [ ] Add language to app-context state (persist with AsyncStorage)
+- [ ] Update OnboardingGuard to show language screen first if no language set
+- [ ] Localize profile screen and settings labels

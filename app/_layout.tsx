@@ -22,6 +22,8 @@ import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { AppProvider, useApp } from "@/lib/app-context";
+import { LanguageProvider, useLanguage } from "@/lib/language-context";
+import "@/lib/i18n"; // Initialize i18next
 import { RevenueCatProvider } from "@/lib/revenuecat-provider";
 import { SuperwallProvider } from "@/lib/superwall-provider";
 import { PaywallTriggerProvider } from "@/lib/paywall-trigger";
@@ -45,18 +47,24 @@ export const unstable_settings = {
 
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { state } = useApp();
+  const { language, isLanguageLoaded } = useLanguage();
   const segments = useSegments();
   const router = useRouter();
 
   useEffect(() => {
-    if (state.isLoading) return;
+    if (state.isLoading || !isLanguageLoaded) return;
     const inOnboarding = (segments[0] as string) === "onboarding";
+    // No language selected yet → show language picker first
+    if (!language && !inOnboarding) {
+      router.replace("/onboarding/language" as never);
+      return;
+    }
     if (!state.isOnboarded && !inOnboarding) {
-      router.replace("/onboarding" as never);
+      router.replace(language ? "/onboarding" : "/onboarding/language" as never);
     } else if (state.isOnboarded && inOnboarding) {
       router.replace("/(tabs)" as never);
     }
-  }, [state.isOnboarded, state.isLoading, segments]);
+  }, [state.isOnboarded, state.isLoading, segments, language, isLanguageLoaded]);
 
   return <>{children}</>;
 }
@@ -113,6 +121,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
+          <LanguageProvider>
           {/* RevenueCat MUST be initialized before Superwall */}
           <RevenueCatProvider>
             {/* Superwall uses RevenueCat as its PurchaseController */}
@@ -132,6 +141,7 @@ export default function RootLayout() {
               </AppProvider>
             </SuperwallProvider>
           </RevenueCatProvider>
+          </LanguageProvider>
         </QueryClientProvider>
       </trpc.Provider>
     </GestureHandlerRootView>

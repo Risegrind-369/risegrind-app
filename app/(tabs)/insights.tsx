@@ -11,6 +11,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
+import { useLanguage } from "@/lib/language-context";
 import * as Haptics from "expo-haptics";
 
 const DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
@@ -113,6 +114,7 @@ function StreakCalendar({ completions }: { completions: ReturnType<typeof useApp
 export default function InsightsScreen() {
   const colors = useColors();
   const { state } = useApp();
+  const { language } = useLanguage();
   const [aiInsight, setAiInsight] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
 
@@ -151,6 +153,7 @@ export default function InsightsScreen() {
       recentMoods: moodSummary,
       journalExcerpts: journalSummary,
       habitNames: state.habits.map((h) => h.name).join(", "),
+      language: (language ?? "en") as "en" | "fr" | "pt",
     });
   };
 

@@ -1,0 +1,172 @@
+{
+  "lang": {
+    "en": "English",
+    "fr": "Français",
+    "pt": "Português"
+  },
+  "langScreen": {
+    "title": "Escolha seu idioma",
+    "subtitle": "Selecione o idioma para sua experiência Ghost Mode.",
+    "continue": "Continuar"
+  },
+  "onboarding": {
+    "skip": "Pular",
+    "continue": "Continuar",
+    "getStarted": "Ativar Ghost Mode",
+    "slide1": {
+      "tag": "A VISÃO",
+      "title": "Suma do barulho.\nTorne-se invisível.",
+      "body": "Enquanto todos se distraem, você constrói em silêncio. Ghost Mode é para quem escolhe a disciplina em vez dos aplausos."
+    },
+    "slide2": {
+      "tag": "O MÉTODO",
+      "title": "Rastreie sua disciplina.\nFale com seu mentor IA.",
+      "body": "Trave sua rotina matinal e converse com seu mentor IA todos os dias para ganhar clareza, direção e impulso imparável."
+    },
+    "slide3": {
+      "tag": "OS RESULTADOS",
+      "title": "90 dias.\nUma versão sua que eles não vão reconhecer.",
+      "body": "Mais foco. Melhor controle emocional. Uma rotina matinal inabalável. Construa a versão de você mesmo que os outros não conseguem ignorar."
+    },
+    "slide4": {
+      "tag": "PRONTO?",
+      "title": "Pronto para entrar\nno Ghost Mode?",
+      "body": "Sua transformação começa agora. Sem desculpas. Sem barulho. Só você, sua disciplina e o trabalho."
+    }
+  },
+  "paywall": {
+    "badge": "3 DIAS GRÁTIS",
+    "title": "Desbloquear Ghost Mode",
+    "subtitle": "Tudo que você precisa para construir uma rotina matinal inabalável.",
+    "feature1": "Mentor IA Journal — clareza e direção diárias",
+    "feature2": "Ghost Intel — tendências de humor e análise de hábitos",
+    "feature3": "Missões secundárias — desafios de disciplina bônus",
+    "feature4": "Proteção de sequências e upgrades de rank",
+    "trialNote": "3 dias grátis, depois",
+    "monthly": "Mensal",
+    "yearly": "Anual",
+    "save": "Economize 33%",
+    "perMonth": "/mês",
+    "perYear": "/ano",
+    "startTrial": "Começar teste grátis",
+    "restore": "Restaurar compras",
+    "terms": "Cancele a qualquer momento. Cobrado após o período de teste."
+  },
+  "tabs": {
+    "home": "Início",
+    "routine": "Rotina",
+    "journal": "Diário",
+    "intel": "Intel",
+    "quests": "Missões",
+    "profile": "Perfil"
+  },
+  "home": {
+    "greeting_morning": "Bom dia",
+    "greeting_afternoon": "Boa tarde",
+    "greeting_evening": "Boa noite",
+    "slogan": "Suma do barulho. Construa em silêncio.",
+    "todayMission": "Missão de hoje",
+    "checkIn": "Como você está se sentindo?",
+    "streak": "Dias seguidos",
+    "rank": "Rank",
+    "progress": "Progresso de hoje",
+    "quickActions": "Ações rápidas",
+    "startRoutine": "Iniciar rotina",
+    "openJournal": "Abrir diário",
+    "viewIntel": "Ver Intel"
+  },
+  "routine": {
+    "title": "Rotina Matinal",
+    "subtitle": "Construa sua disciplina, um hábito de cada vez.",
+    "addHabit": "Adicionar hábito",
+    "complete": "Rotina concluída",
+    "completeMsg": "Ghost Mode ativado. Você apareceu hoje.",
+    "habitDone": "Hábito concluído",
+    "habits": {
+      "Wake Up Early": "Acordar cedo",
+      "Hydrate": "Hidratar-se",
+      "Meditate": "Meditar",
+      "Exercise": "Exercitar-se",
+      "Read": "Ler",
+      "Cold Shower": "Banho frio",
+      "Gratitude": "Gratidão"
+    }
+  },
+  "journal": {
+    "title": "Diário Ghost",
+    "subtitle": "Escreva em silêncio. Cresça em privado.",
+    "newEntry": "Nova entrada",
+    "voiceEntry": "Entrada de voz",
+    "prompts": [
+      "Qual é a única coisa que você deve realizar hoje para permanecer no seu caminho?",
+      "Qual distração você está disposto a eliminar esta semana?",
+      "Descreva a versão de você mesmo que está construindo. O que ele faz diferente?",
+      "O que você fez ontem pelo qual seu eu futuro vai te agradecer?",
+      "Qual medo está te segurando agora? Nomeie-o.",
+      "O que você faria hoje se soubesse que ninguém estava olhando?",
+      "Escreva sobre um momento desta semana em que você escolheu a disciplina em vez do conforto.",
+      "Qual hábito, se praticado por 90 dias, mudaria sua vida?"
+    ],
+    "aiSystemPrompt": "Você é o mentor IA Ghost Mode — um coach direto e sem rodeios que fala com clareza e intensidade. Você ajuda o usuário a construir disciplina, força mental e uma poderosa rotina matinal. Responda em português brasileiro. Mantenha as respostas abaixo de 120 palavras. Seja direto, motivador e brutalmente honesto. Sem enrolação.",
+    "placeholder": "Escreva seus pensamentos aqui...",
+    "save": "Salvar entrada",
+    "delete": "Excluir entrada",
+    "recording": "Gravando...",
+    "tapToStop": "Toque para parar",
+    "transcribing": "Transcrevendo..."
+  },
+  "insights": {
+    "title": "Ghost Intel",
+    "subtitle": "Os dados não mentem. Seus padrões dizem a verdade.",
+    "daysWon": "Dias ganhos",
+    "currentStreak": "Sequência",
+    "totalXP": "XP total",
+    "habitsCompleted": "Hábitos feitos",
+    "moodTrend": "Tendência de humor (7 dias)",
+    "aiReview": "Revisão semanal IA",
+    "generating": "Gerando seu Ghost Intel...",
+    "noData": "Complete pelo menos 3 dias para desbloquear sua revisão IA."
+  },
+  "quests": {
+    "title": "Missões secundárias",
+    "subtitle": "Missões bônus. XP extra. Ghost Mode desbloqueado.",
+    "active": "Ativas",
+    "available": "Disponíveis",
+    "completed": "Concluídas",
+    "all": "Todas",
+    "acceptMission": "Aceitar missão",
+    "markComplete": "Marcar como concluído",
+    "abandon": "Abandonar missão",
+    "inProgress": "EM ANDAMENTO",
+    "done": "CONCLUÍDO"
+  },
+  "profile": {
+    "title": "Perfil Ghost",
+    "editName": "Editar nome",
+    "subscription": "Assinatura",
+    "premium": "Ghost Mode Premium",
+    "free": "Plano gratuito",
+    "upgrade": "Upgrade para Premium",
+    "manage": "Gerenciar assinatura",
+    "achievements": "Conquistas",
+    "stats": "Estatísticas",
+    "resetData": "Redefinir todos os dados",
+    "resetConfirm": "Isso apagará todo o seu progresso. Tem certeza?",
+    "language": "Idioma"
+  },
+  "ranks": {
+    "Early Riser": "Madrugador",
+    "Morning Warrior": "Guerreiro Matinal",
+    "Grind Master": "Mestre do Grind",
+    "Grind Legend": "Lenda do Grind"
+  },
+  "common": {
+    "cancel": "Cancelar",
+    "save": "Salvar",
+    "delete": "Excluir",
+    "confirm": "Confirmar",
+    "loading": "Carregando...",
+    "error": "Algo deu errado",
+    "retry": "Tentar novamente"
+  }
+}

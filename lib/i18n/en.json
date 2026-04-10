@@ -1,0 +1,172 @@
+{
+  "lang": {
+    "en": "English",
+    "fr": "Français",
+    "pt": "Português"
+  },
+  "langScreen": {
+    "title": "Choose Your Language",
+    "subtitle": "Select the language for your Ghost Mode experience.",
+    "continue": "Continue"
+  },
+  "onboarding": {
+    "skip": "Skip",
+    "continue": "Continue",
+    "getStarted": "Enter Ghost Mode",
+    "slide1": {
+      "tag": "THE VISION",
+      "title": "Go Ghost.\nDisappear from the noise.",
+      "body": "While everyone is distracted, you build in silence. Ghost Mode is for those who choose discipline over applause."
+    },
+    "slide2": {
+      "tag": "THE METHOD",
+      "title": "Track discipline.\nTalk to your AI mentor.",
+      "body": "Lock in your morning routine and journal with your AI mentor every day to gain clarity, direction, and unstoppable momentum."
+    },
+    "slide3": {
+      "tag": "THE RESULTS",
+      "title": "90 days.\nA version of you they won't recognise.",
+      "body": "Higher focus. Better emotional control. A rock-solid morning routine. Build the version of yourself that others can't ignore."
+    },
+    "slide4": {
+      "tag": "READY?",
+      "title": "Ready to enter\nGhost Mode?",
+      "body": "Your transformation starts now. No excuses. No noise. Just you, your discipline, and the work."
+    }
+  },
+  "paywall": {
+    "badge": "3-DAY FREE TRIAL",
+    "title": "Unlock Ghost Mode",
+    "subtitle": "Everything you need to build an unbreakable morning routine.",
+    "feature1": "AI Journal Mentor — daily clarity & direction",
+    "feature2": "Ghost Intel — mood trends & habit analytics",
+    "feature3": "Side Quests — bonus discipline challenges",
+    "feature4": "Streak protection & rank upgrades",
+    "trialNote": "Start free for 3 days, then",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "save": "Save 33%",
+    "perMonth": "/mo",
+    "perYear": "/yr",
+    "startTrial": "Start Free Trial",
+    "restore": "Restore Purchases",
+    "terms": "Cancel anytime. Billed after free trial ends."
+  },
+  "tabs": {
+    "home": "Home",
+    "routine": "Routine",
+    "journal": "Journal",
+    "intel": "Intel",
+    "quests": "Quests",
+    "profile": "Profile"
+  },
+  "home": {
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
+    "slogan": "Go Ghost. Build in silence.",
+    "todayMission": "Today's Mission",
+    "checkIn": "How are you feeling?",
+    "streak": "Day Streak",
+    "rank": "Rank",
+    "progress": "Today's Progress",
+    "quickActions": "Quick Actions",
+    "startRoutine": "Start Routine",
+    "openJournal": "Open Journal",
+    "viewIntel": "View Intel"
+  },
+  "routine": {
+    "title": "Morning Routine",
+    "subtitle": "Build your discipline, one habit at a time.",
+    "addHabit": "Add Habit",
+    "complete": "Routine Complete",
+    "completeMsg": "Ghost Mode activated. You showed up today.",
+    "habitDone": "Habit completed",
+    "habits": {
+      "Wake Up Early": "Wake Up Early",
+      "Hydrate": "Hydrate",
+      "Meditate": "Meditate",
+      "Exercise": "Exercise",
+      "Read": "Read",
+      "Cold Shower": "Cold Shower",
+      "Gratitude": "Gratitude"
+    }
+  },
+  "journal": {
+    "title": "Ghost Journal",
+    "subtitle": "Write in silence. Grow in private.",
+    "newEntry": "New Entry",
+    "voiceEntry": "Voice Entry",
+    "prompts": [
+      "What is the one thing you must accomplish today to stay on your path?",
+      "What distraction are you willing to eliminate this week?",
+      "Describe the version of yourself you are building. What does he do differently?",
+      "What did you do yesterday that your future self will thank you for?",
+      "What fear is holding you back right now? Name it.",
+      "What would you do today if you knew no one was watching?",
+      "Write about a moment this week when you chose discipline over comfort.",
+      "What habit, if done consistently for 90 days, would change your life?"
+    ],
+    "aiSystemPrompt": "You are the Ghost Mode AI mentor — a direct, no-BS coach who speaks with clarity and intensity. You help the user build discipline, mental strength, and a powerful morning routine. Respond in English. Keep responses under 120 words. Be direct, motivating, and brutally honest. No fluff.",
+    "placeholder": "Write your thoughts here...",
+    "save": "Save Entry",
+    "delete": "Delete Entry",
+    "recording": "Recording...",
+    "tapToStop": "Tap to stop",
+    "transcribing": "Transcribing..."
+  },
+  "insights": {
+    "title": "Ghost Intel",
+    "subtitle": "Data doesn't lie. Your patterns tell the truth.",
+    "daysWon": "Days Won",
+    "currentStreak": "Streak",
+    "totalXP": "Total XP",
+    "habitsCompleted": "Habits Done",
+    "moodTrend": "Mood Trend (7 days)",
+    "aiReview": "AI Weekly Review",
+    "generating": "Generating your Ghost Intel...",
+    "noData": "Complete at least 3 days to unlock your AI review."
+  },
+  "quests": {
+    "title": "Side Quests",
+    "subtitle": "Bonus missions. Extra XP. Ghost Mode unlocked.",
+    "active": "Active",
+    "available": "Available",
+    "completed": "Done",
+    "all": "All",
+    "acceptMission": "Accept Mission",
+    "markComplete": "Mark Complete",
+    "abandon": "Abandon Quest",
+    "inProgress": "IN PROGRESS",
+    "done": "COMPLETED"
+  },
+  "profile": {
+    "title": "Ghost Profile",
+    "editName": "Edit Name",
+    "subscription": "Subscription",
+    "premium": "Ghost Mode Premium",
+    "free": "Free Plan",
+    "upgrade": "Upgrade to Premium",
+    "manage": "Manage Subscription",
+    "achievements": "Achievements",
+    "stats": "Stats",
+    "resetData": "Reset All Data",
+    "resetConfirm": "This will erase all your progress. Are you sure?",
+    "language": "Language"
+  },
+  "ranks": {
+    "Early Riser": "Early Riser",
+    "Morning Warrior": "Morning Warrior",
+    "Grind Master": "Grind Master",
+    "Grind Legend": "Grind Legend"
+  },
+  "common": {
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Retry"
+  }
+}
