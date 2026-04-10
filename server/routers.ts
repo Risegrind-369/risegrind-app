@@ -4,6 +4,8 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { invokeLLM } from "./_core/llm";
+import { transcribeAudio } from "./_core/voiceTranscription";
+import { storagePut } from "./storage";
 
 export const appRouter = router({
   system: systemRouter,
@@ -14,6 +16,20 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+  }),
+
+  voice: router({
+    transcribe: publicProcedure
+      .input(z.object({ audioBase64: z.string(), mimeType: z.string().default("audio/m4a") }))
+      .mutation(async ({ input }) => {
+        // Decode base64, upload to S3, then transcribe via Whisper
+        const buffer = Buffer.from(input.audioBase64, "base64");
+        const key = `voice/${Date.now()}.m4a`;
+        const { url } = await storagePut(key, buffer, input.mimeType);
+        const result = await transcribeAudio({ audioUrl: url, language: "en" });
+        if ("error" in result) throw new Error(result.error);
+        return { text: result.text ?? "" };
+      }),
   }),
 
   ai: router({
@@ -29,7 +45,7 @@ export const appRouter = router({
         })
       )
       .mutation(async ({ input }) => {
-        const prompt = `You are a supportive wellness coach. Based on this user's data, provide a brief, encouraging weekly insight (2-3 sentences) and 3 specific routine suggestions.
+        const prompt = `You are a Ghost Mode discipline coach — direct, motivating, no fluff. Based on this user's data, give a sharp 2-3 sentence insight and 3 specific action items.
 
 User data:
 - Streak: ${input.streak} days
@@ -44,7 +60,7 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
         try {
           const response = await invokeLLM({
             messages: [
-              { role: "system", content: "You are a wellness coach that responds only with valid JSON." },
+              { role: "system", content: "You are a Ghost Mode discipline coach that responds only with valid JSON." },
               { role: "user", content: prompt },
             ],
           });
@@ -55,7 +71,7 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           if (jsonMatch) {
             const parsed = JSON.parse(jsonMatch[0]);
             return {
-              insight: parsed.insight ?? "Keep up the great work on your morning routine!",
+              insight: parsed.insight ?? "You're building in silence. Keep going.",
               suggestions: parsed.suggestions ?? [],
             };
           }
@@ -65,11 +81,11 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
 
         // Fallback
         return {
-          insight: `You've earned ${input.xp} XP and maintained a ${input.streak}-day streak. Your consistency is building powerful morning habits. Keep pushing forward!`,
+          insight: `${input.streak} days straight. ${input.xp} XP earned. You're not the same person you were when you started. Don't stop now.`,
           suggestions: [
-            "Try adding a 5-minute breathing exercise after waking up",
-            "Consider journaling immediately after your morning routine",
-            "Set a consistent wake-up time to strengthen your circadian rhythm",
+            "Add a 5-minute breathing exercise right after waking up",
+            "Journal immediately after your morning routine — capture the momentum",
+            "Lock in a consistent wake-up time. Your circadian rhythm is your foundation.",
           ],
         };
       }),

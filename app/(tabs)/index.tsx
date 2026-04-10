@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,7 +6,7 @@ import {
   Pressable,
   StyleSheet,
   Modal,
-  TextInput,
+  Animated,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
@@ -16,11 +16,32 @@ import { ProgressRing } from "@/components/ui/progress-ring";
 import { XPBar } from "@/components/ui/xp-bar";
 import * as Haptics from "expo-haptics";
 
+const GHOST_SLOGANS = [
+  "Go Ghost. Build Yourself. Change Everything.",
+  "Disappear from the noise.",
+  "Quiet discipline. Loud results.",
+  "Lock in and rebuild in silence.",
+  "The grind doesn't need an audience.",
+];
+
 function getGreeting(name: string): string {
   const hour = new Date().getHours();
-  if (hour < 12) return `Good morning, ${name} ☀️`;
-  if (hour < 17) return `Good afternoon, ${name} 👋`;
-  return `Good evening, ${name} 🌙`;
+  if (hour < 12) return `Rise up, ${name}`;
+  if (hour < 17) return `Lock in, ${name}`;
+  return `Stay disciplined, ${name}`;
+}
+
+function getDaysWonThisYear(completions: any[], habits: any[]): number {
+  if (!habits.length) return 0;
+  const year = new Date().getFullYear();
+  const dateMap: Record<string, Set<string>> = {};
+  for (const c of completions) {
+    if (c.date.startsWith(String(year))) {
+      if (!dateMap[c.date]) dateMap[c.date] = new Set();
+      dateMap[c.date].add(c.habitId);
+    }
+  }
+  return Object.values(dateMap).filter((s) => s.size >= habits.length).length;
 }
 
 function formatDate(): string {
@@ -37,9 +58,20 @@ export default function HomeScreen() {
   const { state, dispatch, todayCompletions, todayProgress, rank } = useApp();
   const [showMoodPicker, setShowMoodPicker] = useState(false);
   const [selectedMood, setSelectedMood] = useState<MoodLevel | null>(null);
+  const [sloganIndex] = useState(() => Math.floor(Math.random() * GHOST_SLOGANS.length));
+  const sloganOpacity = useRef(new Animated.Value(0)).current;
 
   const todayStr = new Date().toISOString().split("T")[0];
   const hasMoodToday = !!state.todayMood;
+  const daysWon = getDaysWonThisYear(state.completions, state.habits);
+
+  useEffect(() => {
+    Animated.timing(sloganOpacity, {
+      toValue: 1,
+      duration: 800,
+      useNativeDriver: true,
+    }).start();
+  }, []);
 
   const handleMoodSelect = (level: MoodLevel) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -65,7 +97,7 @@ export default function HomeScreen() {
     setSelectedMood(null);
   };
 
-  const recentEntries = state.journalEntries.slice(0, 3);
+  const recentEntries = state.journalEntries.slice(0, 2);
 
   return (
     <ScreenContainer containerClassName="bg-background">
@@ -75,20 +107,34 @@ export default function HomeScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={[styles.greeting, { color: colors.foreground }]}>
-              {getGreeting(state.userName || "Friend")}
+              {getGreeting(state.userName || "Ghost")}
             </Text>
             <Text style={[styles.date, { color: colors.muted }]}>{formatDate()}</Text>
           </View>
-          <View style={[styles.streakBadge, { backgroundColor: "#F9731620" }]}>
+          <View style={[styles.streakBadge, { backgroundColor: "#F9731618" }]}>
             <Text style={styles.streakFire}>🔥</Text>
             <Text style={[styles.streakCount, { color: "#F97316" }]}>{state.streak}</Text>
           </View>
         </View>
 
+        {/* Ghost Mode Slogan Banner */}
+        <Animated.View
+          style={[
+            styles.sloganBanner,
+            { backgroundColor: colors.foreground + "08", borderColor: colors.foreground + "14" },
+            { opacity: sloganOpacity },
+          ]}
+        >
+          <Text style={styles.ghostIcon}>👻</Text>
+          <Text style={[styles.sloganText, { color: colors.foreground }]}>
+            {GHOST_SLOGANS[sloganIndex]}
+          </Text>
+        </Animated.View>
+
         {/* Progress Ring + Stats */}
-        <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.ringSection}>
             <ProgressRing
               progress={todayProgress}
@@ -107,29 +153,30 @@ export default function HomeScreen() {
 
             <View style={styles.statsColumn}>
               <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.foreground }]}>
-                  {state.streak}
-                </Text>
+                <Text style={[styles.statValue, { color: colors.foreground }]}>{state.streak}</Text>
                 <Text style={[styles.statLabel, { color: colors.muted }]}>Day Streak</Text>
+              </View>
+              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+              <View style={styles.statItem}>
+                <Text style={[styles.statValue, { color: "#F97316" }]}>{daysWon}</Text>
+                <Text style={[styles.statLabel, { color: colors.muted }]}>Days Won</Text>
               </View>
               <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
               <View style={styles.statItem}>
                 <Text style={[styles.statValue, { color: colors.foreground }]}>
                   {state.xp.toLocaleString()}
                 </Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>Total XP</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.foreground }]}>
-                  {state.journalEntries.length}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>Entries</Text>
+                <Text style={[styles.statLabel, { color: colors.muted }]}>XP</Text>
               </View>
             </View>
           </View>
 
-          {/* XP Bar */}
+          {/* Rank + XP */}
+          <View style={styles.rankRow}>
+            <View style={[styles.rankBadge, { backgroundColor: colors.primary + "18" }]}>
+              <Text style={[styles.rankText, { color: colors.primary }]}>⚡ {rank}</Text>
+            </View>
+          </View>
           <View style={styles.xpSection}>
             <XPBar xp={state.xp} />
           </View>
@@ -148,83 +195,70 @@ export default function HomeScreen() {
               },
             ]}
           >
-            <Text style={styles.moodBannerEmoji}>😊</Text>
+            <Text style={styles.moodBannerEmoji}>🧠</Text>
             <View style={styles.moodBannerText}>
               <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-                How do you feel today?
+                Check your mental state
               </Text>
               <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                Tap to log your mood
+                Self-awareness is discipline too
               </Text>
             </View>
-            <Text style={[styles.moodBannerArrow, { color: colors.primary }]}>›</Text>
+            <Text style={[styles.moodBannerArrow, { color: colors.muted }]}>›</Text>
           </Pressable>
         ) : (
           <View style={[styles.moodDone, { backgroundColor: colors.success + "12", borderColor: colors.success + "40" }]}>
             <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
             <View style={styles.moodBannerText}>
-              <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-                Feeling {MOOD_LABELS[state.todayMood?.level ?? 3]}
-              </Text>
-              <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                Mood logged for today ✓
-              </Text>
+          <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
+              Mental state logged
+            </Text>
+            <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
+              {MOOD_LABELS[state.todayMood?.level ?? 3]} · Keep going
+            </Text>
             </View>
           </View>
         )}
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Quick Actions</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Your Arsenal</Text>
           <View style={styles.actionGrid}>
-            <Pressable
-              onPress={() => router.push("/(tabs)/routine" as never)}
-              style={({ pressed }) => [
-                styles.actionCard,
-                { backgroundColor: "#3B82F620", transform: [{ scale: pressed ? 0.96 : 1 }] },
-              ]}
-            >
-              <Text style={styles.actionEmoji}>🏃</Text>
-              <Text style={[styles.actionLabel, { color: colors.foreground }]}>
-                Start Routine
-              </Text>
-              <Text style={[styles.actionSub, { color: colors.muted }]}>
-                {todayCompletions.length}/{state.habits.length} done
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => router.push("/(tabs)/journal" as never)}
-              style={({ pressed }) => [
-                styles.actionCard,
-                { backgroundColor: "#10B98120", transform: [{ scale: pressed ? 0.96 : 1 }] },
-              ]}
-            >
-              <Text style={styles.actionEmoji}>✍️</Text>
-              <Text style={[styles.actionLabel, { color: colors.foreground }]}>
-                Journal
-              </Text>
-              <Text style={[styles.actionSub, { color: colors.muted }]}>
-                {state.journalEntries.length} entries
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => router.push("/(tabs)/insights" as never)}
-              style={({ pressed }) => [
-                styles.actionCard,
-                { backgroundColor: "#8B5CF620", transform: [{ scale: pressed ? 0.96 : 1 }] },
-              ]}
-            >
-              <Text style={styles.actionEmoji}>🧠</Text>
-              <Text style={[styles.actionLabel, { color: colors.foreground }]}>
-                Insights
-              </Text>
-              <Text style={[styles.actionSub, { color: colors.muted }]}>
-                AI analysis
-              </Text>
-            </Pressable>
+            {[
+              { emoji: "⚡", label: "Morning\nRoutine", sub: `${todayCompletions.length}/${state.habits.length} done`, route: "/(tabs)/routine", accent: colors.primary },
+              { emoji: "📓", label: "Ghost\nJournal", sub: `${state.journalEntries.length} entries`, route: "/(tabs)/journal", accent: "#8B5CF6" },
+              { emoji: "📊", label: "Deep\nInsights", sub: "Track your growth", route: "/(tabs)/insights", accent: "#10B981" },
+            ].map((action) => (
+              <Pressable
+                key={action.label}
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  router.push(action.route as any);
+                }}
+                style={({ pressed }) => [
+                  styles.actionCard,
+                  {
+                    backgroundColor: action.accent + "12",
+                    borderColor: action.accent + "30",
+                    borderWidth: 1,
+                    transform: [{ scale: pressed ? 0.95 : 1 }],
+                  },
+                ]}
+              >
+                <Text style={styles.actionEmoji}>{action.emoji}</Text>
+                <Text style={[styles.actionLabel, { color: colors.foreground }]}>{action.label}</Text>
+                <Text style={[styles.actionSub, { color: colors.muted }]}>{action.sub}</Text>
+              </Pressable>
+            ))}
           </View>
+        </View>
+
+        {/* Ghost Mode Motivational Block */}
+        <View style={[styles.ghostBlock, { backgroundColor: colors.foreground + "06", borderColor: colors.foreground + "12" }]}>
+          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 Ghost Mode Active</Text>
+          <Text style={[styles.ghostBlockBody, { color: colors.muted }]}>
+            You're building in silence. Every habit completed, every entry written, every day won — it compounds. Stay invisible. Stay dangerous.
+          </Text>
         </View>
 
         {/* Recent Journal Entries */}
@@ -259,17 +293,12 @@ export default function HomeScreen() {
         visible={showMoodPicker}
         transparent
         animationType="slide"
-        onRequestClose={() => setShowMoodPicker(false)}
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>
-              How are you feeling?
-            </Text>
-            <Text style={[styles.modalSub, { color: colors.muted }]}>
-              Select your mood for today
-            </Text>
+            <Text style={[styles.modalTitle, { color: colors.foreground }]}>Mental State</Text>
+            <Text style={[styles.modalSub, { color: colors.muted }]}>How are you feeling right now?</Text>
 
             <View style={styles.moodGrid}>
               {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
@@ -307,7 +336,7 @@ export default function HomeScreen() {
               ]}
             >
               <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
-                Save Mood
+                Log State
               </Text>
             </Pressable>
 
@@ -362,11 +391,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "800",
   },
+  sloganBanner: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 14,
+    borderWidth: 1,
+  },
+  ghostIcon: { fontSize: 20 },
+  sloganText: { flex: 1, fontSize: 13, fontWeight: "700", letterSpacing: 0.1, lineHeight: 18 },
+  rankRow: { flexDirection: "row" },
+  rankBadge: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20 },
+  rankText: { fontSize: 13, fontWeight: "700" },
+  ghostBlock: { borderRadius: 16, padding: 18, borderWidth: 1, gap: 8 },
+  ghostBlockTitle: { fontSize: 15, fontWeight: "800", letterSpacing: -0.2 },
+  ghostBlockBody: { fontSize: 13, lineHeight: 20 },
   card: {
-    borderRadius: 20,
+    borderRadius: 22,
     padding: 20,
     borderWidth: 1,
-    gap: 16,
+    gap: 14,
   },
   ringSection: {
     flexDirection: "row",

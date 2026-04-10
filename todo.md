@@ -116,3 +116,19 @@
 - [ ] Configure Superwall dashboard: create paywalls and placements
 - [ ] Connect RevenueCat integration in Superwall dashboard
 - [ ] Test with EAS development build on physical device
+
+## Ghost Mode Transformation
+- [x] Apply Ghost Mode branding + slogans to Home dashboard
+- [ ] Apply Ghost Mode tone to Onboarding slides
+- [x] Redesign paywall with Ghost Mode copy and dark styling
+- [x] Add speech-to-text button to Journal screen
+- [x] Upgrade Insights to Ghost Mode analytics (days won, year overview, motivational messages)
+- [x] Add Side Quests / Mini-Challenges screen with 8 Ghost Mode quests
+- [x] Add SideQuest state to app-context (active quests, completions)
+- [ ] Upgrade streak fire animation (grows with particles)
+- [ ] Upgrade rank unlock animation (pop + glow + confetti)
+- [ ] Upgrade habit completion animation (check + confetti)
+- [ ] Add Ghost Mode slogan banner to Home screen
+- [ ] Update theme with Ghost Mode dark accent colors
+- [x] Add "Days Won" stat to Insights
+- [x] Add motivational micro-copy throughout all screens

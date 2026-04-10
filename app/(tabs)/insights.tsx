@@ -180,8 +180,8 @@ export default function InsightsScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>AI Insights</Text>
-          <Text style={[styles.headerSub, { color: colors.muted }]}>Powered by your data</Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>Ghost Intel</Text>
+          <Text style={[styles.headerSub, { color: colors.muted }]}>Your data. Your edge.</Text>
         </View>
 
         {/* Stats Row */}
@@ -192,11 +192,11 @@ export default function InsightsScreen() {
             <Text style={[styles.statLabel, { color: colors.muted }]}>Day Streak</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={styles.statEmoji}>😊</Text>
+            <Text style={styles.statEmoji}>🏆</Text>
             <Text style={[styles.statValue, { color: colors.foreground }]}>
-              {avgMood > 0 ? avgMood.toFixed(1) : "—"}
+              {[...new Set(state.completions.map((c) => c.date))].length}
             </Text>
-            <Text style={[styles.statLabel, { color: colors.muted }]}>Avg Mood</Text>
+            <Text style={[styles.statLabel, { color: colors.muted }]}>Days Won</Text>
           </View>
           <View style={[styles.statCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             <Text style={styles.statEmoji}>⚡</Text>
@@ -214,7 +214,7 @@ export default function InsightsScreen() {
         {/* AI Weekly Review */}
         <View style={[styles.aiCard, { backgroundColor: colors.primary + "10", borderColor: colors.primary + "30" }]}>
           <View style={styles.aiHeader}>
-            <Text style={[styles.aiTitle, { color: colors.foreground }]}>🧠 AI Weekly Review</Text>
+            <Text style={[styles.aiTitle, { color: colors.foreground }]}>👻 Ghost Mode Intel</Text>
             <Pressable
               onPress={handleGenerate}
               disabled={generateMutation.isPending}
@@ -226,7 +226,7 @@ export default function InsightsScreen() {
               {generateMutation.isPending ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
-                <Text style={styles.generateButtonText}>Generate</Text>
+                <Text style={styles.generateButtonText}>Analyze</Text>
               )}
             </Pressable>
           </View>
@@ -235,7 +235,7 @@ export default function InsightsScreen() {
             <Text style={[styles.aiInsightText, { color: colors.foreground }]}>{aiInsight}</Text>
           ) : (
             <Text style={[styles.aiPlaceholder, { color: colors.muted }]}>
-              Tap "Generate" to get your personalized AI analysis based on your mood, habits, and journal entries.
+              Tap "Analyze" to get your Ghost Mode debrief — built from your habits, mood, and journal entries.
             </Text>
           )}
         </View>
@@ -243,7 +243,7 @@ export default function InsightsScreen() {
         {/* Suggestions */}
         {suggestions.length > 0 && (
           <View style={[styles.suggestionsCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            <Text style={[styles.cardTitle, { color: colors.foreground }]}>💡 Routine Suggestions</Text>
+            <Text style={[styles.cardTitle, { color: colors.foreground }]}>⚡ Ghost Directives</Text>
             {suggestions.map((s, i) => (
               <View key={i} style={styles.suggestionRow}>
                 <View style={[styles.suggestionDot, { backgroundColor: colors.primary }]} />

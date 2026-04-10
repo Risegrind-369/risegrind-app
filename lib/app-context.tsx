@@ -45,6 +45,19 @@ export interface Achievement {
   unlockedAt?: number;
 }
 
+export interface SideQuest {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  durationDays: number;
+  xpReward: number;
+  badgeId: string;
+  startedAt?: number; // timestamp when user started
+  completedAt?: number; // timestamp when completed
+  category: "discipline" | "wellness" | "mindset" | "body";
+}
+
 export type Rank = "Early Riser" | "Morning Warrior" | "Grind Master" | "Grind Legend";
 
 export interface AppState {
@@ -69,6 +82,7 @@ export interface AppState {
   streak: number;
   lastActiveDate: string | null;
   achievements: Achievement[];
+  sideQuests: SideQuest[];
 
   // UI
   isLoading: boolean;
@@ -87,6 +101,9 @@ export type AppAction =
   | { type: "ADD_XP"; payload: number }
   | { type: "UPDATE_STREAK" }
   | { type: "UNLOCK_ACHIEVEMENT"; payload: string }
+  | { type: "START_SIDE_QUEST"; payload: string }
+  | { type: "COMPLETE_SIDE_QUEST"; payload: string }
+  | { type: "ABANDON_SIDE_QUEST"; payload: string }
   | { type: "LOAD_STATE"; payload: Partial<AppState> }
   | { type: "SET_LOADING"; payload: boolean };
 
@@ -142,6 +159,91 @@ export const MOOD_LABELS: Record<MoodLevel, string> = {
   5: "Amazing",
 };
 
+// ─── Side Quests ─────────────────────────────────────────────────────────────
+
+export const ALL_SIDE_QUESTS: SideQuest[] = [
+  {
+    id: "sq_no_social_7",
+    title: "Digital Blackout",
+    description: "7 days no social media. Disappear from the feed. Reappear as someone different.",
+    icon: "📵",
+    durationDays: 7,
+    xpReward: 200,
+    badgeId: "ghost_digital",
+    category: "discipline",
+  },
+  {
+    id: "sq_sleep_7",
+    title: "Sleep Optimization Week",
+    description: "Sleep before 10:30 PM every night for 7 days. Protect your recovery like your life depends on it.",
+    icon: "🌙",
+    durationDays: 7,
+    xpReward: 175,
+    badgeId: "ghost_sleep",
+    category: "wellness",
+  },
+  {
+    id: "sq_gratitude_7",
+    title: "Gratitude Deep Dive",
+    description: "Write 3 things you're grateful for every day for 7 days. No repeats.",
+    icon: "🙏",
+    durationDays: 7,
+    xpReward: 150,
+    badgeId: "ghost_gratitude",
+    category: "mindset",
+  },
+  {
+    id: "sq_cold_shower_14",
+    title: "Cold Ghost Protocol",
+    description: "14 days of cold showers. Every morning. No excuses. The cold builds what comfort destroys.",
+    icon: "🚿",
+    durationDays: 14,
+    xpReward: 300,
+    badgeId: "ghost_cold",
+    category: "body",
+  },
+  {
+    id: "sq_no_alcohol_30",
+    title: "30-Day Clarity Mission",
+    description: "30 days alcohol-free. Clear mind. Sharp focus. Ghost Mode at full power.",
+    icon: "🧠",
+    durationDays: 30,
+    xpReward: 500,
+    badgeId: "ghost_clarity",
+    category: "discipline",
+  },
+  {
+    id: "sq_journal_14",
+    title: "14-Day Reflection Sprint",
+    description: "Journal every day for 14 days. No skipping. Your thoughts deserve to be heard.",
+    icon: "✍️",
+    durationDays: 14,
+    xpReward: 250,
+    badgeId: "ghost_writer",
+    category: "mindset",
+  },
+  {
+    id: "sq_exercise_21",
+    title: "21-Day Body Activation",
+    description: "Exercise every single day for 21 days. Build the body that matches the mind.",
+    icon: "💪",
+    durationDays: 21,
+    xpReward: 400,
+    badgeId: "ghost_body",
+    category: "body",
+  },
+  {
+    id: "sq_meditate_10",
+    title: "10-Day Silence Protocol",
+    description: "Meditate for at least 10 minutes every day for 10 days. Silence is your weapon.",
+    icon: "🧘",
+    durationDays: 10,
+    xpReward: 200,
+    badgeId: "ghost_zen",
+    category: "wellness",
+  },
+];
+
 // ─── Achievements ─────────────────────────────────────────────────────────────
 
 export const ALL_ACHIEVEMENTS: Achievement[] = [
@@ -168,6 +270,7 @@ const INITIAL_STATE: AppState = {
   streak: 0,
   lastActiveDate: null,
   achievements: ALL_ACHIEVEMENTS,
+  sideQuests: ALL_SIDE_QUESTS,
   isLoading: true,
 };
 
@@ -243,6 +346,34 @@ function appReducer(state: AppState, action: AppAction): AppState {
         a.id === action.payload && !a.unlockedAt ? { ...a, unlockedAt: Date.now() } : a
       );
       return { ...state, achievements: updated };
+    }
+
+    case "START_SIDE_QUEST": {
+      const quests = state.sideQuests.map((q) =>
+        q.id === action.payload && !q.startedAt && !q.completedAt
+          ? { ...q, startedAt: Date.now() }
+          : q
+      );
+      return { ...state, sideQuests: quests };
+    }
+
+    case "COMPLETE_SIDE_QUEST": {
+      const quest = state.sideQuests.find((q) => q.id === action.payload);
+      const quests = state.sideQuests.map((q) =>
+        q.id === action.payload ? { ...q, completedAt: Date.now() } : q
+      );
+      return {
+        ...state,
+        sideQuests: quests,
+        xp: state.xp + (quest?.xpReward ?? 0),
+      };
+    }
+
+    case "ABANDON_SIDE_QUEST": {
+      const quests = state.sideQuests.map((q) =>
+        q.id === action.payload ? { ...q, startedAt: undefined, completedAt: undefined } : q
+      );
+      return { ...state, sideQuests: quests };
     }
 
     case "LOAD_STATE":

@@ -18,12 +18,12 @@ import * as Haptics from "expo-haptics";
 type PlanType = "monthly" | "yearly";
 
 const FEATURES = [
-  { icon: "🔥", text: "Unlimited habit tracking & streaks" },
-  { icon: "🧠", text: "AI-powered mood analysis & insights" },
-  { icon: "📖", text: "Unlimited journal entries with AI prompts" },
-  { icon: "🏆", text: "Full gamification — XP, ranks & achievements" },
-  { icon: "📊", text: "Weekly AI review & routine suggestions" },
-  { icon: "🔔", text: "Smart morning reminders" },
+  { icon: "👻", text: "Ghost Mode — build your empire in silence" },
+  { icon: "🔥", text: "Unlimited streaks, habits & XP tracking" },
+  { icon: "🎤", text: "Voice journaling — speak your thoughts, AI transcribes" },
+  { icon: "🧠", text: "Ghost Intel — AI debrief built from your data" },
+  { icon: "🏆", text: "Ranks, side quests & achievement unlocks" },
+  { icon: "📊", text: "Days Won counter & 28-day activity map" },
 ];
 
 export default function PaywallScreen() {
@@ -94,12 +94,12 @@ export default function PaywallScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.badge}>✨ FULL ACCESS</Text>
+          <Text style={styles.badge}>👻 GHOST MODE</Text>
           <Text style={[styles.title, { color: colors.foreground }]}>
-            Start Your{"\n"}Morning Journey
+            Go Invisible.{"\n"}Go Dangerous.
           </Text>
           <Text style={[styles.subtitle, { color: colors.muted }]}>
-            Try everything free for 3 days.{"\n"}No restrictions, cancel anytime.
+            While they sleep, you grind.{"\n"}3 days free — no restrictions, cancel anytime.
           </Text>
         </View>
 
