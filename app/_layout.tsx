@@ -27,6 +27,7 @@ import "@/lib/i18n"; // Initialize i18next
 import { RevenueCatProvider } from "@/lib/revenuecat-provider";
 import { SuperwallProvider } from "@/lib/superwall-provider";
 import { PaywallTriggerProvider } from "@/lib/paywall-trigger";
+import { HealthProvider } from "@/lib/health-provider";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -127,17 +128,21 @@ export default function RootLayout() {
             {/* Superwall uses RevenueCat as its PurchaseController */}
             <SuperwallProvider>
               <AppProvider>
+                <HealthProvider>
                 {/* Shows time-based paywall after 1-2 days of usage */}
                 <PaywallTriggerProvider>
                   <OnboardingGuard>
                     <Stack screenOptions={{ headerShown: false }}>
                       <Stack.Screen name="(tabs)" />
                       <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+                      <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
+                      <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
                       <Stack.Screen name="oauth/callback" />
                     </Stack>
                     <StatusBar style="auto" />
                   </OnboardingGuard>
                 </PaywallTriggerProvider>
+                </HealthProvider>
               </AppProvider>
             </SuperwallProvider>
           </RevenueCatProvider>

@@ -1,5 +1,9 @@
 {
-  "lang": { "en": "English", "fr": "Français", "pt": "Português" },
+  "lang": {
+    "en": "English",
+    "fr": "Français",
+    "pt": "Português"
+  },
   "langScreen": {
     "title": "Choose Your Language",
     "subtitle": "Select the language for your Ghost Mode experience.",
@@ -28,6 +32,18 @@
       "tag": "READY?",
       "title": "Ready to enter\nGhost Mode?",
       "body": "Your transformation starts now. No excuses. No noise. Just you, your discipline, and the work."
+    },
+    "chart": {
+      "day0": "Day 0",
+      "day30": "Day 30",
+      "day60": "Day 60",
+      "day90": "Day 90",
+      "annotation": "30% → 95% discipline in 90 days"
+    },
+    "trust": {
+      "encrypted": "Encrypted",
+      "private": "Journal Private",
+      "mentor": "AI Mentor"
     }
   },
   "paywall": {
@@ -41,12 +57,18 @@
     "trialNote": "Start free for 3 days, then",
     "monthly": "Monthly",
     "yearly": "Yearly",
-    "save": "Save 33%",
-    "perMonth": "/mo",
-    "perYear": "/yr",
+    "save": "Save 50%",
+    "perMonth": "/month",
+    "perYear": "/year",
     "startTrial": "Start Free Trial",
     "restore": "Restore Purchases",
-    "terms": "Cancel anytime. Billed after free trial ends."
+    "terms": "Cancel anytime. Billed after free trial ends.",
+    "purchaseFailed": "Purchase Failed",
+    "purchaseError": "Something went wrong. Please try again.",
+    "restoreSuccess": "Restored!",
+    "restoreSuccessMsg": "Your purchases have been restored.",
+    "restoreFailed": "Restore Failed",
+    "restoreFailedMsg": "No purchases found to restore."
   },
   "tabs": {
     "home": "Home",
@@ -55,7 +77,8 @@
     "intel": "Intel",
     "quests": "Quests",
     "community": "Community",
-    "profile": "Profile"
+    "profile": "Profile",
+    "aiMentor": "AI"
   },
   "home": {
     "greeting_morning": "Good morning",
@@ -262,14 +285,38 @@
     "Grind Legend": "Grind Legend"
   },
   "achievements": {
-    "first_entry": { "title": "First Entry", "description": "Write your first journal entry" },
-    "streak_3": { "title": "3-Day Streak", "description": "Maintain a 3-day streak" },
-    "streak_7": { "title": "Week Warrior", "description": "Maintain a 7-day streak" },
-    "streak_30": { "title": "30-Day Ghost", "description": "Maintain a 30-day streak" },
-    "habits_10": { "title": "Habit Builder", "description": "Complete 10 habits total" },
-    "habits_50": { "title": "Discipline Engine", "description": "Complete 50 habits total" },
-    "xp_500": { "title": "XP Hunter", "description": "Earn 500 XP" },
-    "xp_1000": { "title": "Ghost Operator", "description": "Earn 1000 XP" }
+    "first_entry": {
+      "title": "First Entry",
+      "description": "Write your first journal entry"
+    },
+    "streak_3": {
+      "title": "3-Day Streak",
+      "description": "Maintain a 3-day streak"
+    },
+    "streak_7": {
+      "title": "Week Warrior",
+      "description": "Maintain a 7-day streak"
+    },
+    "streak_30": {
+      "title": "30-Day Ghost",
+      "description": "Maintain a 30-day streak"
+    },
+    "habits_10": {
+      "title": "Habit Builder",
+      "description": "Complete 10 habits total"
+    },
+    "habits_50": {
+      "title": "Discipline Engine",
+      "description": "Complete 50 habits total"
+    },
+    "xp_500": {
+      "title": "XP Hunter",
+      "description": "Earn 500 XP"
+    },
+    "xp_1000": {
+      "title": "Ghost Operator",
+      "description": "Earn 1000 XP"
+    }
   },
   "shareCard": {
     "slogan": "Discipline is the only way.",

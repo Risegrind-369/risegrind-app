@@ -101,6 +101,51 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           ],
         };
       }),
+
+    chat: publicProcedure
+      .input(
+        z.object({
+          message: z.string(),
+          history: z.array(z.object({ role: z.enum(["user", "assistant"]), content: z.string() })).optional().default([]),
+          streak: z.number().optional().default(0),
+          xp: z.number().optional().default(0),
+          habitRate: z.number().optional().default(0),
+          stepsToday: z.number().nullable().optional(),
+          sleepLastNight: z.number().nullable().optional(),
+          language: z.enum(["en", "fr", "pt"]).optional().default("en"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const langInstruction = input.language === "fr"
+          ? "R\u00e9ponds UNIQUEMENT en fran\u00e7ais. Tu es un mentor Ghost Mode \u2014 direct, motivant, sans fioritures."
+          : input.language === "pt"
+          ? "Responda APENAS em portugu\u00eas brasileiro. Voc\u00ea \u00e9 um mentor Ghost Mode \u2014 direto, motivador, sem rodeios."
+          : "Respond ONLY in English. You are a Ghost Mode mentor \u2014 direct, motivating, no fluff.";
+
+        const contextParts = [
+          `Streak: ${input.streak} days`,
+          `XP: ${input.xp}`,
+          `Habit completion: ${input.habitRate}%`,
+          input.stepsToday != null ? `Steps today: ${input.stepsToday.toLocaleString()}` : null,
+          input.sleepLastNight != null ? `Sleep last night: ${input.sleepLastNight}h` : null,
+        ].filter(Boolean);
+
+        const systemPrompt = `You are a Ghost Mode AI mentor \u2014 a sharp, no-nonsense discipline coach. ${langInstruction}\n\nUser context: ${contextParts.join(" | ")}\n\nRules:\n- Be concise (2-4 sentences max per response)\n- Use the user's data when relevant\n- When asked for charts/reports, respond with a text-based visual using ASCII or emoji bars\n- Never be preachy. Be like a coach who respects the athlete's time.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal`;
+
+        try {
+          const messages = [
+            { role: "system" as const, content: systemPrompt },
+            ...input.history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
+            { role: "user" as const, content: input.message },
+          ];
+          const response = await invokeLLM({ messages });
+          const content = response?.choices?.[0]?.message?.content ?? "";
+          return { reply: typeof content === "string" ? content : "Keep going. You're on the right path." };
+        } catch (e) {
+          console.error("AI chat error:", e);
+          return { reply: input.language === "fr" ? "Connexion au mentor impossible. R\u00e9essaie." : input.language === "pt" ? "N\u00e3o foi poss\u00edvel conectar ao mentor. Tente novamente." : "Couldn't reach the mentor. Try again." };
+        }
+      }),
   }),
 });
 

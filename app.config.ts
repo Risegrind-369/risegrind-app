@@ -50,9 +50,15 @@ const config: ExpoConfig = {
   ios: {
     supportsTablet: true,
     bundleIdentifier: env.iosBundleId,
-    "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      }
+    infoPlist: {
+      ITSAppUsesNonExemptEncryption: false,
+      NSHealthShareUsageDescription: "RiseGrind reads your steps and sleep data to automatically validate your daily habits and show health correlations in your dashboard.",
+      NSHealthUpdateUsageDescription: "RiseGrind writes workout data to help you track your fitness habits.",
+    },
+    entitlements: {
+      "com.apple.developer.healthkit": true,
+      "com.apple.developer.healthkit.background-delivery": true,
+    },
   },
   android: {
     adaptiveIcon: {

@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
@@ -17,22 +18,21 @@ import * as Haptics from "expo-haptics";
 
 type PlanType = "monthly" | "yearly";
 
-const FEATURES = [
-  { icon: "👻", text: "Ghost Mode — build your empire in silence" },
-  { icon: "🔥", text: "Unlimited streaks, habits & XP tracking" },
-  { icon: "🎤", text: "Voice journaling — speak your thoughts, AI transcribes" },
-  { icon: "🧠", text: "Ghost Intel — AI debrief built from your data" },
-  { icon: "🏆", text: "Ranks, side quests & achievement unlocks" },
-  { icon: "📊", text: "Days Won counter & 28-day activity map" },
-];
+const FEATURE_ICONS = ["👻", "🔥", "🎤", "🧠", "🏆", "📊"];
 
 export default function PaywallScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { t } = useTranslation();
   const { offerings, purchasePackage, restorePurchases } = useRevenueCat();
   const { dispatch } = useApp();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("yearly");
   const [isLoading, setIsLoading] = useState(false);
+
+  const features = FEATURE_ICONS.map((icon, i) => ({
+    icon,
+    text: t(`paywall.feature${i + 1}`),
+  }));
 
   const handlePurchase = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -67,7 +67,7 @@ export default function PaywallScreen() {
     } catch (e: unknown) {
       const err = e as { userCancelled?: boolean; message?: string };
       if (!err?.userCancelled) {
-        Alert.alert("Purchase Failed", err?.message ?? "Something went wrong. Please try again.");
+        Alert.alert(t("paywall.purchaseFailed", { defaultValue: "Purchase Failed" }), err?.message ?? t("paywall.purchaseError", { defaultValue: "Something went wrong. Please try again." }));
       }
     } finally {
       setIsLoading(false);
@@ -78,9 +78,9 @@ export default function PaywallScreen() {
     setIsLoading(true);
     try {
       await restorePurchases();
-      Alert.alert("Restored", "Your purchases have been restored.");
+      Alert.alert(t("paywall.restoreSuccess", { defaultValue: "Restored!" }), t("paywall.restoreSuccessMsg", { defaultValue: "Your purchases have been restored." }));
     } catch {
-      Alert.alert("Error", "Could not restore purchases.");
+      Alert.alert(t("paywall.restoreFailed", { defaultValue: "Restore Failed" }), t("paywall.restoreFailedMsg", { defaultValue: "No purchases found to restore." }));
     } finally {
       setIsLoading(false);
     }
@@ -94,18 +94,14 @@ export default function PaywallScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.badge}>👻 GHOST MODE</Text>
-          <Text style={[styles.title, { color: colors.foreground }]}>
-            Go Invisible.{"\n"}Go Dangerous.
-          </Text>
-          <Text style={[styles.subtitle, { color: colors.muted }]}>
-            While they sleep, you grind.{"\n"}3 days free — no restrictions, cancel anytime.
-          </Text>
+          <Text style={styles.badge}>{t("paywall.badge")}</Text>
+          <Text style={[styles.title, { color: colors.foreground }]}>{t("paywall.title")}</Text>
+          <Text style={[styles.subtitle, { color: colors.muted }]}>{t("paywall.subtitle")}</Text>
         </View>
 
         {/* Features */}
         <View style={[styles.featuresCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {FEATURES.map((f, i) => (
+          {features.map((f, i) => (
             <View key={i} style={styles.featureRow}>
               <Text style={styles.featureIcon}>{f.icon}</Text>
               <Text style={[styles.featureText, { color: colors.foreground }]}>{f.text}</Text>
@@ -130,16 +126,16 @@ export default function PaywallScreen() {
             ]}
           >
             <View style={styles.planBadgeRow}>
-              <View style={[styles.planBadge, { backgroundColor: colors.warning }]}>
-                <Text style={styles.planBadgeText}>BEST VALUE</Text>
+              <View style={[styles.planBadge, { backgroundColor: "#22C55E" }]}>
+                <Text style={styles.planBadgeText}>{t("paywall.save")}</Text>
               </View>
               {selectedPlan === "yearly" && (
                 <Text style={styles.checkmark}>✓</Text>
               )}
             </View>
-            <Text style={[styles.planName, { color: colors.foreground }]}>Yearly</Text>
-            <Text style={[styles.planPrice, { color: colors.primary }]}>$39.99/year</Text>
-            <Text style={[styles.planNote, { color: colors.muted }]}>Just $3.33/month · Save 33%</Text>
+            <Text style={[styles.planName, { color: colors.foreground }]}>{t("paywall.yearly")}</Text>
+            <Text style={[styles.planPrice, { color: colors.primary }]}>$29.99</Text>
+            <Text style={[styles.planNote, { color: colors.muted }]}>{t("paywall.perYear")} · $2.50/mo</Text>
           </Pressable>
 
           <Pressable
@@ -161,9 +157,9 @@ export default function PaywallScreen() {
                 <Text style={styles.checkmark}>✓</Text>
               )}
             </View>
-            <Text style={[styles.planName, { color: colors.foreground }]}>Monthly</Text>
-            <Text style={[styles.planPrice, { color: colors.primary }]}>$4.99/month</Text>
-            <Text style={[styles.planNote, { color: colors.muted }]}>Flexible, cancel anytime</Text>
+            <Text style={[styles.planName, { color: colors.foreground }]}>{t("paywall.monthly")}</Text>
+            <Text style={[styles.planPrice, { color: colors.primary }]}>$4.99</Text>
+            <Text style={[styles.planNote, { color: colors.muted }]}>{t("paywall.perMonth")}</Text>
           </Pressable>
         </View>
 
@@ -185,22 +181,18 @@ export default function PaywallScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.ctaText}>Try 3 Days Free</Text>
+                <Text style={styles.ctaText}>{t("paywall.startTrial")}</Text>
                 <Text style={styles.ctaSubText}>
-                  Then {selectedPlan === "yearly" ? "$39.99/year" : "$4.99/month"} · Cancel anytime
+                  {t("paywall.trialNote")} {selectedPlan === "yearly" ? "$29.99/year" : "$4.99/month"}
                 </Text>
               </>
             )}
           </Pressable>
 
-          <Text style={[styles.legalText, { color: colors.muted }]}>
-            Payment will be charged to your Apple ID account at the confirmation of purchase.
-            Subscription automatically renews unless it is cancelled at least 24 hours before the end of the current period.
-            You can manage your subscriptions in Settings.
-          </Text>
+          <Text style={[styles.legalText, { color: colors.muted }]}>{t("paywall.terms")}</Text>
 
           <Pressable onPress={handleRestore} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-            <Text style={[styles.restoreText, { color: colors.primary }]}>Restore Purchases</Text>
+            <Text style={[styles.restoreText, { color: colors.primary }]}>{t("paywall.restore")}</Text>
           </Pressable>
         </View>
       </ScrollView>

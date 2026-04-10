@@ -198,3 +198,20 @@
 - [ ] Review Profile screen — zero hardcoded strings
 - [ ] Review Notifications screen — zero hardcoded strings
 - [ ] Review Onboarding screens — zero hardcoded strings
+
+## Sprint 5: Health, AI Chat, Visual Onboarding & Pricing
+- [ ] Install react-native-health and add HealthKit permissions to app.config.ts
+- [ ] Create lib/health-provider.tsx with Steps + Sleep data fetching
+- [ ] Auto-validate Movement/Sleep habits from HealthKit data
+- [ ] Show health correlation card on Home/Insights dashboard
+- [ ] Add central AI chat floating action button to tab bar area
+- [ ] Create app/ai-chat.tsx full-screen chat interface with visual report generation
+- [ ] Add icon-symbol mapping for sparkles/wand icon
+- [ ] Rewrite onboarding/index.tsx with animated growth chart slide (Cal AI style)
+- [ ] Add "Potential Progress" curve: 30% -> 90% discipline animation
+- [ ] Add trust-building copy slide: encryption, privacy, AI mentor
+- [ ] Fully localize all onboarding slides (EN/FR/PT) including chart labels
+- [ ] Update paywall with $4.99/month and $29.99/year pricing + Save 50% badge
+- [ ] Localize paywall pricing copy and currency in all 3 languages
+- [ ] Ensure language is saved to AsyncStorage immediately on language screen selection
+- [ ] Wire all onboarding i18n keys into en.json, fr.json, pt.json

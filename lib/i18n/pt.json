@@ -1,5 +1,9 @@
 {
-  "lang": { "en": "English", "fr": "Français", "pt": "Português" },
+  "lang": {
+    "en": "English",
+    "fr": "Français",
+    "pt": "Português"
+  },
   "langScreen": {
     "title": "Escolha seu idioma",
     "subtitle": "Selecione o idioma para sua experiência Ghost Mode.",
@@ -28,6 +32,18 @@
       "tag": "PRONTO?",
       "title": "Pronto para entrar\nno Ghost Mode?",
       "body": "Sua transformação começa agora. Sem desculpas. Sem barulho. Só você, sua disciplina e o trabalho."
+    },
+    "chart": {
+      "day0": "Dia 0",
+      "day30": "Dia 30",
+      "day60": "Dia 60",
+      "day90": "Dia 90",
+      "annotation": "30% → 95% de disciplina em 90 dias"
+    },
+    "trust": {
+      "encrypted": "Criptografado",
+      "private": "Diário Privado",
+      "mentor": "Mentor IA"
     }
   },
   "paywall": {
@@ -41,12 +57,18 @@
     "trialNote": "Grátis por 3 dias, depois",
     "monthly": "Mensal",
     "yearly": "Anual",
-    "save": "Economize 33%",
+    "save": "Economize 50%",
     "perMonth": "/mês",
     "perYear": "/ano",
     "startTrial": "Começar teste grátis",
     "restore": "Restaurar compras",
-    "terms": "Cancele a qualquer momento. Cobrado após o teste grátis."
+    "terms": "Cancele a qualquer momento. Cobrado após o teste grátis.",
+    "purchaseFailed": "Compra Falhou",
+    "purchaseError": "Algo deu errado. Tente novamente.",
+    "restoreSuccess": "Restaurado!",
+    "restoreSuccessMsg": "Suas compras foram restauradas.",
+    "restoreFailed": "Restauração Falhou",
+    "restoreFailedMsg": "Nenhuma compra encontrada para restaurar."
   },
   "tabs": {
     "home": "Início",
@@ -55,7 +77,8 @@
     "intel": "Intel",
     "quests": "Missões",
     "community": "Comunidade",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "aiMentor": "IA"
   },
   "home": {
     "greeting_morning": "Bom dia",
@@ -270,14 +293,38 @@
     "Grind Legend": "Lenda do Grind"
   },
   "achievements": {
-    "first_entry": { "title": "Primeira entrada", "description": "Escreva sua primeira entrada no diário" },
-    "streak_3": { "title": "Sequência de 3 dias", "description": "Mantenha uma sequência de 3 dias" },
-    "streak_7": { "title": "Guerreiro da semana", "description": "Mantenha uma sequência de 7 dias" },
-    "streak_30": { "title": "Fantasma 30 dias", "description": "Mantenha uma sequência de 30 dias" },
-    "habits_10": { "title": "Construtor de hábitos", "description": "Complete 10 hábitos no total" },
-    "habits_50": { "title": "Motor de disciplina", "description": "Complete 50 hábitos no total" },
-    "xp_500": { "title": "Caçador de XP", "description": "Ganhe 500 XP" },
-    "xp_1000": { "title": "Operador Fantasma", "description": "Ganhe 1000 XP" }
+    "first_entry": {
+      "title": "Primeira entrada",
+      "description": "Escreva sua primeira entrada no diário"
+    },
+    "streak_3": {
+      "title": "Sequência de 3 dias",
+      "description": "Mantenha uma sequência de 3 dias"
+    },
+    "streak_7": {
+      "title": "Guerreiro da semana",
+      "description": "Mantenha uma sequência de 7 dias"
+    },
+    "streak_30": {
+      "title": "Fantasma 30 dias",
+      "description": "Mantenha uma sequência de 30 dias"
+    },
+    "habits_10": {
+      "title": "Construtor de hábitos",
+      "description": "Complete 10 hábitos no total"
+    },
+    "habits_50": {
+      "title": "Motor de disciplina",
+      "description": "Complete 50 hábitos no total"
+    },
+    "xp_500": {
+      "title": "Caçador de XP",
+      "description": "Ganhe 500 XP"
+    },
+    "xp_1000": {
+      "title": "Operador Fantasma",
+      "description": "Ganhe 1000 XP"
+    }
   },
   "common": {
     "cancel": "Cancelar",
