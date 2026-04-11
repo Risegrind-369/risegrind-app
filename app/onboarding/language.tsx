@@ -5,6 +5,7 @@ import {
   Pressable,
   StyleSheet,
   Dimensions,
+  Image,
 } from "react-native";
 import Animated, {
   useSharedValue,
@@ -108,9 +109,13 @@ export default function LanguageScreen() {
   return (
     <ScreenContainer containerClassName="bg-background">
       <View style={styles.container}>
-        {/* Ghost icon */}
+        {/* App icon */}
         <Animated.View entering={FadeIn.delay(100).duration(600)} style={styles.iconWrap}>
-          <Text style={styles.ghostIcon}>👻</Text>
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={styles.appIcon}
+            resizeMode="contain"
+          />
         </Animated.View>
 
         {/* Title */}
@@ -174,8 +179,10 @@ const styles = StyleSheet.create({
   iconWrap: {
     alignItems: "center",
   },
-  ghostIcon: {
-    fontSize: 64,
+  appIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 18,
   },
   titleWrap: {
     alignItems: "center",

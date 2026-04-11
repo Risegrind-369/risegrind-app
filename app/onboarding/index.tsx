@@ -16,6 +16,7 @@ import {
   StyleSheet,
   Dimensions,
   FlatList,
+  Image,
   type ListRenderItem,
 } from "react-native";
 import Animated, {
@@ -202,12 +203,20 @@ function SlideContent({
           </Animated.Text>
         ))}
 
-      {/* Emoji icon */}
+      {/* Icon / Emoji */}
       <Animated.View
         entering={isActive ? FadeInUp.delay(100).springify().damping(14) : undefined}
         style={[styles.emojiWrap, { backgroundColor: visual.accentColor + "18" }]}
       >
-        <Text style={styles.mainEmoji}>{visual.emoji}</Text>
+        {visual.id === "1" ? (
+          <Image
+            source={require("../../assets/images/icon.png")}
+            style={{ width: 72, height: 72, borderRadius: 16 }}
+            resizeMode="contain"
+          />
+        ) : (
+          <Text style={styles.mainEmoji}>{visual.emoji}</Text>
+        )}
       </Animated.View>
 
       {/* Tag */}
