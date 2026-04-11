@@ -1,3 +1,11 @@
+/**
+ * Paywall Screen
+ *
+ * Shown during onboarding and when the user tries to access premium features.
+ * Uses RevenueCat offerings to display real package prices when available.
+ *
+ * Trial: 3-day free trial → full access → then $4.99/month or $39.99/year
+ */
 import React, { useState } from "react";
 import {
   View,
@@ -7,6 +15,7 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -18,37 +27,50 @@ import * as Haptics from "expo-haptics";
 
 type PlanType = "monthly" | "yearly";
 
-const FEATURE_ICONS = ["👻", "🔥", "🎤", "🧠", "🏆", "📊"];
+const ICON_URL =
+  "https://d2xsxph8kpxj0f.cloudfront.net/310519663533327081/FX74FzCVEe6tC4xxrVKhws/risegrind-icon-v2-fGbAHYbpaF4huMRJsUSWRR.png";
+
+const FEATURES = [
+  { icon: "👻", key: "feature1", fallback: "Ghost Mode — full discipline toolkit" },
+  { icon: "🧠", key: "feature2", fallback: "AI Journal Mentor — daily clarity & direction" },
+  { icon: "🔥", key: "feature3", fallback: "Unlimited habits & streak protection" },
+  { icon: "📊", key: "feature4", fallback: "Ghost Intel — mood trends & habit analytics" },
+  { icon: "🏆", key: "feature5", fallback: "Side Quests — bonus discipline challenges" },
+  { icon: "🎤", key: "feature6", fallback: "Voice journaling with AI response playback" },
+];
 
 export default function PaywallScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
-  const { offerings, purchasePackage, restorePurchases } = useRevenueCat();
+  const { offerings, purchasePackage, restorePurchases, getMonthlyPackage, getAnnualPackage } =
+    useRevenueCat();
   const { dispatch } = useApp();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>("yearly");
   const [isLoading, setIsLoading] = useState(false);
 
-  const features = FEATURE_ICONS.map((icon, i) => ({
-    icon,
-    text: t(`paywall.feature${i + 1}`),
-  }));
+  // Get real prices from RevenueCat if available
+  const monthlyPkg = getMonthlyPackage();
+  const annualPkg = getAnnualPackage();
+  const monthlyPrice =
+    (monthlyPkg as any)?.product?.priceString ?? "$4.99";
+  const annualPrice =
+    (annualPkg as any)?.product?.priceString ?? "$39.99";
 
   const handlePurchase = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsLoading(true);
     try {
-      // Try to get the actual package from RevenueCat offerings
+      // Select the right package based on plan choice
       let pkg: unknown = null;
-      if (offerings && typeof offerings === "object") {
+      if (selectedPlan === "yearly" && annualPkg) {
+        pkg = annualPkg;
+      } else if (selectedPlan === "monthly" && monthlyPkg) {
+        pkg = monthlyPkg;
+      } else if (offerings && typeof offerings === "object") {
+        // Fallback: first available package
         const off = offerings as { current?: { availablePackages?: unknown[] } };
-        const packages = off.current?.availablePackages ?? [];
-        pkg = packages.find((p: unknown) => {
-          const pack = p as { packageType?: string };
-          return selectedPlan === "yearly"
-            ? pack.packageType === "ANNUAL"
-            : pack.packageType === "MONTHLY";
-        }) ?? packages[0] ?? null;
+        pkg = off.current?.availablePackages?.[0] ?? null;
       }
 
       if (pkg) {
@@ -67,7 +89,10 @@ export default function PaywallScreen() {
     } catch (e: unknown) {
       const err = e as { userCancelled?: boolean; message?: string };
       if (!err?.userCancelled) {
-        Alert.alert(t("paywall.purchaseFailed", { defaultValue: "Purchase Failed" }), err?.message ?? t("paywall.purchaseError", { defaultValue: "Something went wrong. Please try again." }));
+        Alert.alert(
+          t("paywall.purchaseFailed", { defaultValue: "Purchase Failed" }),
+          err?.message ?? t("paywall.purchaseError", { defaultValue: "Something went wrong. Please try again." })
+        );
       }
     } finally {
       setIsLoading(false);
@@ -78,9 +103,15 @@ export default function PaywallScreen() {
     setIsLoading(true);
     try {
       await restorePurchases();
-      Alert.alert(t("paywall.restoreSuccess", { defaultValue: "Restored!" }), t("paywall.restoreSuccessMsg", { defaultValue: "Your purchases have been restored." }));
+      Alert.alert(
+        t("paywall.restoreSuccess", { defaultValue: "Restored!" }),
+        t("paywall.restoreSuccessMsg", { defaultValue: "Your purchases have been restored." })
+      );
     } catch {
-      Alert.alert(t("paywall.restoreFailed", { defaultValue: "Restore Failed" }), t("paywall.restoreFailedMsg", { defaultValue: "No purchases found to restore." }));
+      Alert.alert(
+        t("paywall.restoreFailed", { defaultValue: "Restore Failed" }),
+        t("paywall.restoreFailedMsg", { defaultValue: "No purchases found to restore." })
+      );
     } finally {
       setIsLoading(false);
     }
@@ -94,23 +125,40 @@ export default function PaywallScreen() {
       >
         {/* Header */}
         <View style={styles.header}>
-          <Text style={styles.badge}>{t("paywall.badge")}</Text>
-          <Text style={[styles.title, { color: colors.foreground }]}>{t("paywall.title")}</Text>
-          <Text style={[styles.subtitle, { color: colors.muted }]}>{t("paywall.subtitle")}</Text>
+          <Image source={{ uri: ICON_URL }} style={styles.icon} />
+          <View style={styles.badgeRow}>
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>
+                {t("paywall.badge", { defaultValue: "3-DAY FREE TRIAL" })}
+              </Text>
+            </View>
+          </View>
+          <Text style={[styles.title, { color: colors.foreground }]}>
+            {t("paywall.title", { defaultValue: "Unlock Ghost Mode" })}
+          </Text>
+          <Text style={[styles.trialCopy, { color: colors.muted }]}>
+            {t("paywall.trialCopy", {
+              defaultValue:
+                "Start your 3-day free trial – Full access to AI coach, unlimited habits, deep insights, and Ghost Mode tools.",
+            })}
+          </Text>
         </View>
 
         {/* Features */}
         <View style={[styles.featuresCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {features.map((f, i) => (
-            <View key={i} style={styles.featureRow}>
-              <Text style={styles.featureIcon}>{f.icon}</Text>
-              <Text style={[styles.featureText, { color: colors.foreground }]}>{f.text}</Text>
+          {FEATURES.map(({ icon, key, fallback }) => (
+            <View key={key} style={styles.featureRow}>
+              <Text style={styles.featureIcon}>{icon}</Text>
+              <Text style={[styles.featureText, { color: colors.foreground }]}>
+                {t(`paywall.${key}`, { defaultValue: fallback })}
+              </Text>
             </View>
           ))}
         </View>
 
         {/* Plan Selector */}
         <View style={styles.plans}>
+          {/* Yearly — recommended */}
           <Pressable
             onPress={() => {
               setSelectedPlan("yearly");
@@ -119,25 +167,34 @@ export default function PaywallScreen() {
             style={({ pressed }) => [
               styles.planCard,
               {
-                backgroundColor: selectedPlan === "yearly" ? colors.primary + "15" : colors.surface,
-                borderColor: selectedPlan === "yearly" ? colors.primary : colors.border,
+                backgroundColor:
+                  selectedPlan === "yearly" ? "#F9731615" : colors.surface,
+                borderColor:
+                  selectedPlan === "yearly" ? "#F97316" : colors.border,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
           >
             <View style={styles.planBadgeRow}>
-              <View style={[styles.planBadge, { backgroundColor: "#22C55E" }]}>
-                <Text style={styles.planBadgeText}>{t("paywall.save")}</Text>
+              <View style={[styles.saveBadge, { backgroundColor: "#22C55E" }]}>
+                <Text style={styles.saveBadgeText}>
+                  {t("paywall.save", { defaultValue: "Save 50%" })}
+                </Text>
               </View>
               {selectedPlan === "yearly" && (
-                <Text style={styles.checkmark}>✓</Text>
+                <Text style={[styles.checkmark, { color: "#F97316" }]}>✓</Text>
               )}
             </View>
-            <Text style={[styles.planName, { color: colors.foreground }]}>{t("paywall.yearly")}</Text>
-            <Text style={[styles.planPrice, { color: colors.primary }]}>$29.99</Text>
-            <Text style={[styles.planNote, { color: colors.muted }]}>{t("paywall.perYear")} · $2.50/mo</Text>
+            <Text style={[styles.planName, { color: colors.foreground }]}>
+              {t("paywall.yearly", { defaultValue: "Yearly" })}
+            </Text>
+            <Text style={[styles.planPrice, { color: "#F97316" }]}>{annualPrice}</Text>
+            <Text style={[styles.planNote, { color: colors.muted }]}>
+              {t("paywall.perYear", { defaultValue: "/year" })} · ~$3.33/mo
+            </Text>
           </Pressable>
 
+          {/* Monthly */}
           <Pressable
             onPress={() => {
               setSelectedPlan("monthly");
@@ -146,20 +203,26 @@ export default function PaywallScreen() {
             style={({ pressed }) => [
               styles.planCard,
               {
-                backgroundColor: selectedPlan === "monthly" ? colors.primary + "15" : colors.surface,
-                borderColor: selectedPlan === "monthly" ? colors.primary : colors.border,
+                backgroundColor:
+                  selectedPlan === "monthly" ? "#F9731615" : colors.surface,
+                borderColor:
+                  selectedPlan === "monthly" ? "#F97316" : colors.border,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
           >
             <View style={styles.planBadgeRow}>
               {selectedPlan === "monthly" && (
-                <Text style={styles.checkmark}>✓</Text>
+                <Text style={[styles.checkmark, { color: "#F97316" }]}>✓</Text>
               )}
             </View>
-            <Text style={[styles.planName, { color: colors.foreground }]}>{t("paywall.monthly")}</Text>
-            <Text style={[styles.planPrice, { color: colors.primary }]}>$4.99</Text>
-            <Text style={[styles.planNote, { color: colors.muted }]}>{t("paywall.perMonth")}</Text>
+            <Text style={[styles.planName, { color: colors.foreground }]}>
+              {t("paywall.monthly", { defaultValue: "Monthly" })}
+            </Text>
+            <Text style={[styles.planPrice, { color: "#F97316" }]}>{monthlyPrice}</Text>
+            <Text style={[styles.planNote, { color: colors.muted }]}>
+              {t("paywall.perMonth", { defaultValue: "/month" })}
+            </Text>
           </Pressable>
         </View>
 
@@ -171,7 +234,7 @@ export default function PaywallScreen() {
             style={({ pressed }) => [
               styles.ctaButton,
               {
-                backgroundColor: colors.primary,
+                backgroundColor: "#F97316",
                 transform: [{ scale: pressed ? 0.97 : 1 }],
                 opacity: isLoading ? 0.7 : 1,
               },
@@ -181,18 +244,31 @@ export default function PaywallScreen() {
               <ActivityIndicator color="#fff" />
             ) : (
               <>
-                <Text style={styles.ctaText}>{t("paywall.startTrial")}</Text>
+                <Text style={styles.ctaText}>
+                  {t("paywall.startTrial", { defaultValue: "Start Free Trial" })}
+                </Text>
                 <Text style={styles.ctaSubText}>
-                  {t("paywall.trialNote")} {selectedPlan === "yearly" ? "$29.99/year" : "$4.99/month"}
+                  {t("paywall.trialNote", { defaultValue: "3 days free, then" })}{" "}
+                  {selectedPlan === "yearly" ? annualPrice + "/year" : monthlyPrice + "/month"}
                 </Text>
               </>
             )}
           </Pressable>
 
-          <Text style={[styles.legalText, { color: colors.muted }]}>{t("paywall.terms")}</Text>
+          <Text style={[styles.legalText, { color: colors.muted }]}>
+            {t("paywall.terms", {
+              defaultValue:
+                "Cancel anytime. Billed after 3-day free trial ends. No charge today.",
+            })}
+          </Text>
 
-          <Pressable onPress={handleRestore} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-            <Text style={[styles.restoreText, { color: colors.primary }]}>{t("paywall.restore")}</Text>
+          <Pressable
+            onPress={handleRestore}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+          >
+            <Text style={[styles.restoreText, { color: colors.muted }]}>
+              {t("paywall.restore", { defaultValue: "Restore Purchases" })}
+            </Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -204,35 +280,48 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: 24,
     paddingTop: 32,
-    paddingBottom: 48,
+    paddingBottom: 56,
     gap: 24,
   },
   header: {
     alignItems: "center",
     gap: 12,
   },
+  icon: {
+    width: 72,
+    height: 72,
+    borderRadius: 16,
+    marginBottom: 4,
+  },
+  badgeRow: {
+    flexDirection: "row",
+  },
   badge: {
-    fontSize: 12,
+    backgroundColor: "#F9731620",
+    paddingHorizontal: 14,
+    paddingVertical: 5,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: "#F9731640",
+  },
+  badgeText: {
+    fontSize: 11,
     fontWeight: "800",
     letterSpacing: 1.5,
     color: "#F97316",
-    backgroundColor: "#F9731620",
-    paddingHorizontal: 12,
-    paddingVertical: 4,
-    borderRadius: 20,
-    overflow: "hidden",
   },
   title: {
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: "800",
     textAlign: "center",
     letterSpacing: -0.5,
-    lineHeight: 44,
+    lineHeight: 42,
   },
-  subtitle: {
-    fontSize: 16,
+  trialCopy: {
+    fontSize: 15,
     textAlign: "center",
-    lineHeight: 24,
+    lineHeight: 23,
+    paddingHorizontal: 8,
   },
   featuresCard: {
     borderRadius: 20,
@@ -273,12 +362,12 @@ const styles = StyleSheet.create({
     minHeight: 22,
     marginBottom: 4,
   },
-  planBadge: {
+  saveBadge: {
     borderRadius: 6,
     paddingHorizontal: 6,
     paddingVertical: 2,
   },
-  planBadgeText: {
+  saveBadgeText: {
     fontSize: 9,
     fontWeight: "800",
     color: "#fff",
@@ -286,7 +375,6 @@ const styles = StyleSheet.create({
   },
   checkmark: {
     fontSize: 16,
-    color: "#3B82F6",
     fontWeight: "700",
   },
   planName: {
@@ -294,7 +382,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   planPrice: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: "800",
   },
   planNote: {
@@ -302,12 +390,12 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   ctaSection: {
-    gap: 16,
+    gap: 14,
     alignItems: "center",
   },
   ctaButton: {
     width: "100%",
-    height: 60,
+    height: 62,
     borderRadius: 18,
     alignItems: "center",
     justifyContent: "center",
@@ -327,10 +415,11 @@ const styles = StyleSheet.create({
   legalText: {
     fontSize: 11,
     textAlign: "center",
-    lineHeight: 16,
+    lineHeight: 17,
+    paddingHorizontal: 16,
   },
   restoreText: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: "500",
   },
 });

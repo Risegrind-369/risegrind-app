@@ -215,3 +215,15 @@
 - [ ] Localize paywall pricing copy and currency in all 3 languages
 - [ ] Ensure language is saved to AsyncStorage immediately on language screen selection
 - [ ] Wire all onboarding i18n keys into en.json, fr.json, pt.json
+
+## Sprint 8 - Icon Refinement + RevenueCat Hardening
+
+- [x] Generate refined app icon (finer mountain, subtle sun glow, elegant rays)
+- [x] Generate refined splash screen (dark bg, centered logo, elegant "RiseGrind" + tagline typography)
+- [x] Compress and deploy all new icon assets
+- [x] Audit RevenueCat init: platform key selection, verbose logging, single init on mount
+- [x] Ensure paywall uses react-native-purchases-ui bottom sheet
+- [x] Verify 3-day trial copy and entitlement gating
+- [x] Add real-time customerInfo listener for instant unlock after purchase
+- [x] Update paywall copy: "Start your 3-day free trial – Full access..."
+- [x] Ensure premium feature gating (habits, AI, voice, quests) uses entitlement check
