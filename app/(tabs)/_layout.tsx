@@ -71,6 +71,11 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
           }}
         />
+        {/* index-premium hidden — legacy screen, not shown in tab bar */}
+        <Tabs.Screen
+          name="index-premium"
+          options={{ href: null }}
+        />
         <Tabs.Screen
           name="routine"
           options={{

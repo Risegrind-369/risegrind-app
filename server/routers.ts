@@ -18,6 +18,47 @@ export const appRouter = router({
     }),
   }),
 
+  journal: router({
+    analyzeEntry: publicProcedure
+      .input(
+        z.object({
+          entryContent: z.string(),
+          prompt: z.string().optional().default(""),
+          moodLevel: z.number().optional(),
+          streak: z.number().optional().default(0),
+          recentEntries: z.array(z.string()).optional().default([]),
+          language: z.enum(["en", "fr", "pt"]).optional().default("en"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const langInstruction = input.language === "fr"
+          ? "R\u00e9ponds UNIQUEMENT en fran\u00e7ais. Tu es un mentor Ghost Mode \u2014 direct, motivant, sans fioritures."
+          : input.language === "pt"
+          ? "Responda APENAS em portugu\u00eas brasileiro. Voc\u00ea \u00e9 um mentor Ghost Mode \u2014 direto, motivador, sem rodeios."
+          : "Respond ONLY in English. You are a Ghost Mode mentor \u2014 direct, motivating, no fluff.";
+        const moodMap: Record<number, string> = { 1: "very low", 2: "low", 3: "neutral", 4: "good", 5: "excellent" };
+        const moodDesc = input.moodLevel ? (moodMap[input.moodLevel] ?? "unknown") : "not logged";
+        const recentContext = input.recentEntries.length > 0
+          ? `Recent journal context: ${input.recentEntries.slice(0, 3).join(" | ")}`
+          : "No previous journal entries.";
+        const systemPrompt = `You are a Ghost Mode AI mentor \u2014 an elite discipline coach who understands the human mind deeply. ${langInstruction}\n\nYour job:\n1. Acknowledge what they shared with empathy and precision\n2. Identify a key insight or pattern from their words\n3. Give ONE specific, actionable next step\n4. End with a powerful 1-sentence motivational push in Ghost Mode style\n\nRules:\n- Be concise: 3-5 sentences total\n- Be intelligent: reference specific things they wrote\n- Zero generic advice. Be specific to THEIR situation.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- Never be preachy. Be like a coach who respects the athlete's time.`;
+        const userMessage = `My journal entry today:\n"${input.entryContent}"\n\nMy mood today: ${moodDesc}\nMy current streak: ${input.streak} days\n${recentContext}\n\nGive me your honest, sharp analysis and one clear action step.`;
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system" as const, content: systemPrompt },
+              { role: "user" as const, content: userMessage },
+            ],
+          });
+          const content = response?.choices?.[0]?.message?.content ?? "";
+          return { reply: typeof content === "string" && content.length > 0 ? content : null };
+        } catch (e) {
+          console.error("Journal AI error:", e);
+          return { reply: null };
+        }
+      }),
+  }),
+
   voice: router({
     transcribe: publicProcedure
       .input(z.object({

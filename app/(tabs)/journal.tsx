@@ -14,6 +14,7 @@ import {
   ScrollView,
   ActivityIndicator,
 } from "react-native";
+import * as Speech from "expo-speech";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, type JournalEntry } from "@/lib/app-context";
@@ -27,7 +28,6 @@ import {
 } from "expo-audio";
 import * as FileSystem from "expo-file-system/legacy";
 
-// Fallback EN prompts used before i18n loads
 const FALLBACK_PROMPTS = [
   "What did you do today that your future self will thank you for?",
   "What noise are you blocking out right now?",
@@ -43,34 +43,55 @@ function getRandomFromList(list: string[]): string {
   return list[Math.floor(Math.random() * list.length)];
 }
 
-function formatEntryDate(timestamp: number): string {
+function formatEntryDate(timestamp: number, locale: string): string {
   const date = new Date(timestamp);
   const today = new Date();
   const yesterday = new Date(today);
   yesterday.setDate(yesterday.getDate() - 1);
-  if (date.toDateString() === today.toDateString()) return "Today";
-  if (date.toDateString() === yesterday.toDateString()) return "Yesterday";
-  return date.toLocaleDateString("en-US", { month: "long", day: "numeric" });
+  if (date.toDateString() === today.toDateString()) {
+    return locale === "fr" ? "Aujourd'hui" : locale === "pt" ? "Hoje" : "Today";
+  }
+  if (date.toDateString() === yesterday.toDateString()) {
+    return locale === "fr" ? "Hier" : locale === "pt" ? "Ontem" : "Yesterday";
+  }
+  const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
+  return date.toLocaleDateString(displayLocale, { month: "long", day: "numeric" });
 }
 
-function JournalCard({ entry, onDelete }: { entry: JournalEntry; onDelete: () => void }) {
+function JournalCard({
+  entry,
+  onDelete,
+  locale,
+}: {
+  entry: JournalEntry;
+  onDelete: () => void;
+  locale: string;
+}) {
   const colors = useColors();
+  const { t } = useTranslation();
+  const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
   return (
     <Pressable
       onLongPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-        Alert.alert("Delete Entry", "Are you sure you want to delete this journal entry?", [
-          { text: "Cancel", style: "cancel" },
-          { text: "Delete", style: "destructive", onPress: onDelete },
-        ]);
+        Alert.alert(
+          t("journal.deleteTitle"),
+          t("journal.deleteConfirm"),
+          [
+            { text: t("common.cancel"), style: "cancel" },
+            { text: t("common.delete"), style: "destructive", onPress: onDelete },
+          ]
+        );
       }}
       style={[styles.entryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
     >
       <View style={styles.entryHeader}>
         <Text style={[styles.entryDate, { color: colors.muted }]}>
-          {formatEntryDate(entry.createdAt)}
+          {formatEntryDate(entry.createdAt, locale)}
         </Text>
-        {entry.moodLevel && <Text style={styles.entryMoodEmoji}>{MOOD_EMOJIS[entry.moodLevel]}</Text>}
+        {entry.moodLevel && (
+          <Text style={styles.entryMoodEmoji}>{MOOD_EMOJIS[entry.moodLevel]}</Text>
+        )}
       </View>
       {entry.prompt ? (
         <Text style={[styles.entryPrompt, { color: colors.primary }]} numberOfLines={1}>
@@ -81,7 +102,10 @@ function JournalCard({ entry, onDelete }: { entry: JournalEntry; onDelete: () =>
         {entry.content}
       </Text>
       <Text style={[styles.entryTime, { color: colors.muted }]}>
-        {new Date(entry.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+        {new Date(entry.createdAt).toLocaleTimeString(displayLocale, {
+          hour: "numeric",
+          minute: "2-digit",
+        })}
       </Text>
     </Pressable>
   );
@@ -90,7 +114,10 @@ function JournalCard({ entry, onDelete }: { entry: JournalEntry; onDelete: () =>
 export default function JournalScreen() {
   const colors = useColors();
   const { state, dispatch } = useApp();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = i18n.language || "en";
+  const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
+
   const localizedPrompts = useMemo(() => {
     try {
       const arr = t("journal.prompts", { returnObjects: true }) as string[];
@@ -99,21 +126,30 @@ export default function JournalScreen() {
       return FALLBACK_PROMPTS;
     }
   }, [t]);
+
   const [showEditor, setShowEditor] = useState(false);
   const [content, setContent] = useState("");
   const [currentPrompt, setCurrentPrompt] = useState(() => getRandomFromList(FALLBACK_PROMPTS));
   const [isRecording, setIsRecording] = useState(false);
   const [isTranscribing, setIsTranscribing] = useState(false);
+  const [aiResponse, setAiResponse] = useState<string | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showAiPanel, setShowAiPanel] = useState(false);
+
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const transcribeMutation = trpc.voice.transcribe.useMutation();
+  const analyzeEntryMutation = trpc.journal.analyzeEntry.useMutation();
 
   const handleNewEntry = () => {
     setCurrentPrompt(getRandomFromList(localizedPrompts));
     setContent("");
+    setAiResponse(null);
+    setShowAiPanel(false);
     setShowEditor(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!content.trim()) return;
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     const entry: JournalEntry = {
@@ -127,8 +163,38 @@ export default function JournalScreen() {
     dispatch({ type: "ADD_JOURNAL", payload: entry });
     dispatch({ type: "ADD_XP", payload: 25 });
     dispatch({ type: "UNLOCK_ACHIEVEMENT", payload: "first_entry" });
-    setShowEditor(false);
+
+    // Show AI analysis panel immediately
+    setShowAiPanel(true);
+    setIsAnalyzing(true);
     setContent("");
+
+    try {
+      const recentExcerpts = state.journalEntries
+        .slice(0, 3)
+        .map((e) => e.content.slice(0, 120));
+      const result = await analyzeEntryMutation.mutateAsync({
+        entryContent: entry.content,
+        prompt: currentPrompt,
+        moodLevel: state.todayMood?.level,
+        streak: state.streak,
+        recentEntries: recentExcerpts,
+        language: locale as "en" | "fr" | "pt",
+      });
+      setAiResponse(result.reply ?? null);
+    } catch {
+      setAiResponse(null);
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const handleCloseEditor = () => {
+    setShowEditor(false);
+    setAiResponse(null);
+    setShowAiPanel(false);
+    setIsSpeaking(false);
+    Speech.stop();
   };
 
   const refreshPrompt = () => {
@@ -148,20 +214,24 @@ export default function JournalScreen() {
         const base64 = await FileSystem.readAsStringAsync(uri, {
           encoding: FileSystem.EncodingType.Base64,
         });
-        const result = await transcribeMutation.mutateAsync({ audioBase64: base64, mimeType: "audio/m4a" });
+        const result = await transcribeMutation.mutateAsync({
+          audioBase64: base64,
+          mimeType: "audio/m4a",
+          language: locale as "en" | "fr" | "pt",
+        });
         if (result.text) {
           setContent((prev) => (prev ? prev + " " + result.text : result.text));
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         }
       } catch {
-        Alert.alert("Transcription failed", "Could not transcribe audio. Please try again.");
+        Alert.alert(t("journal.transcribeFailed"), t("journal.transcribeError"));
       } finally {
         setIsTranscribing(false);
       }
     } else {
       const { granted } = await requestRecordingPermissionsAsync();
       if (!granted) {
-        Alert.alert("Permission needed", "Microphone access is required for voice journaling.");
+        Alert.alert(t("journal.permissionTitle"), t("journal.permissionBody"));
         return;
       }
       await setAudioModeAsync({ playsInSilentMode: true });
@@ -172,14 +242,35 @@ export default function JournalScreen() {
     }
   };
 
+  const handleSpeak = (text: string) => {
+    if (isSpeaking) {
+      Speech.stop();
+      setIsSpeaking(false);
+      return;
+    }
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setIsSpeaking(true);
+    const speechLang = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
+    Speech.speak(text, {
+      language: speechLang,
+      pitch: 0.95,
+      rate: 0.9,
+      onDone: () => setIsSpeaking(false),
+      onError: () => setIsSpeaking(false),
+      onStopped: () => setIsSpeaking(false),
+    });
+  };
+
   return (
     <ScreenContainer containerClassName="bg-background">
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
         <View>
-          <Text style={[styles.headerTitle, { color: colors.foreground }]}>Ghost Journal</Text>
+          <Text style={[styles.headerTitle, { color: colors.foreground }]}>
+            {t("journal.title")}
+          </Text>
           <Text style={[styles.headerSub, { color: colors.muted }]}>
-            {state.journalEntries.length} entries · Build in silence
+            {state.journalEntries.length} {t("journal.entriesCount")} · {t("journal.tagline")}
           </Text>
         </View>
         <Pressable
@@ -189,7 +280,7 @@ export default function JournalScreen() {
             { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.95 : 1 }] },
           ]}
         >
-          <Text style={styles.newButtonText}>+ New</Text>
+          <Text style={styles.newButtonText}>{t("journal.newEntry")}</Text>
         </Pressable>
       </View>
 
@@ -198,10 +289,10 @@ export default function JournalScreen() {
         <View style={styles.emptyState}>
           <Text style={styles.emptyEmoji}>👻</Text>
           <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
-            Go Ghost. Start Writing.
+            {t("journal.emptyTitle")}
           </Text>
           <Text style={[styles.emptySubtitle, { color: colors.muted }]}>
-            Your journal is your private space to build in silence. No audience. Just you and your growth.
+            {t("journal.emptySubtitle")}
           </Text>
           <Pressable
             onPress={handleNewEntry}
@@ -210,7 +301,7 @@ export default function JournalScreen() {
               { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.97 : 1 }] },
             ]}
           >
-            <Text style={styles.emptyButtonText}>Write First Entry</Text>
+            <Text style={styles.emptyButtonText}>{t("journal.firstEntry")}</Text>
           </Pressable>
         </View>
       ) : (
@@ -220,6 +311,7 @@ export default function JournalScreen() {
           renderItem={({ item }) => (
             <JournalCard
               entry={item}
+              locale={locale}
               onDelete={() => dispatch({ type: "DELETE_JOURNAL", payload: item.id })}
             />
           )}
@@ -234,7 +326,7 @@ export default function JournalScreen() {
         visible={showEditor}
         animationType="slide"
         presentationStyle="pageSheet"
-        onRequestClose={() => setShowEditor(false)}
+        onRequestClose={handleCloseEditor}
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -244,19 +336,25 @@ export default function JournalScreen() {
             {/* Editor Header */}
             <View style={[styles.editorHeader, { borderBottomColor: colors.border }]}>
               <Pressable
-                onPress={() => setShowEditor(false)}
+                onPress={handleCloseEditor}
                 style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={[styles.editorCancel, { color: colors.muted }]}>Cancel</Text>
+                <Text style={[styles.editorCancel, { color: colors.muted }]}>
+                  {t("common.cancel")}
+                </Text>
               </Pressable>
-              <Text style={[styles.editorTitle, { color: colors.foreground }]}>New Entry</Text>
+              <Text style={[styles.editorTitle, { color: colors.foreground }]}>
+                {t("journal.ghostJournal")}
+              </Text>
               <Pressable
                 onPress={handleSave}
-                disabled={!content.trim()}
-                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                disabled={!content.trim() || isAnalyzing}
+                style={({ pressed }) => ({
+                  opacity: pressed ? 0.6 : content.trim() && !isAnalyzing ? 1 : 0.4,
+                })}
               >
-                <Text style={[styles.editorSave, { color: content.trim() ? colors.primary : colors.muted }]}>
-                  Save
+                <Text style={[styles.editorSave, { color: colors.primary }]}>
+                  {isAnalyzing ? "..." : t("common.save")}
                 </Text>
               </Pressable>
             </View>
@@ -266,23 +364,107 @@ export default function JournalScreen() {
               contentContainerStyle={styles.editorScrollContent}
               keyboardShouldPersistTaps="handled"
             >
+              {/* AI Response Panel — shown after saving */}
+              {showAiPanel && (
+                <View
+                  style={[
+                    styles.aiPanel,
+                    {
+                      backgroundColor: colors.primary + "10",
+                      borderColor: colors.primary + "30",
+                    },
+                  ]}
+                >
+                  <View style={styles.aiPanelHeader}>
+                    <Text style={[styles.aiPanelTitle, { color: colors.primary }]}>
+                      ⚡ {t("journal.aiMentor")}
+                    </Text>
+                    {aiResponse && !isAnalyzing && (
+                      <Pressable
+                        onPress={() => handleSpeak(aiResponse)}
+                        style={({ pressed }) => [
+                          styles.speakButton,
+                          {
+                            backgroundColor: isSpeaking
+                              ? colors.primary + "20"
+                              : colors.surface,
+                            borderColor: isSpeaking ? colors.primary : colors.border,
+                            opacity: pressed ? 0.7 : 1,
+                          },
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.speakButtonText,
+                            { color: isSpeaking ? colors.primary : colors.muted },
+                          ]}
+                        >
+                          {isSpeaking
+                            ? `🔊 ${t("journal.speaking")}`
+                            : `🔊 ${t("journal.hearMotivation")}`}
+                        </Text>
+                      </Pressable>
+                    )}
+                  </View>
+                  {isAnalyzing ? (
+                    <View style={styles.aiLoading}>
+                      <ActivityIndicator size="small" color={colors.primary} />
+                      <Text style={[styles.aiLoadingText, { color: colors.muted }]}>
+                        {t("journal.analyzing")}
+                      </Text>
+                    </View>
+                  ) : aiResponse ? (
+                    <Text style={[styles.aiResponseText, { color: colors.foreground }]}>
+                      {aiResponse}
+                    </Text>
+                  ) : (
+                    <Text style={[styles.aiResponseText, { color: colors.muted }]}>
+                      {t("journal.aiUnavailable")}
+                    </Text>
+                  )}
+                </View>
+              )}
+
               {/* Ghost Prompt */}
-              <View style={[styles.promptCard, { backgroundColor: colors.primary + "10", borderColor: colors.primary + "30" }]}>
+              <View
+                style={[
+                  styles.promptCard,
+                  {
+                    backgroundColor: colors.primary + "10",
+                    borderColor: colors.primary + "30",
+                  },
+                ]}
+              >
                 <View style={styles.promptHeader}>
-                  <Text style={[styles.promptLabel, { color: colors.primary }]}>👻 Ghost Prompt</Text>
-                  <Pressable onPress={refreshPrompt} style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}>
-                    <Text style={[styles.refreshText, { color: colors.primary }]}>↻ New</Text>
+                  <Text style={[styles.promptLabel, { color: colors.primary }]}>
+                    👻 {t("journal.ghostPrompt")}
+                  </Text>
+                  <Pressable
+                    onPress={refreshPrompt}
+                    style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                  >
+                    <Text style={[styles.refreshText, { color: colors.primary }]}>
+                      ↻ {t("journal.newPrompt")}
+                    </Text>
                   </Pressable>
                 </View>
-                <Text style={[styles.promptText, { color: colors.foreground }]}>{currentPrompt}</Text>
+                <Text style={[styles.promptText, { color: colors.foreground }]}>
+                  {currentPrompt}
+                </Text>
               </View>
 
               {/* Date + Mood */}
               <View style={styles.metaRow}>
                 <Text style={[styles.metaDate, { color: colors.muted }]}>
-                  {new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+                  {new Date().toLocaleDateString(displayLocale, {
+                    weekday: "long",
+                    month: "long",
+                    day: "numeric",
+                  })}
                 </Text>
-                {state.todayMood && <Text style={styles.metaMood}>{MOOD_EMOJIS[state.todayMood.level]}</Text>}
+                {state.todayMood && (
+                  <Text style={styles.metaMood}>{MOOD_EMOJIS[state.todayMood.level]}</Text>
+                )}
               </View>
 
               {/* Voice Button */}
@@ -299,10 +481,22 @@ export default function JournalScreen() {
                 ]}
               >
                 {isTranscribing ? (
-                  <ActivityIndicator size="small" color={colors.primary} />
+                  <View style={styles.voiceButtonInner}>
+                    <ActivityIndicator size="small" color={colors.primary} />
+                    <Text style={[styles.voiceButtonText, { color: colors.muted }]}>
+                      {t("journal.transcribing")}
+                    </Text>
+                  </View>
                 ) : (
-                  <Text style={[styles.voiceButtonText, { color: isRecording ? "#EF4444" : colors.muted }]}>
-                    {isRecording ? "🔴 Recording... tap to stop" : "🎤 Tap to record voice note"}
+                  <Text
+                    style={[
+                      styles.voiceButtonText,
+                      { color: isRecording ? "#EF4444" : colors.muted },
+                    ]}
+                  >
+                    {isRecording
+                      ? `🔴 ${t("journal.recording")}`
+                      : `🎤 ${t("journal.speakToAI")}`}
                   </Text>
                 )}
               </Pressable>
@@ -310,12 +504,12 @@ export default function JournalScreen() {
               {/* Text Editor */}
               <TextInput
                 style={[styles.textEditor, { color: colors.foreground }]}
-                placeholder="Start writing or use voice above..."
+                placeholder={t("journal.placeholder")}
                 placeholderTextColor={colors.muted}
                 value={content}
                 onChangeText={setContent}
                 multiline
-                autoFocus
+                autoFocus={!showAiPanel}
                 textAlignVertical="top"
               />
             </ScrollView>
@@ -372,7 +566,34 @@ const styles = StyleSheet.create({
   editorTitle: { fontSize: 17, fontWeight: "700" },
   editorSave: { fontSize: 16, fontWeight: "700" },
   editorScroll: { flex: 1 },
-  editorScrollContent: { padding: 20, gap: 16, paddingBottom: 40 },
+  editorScrollContent: { padding: 20, gap: 16, paddingBottom: 60 },
+  aiPanel: {
+    borderRadius: 16,
+    padding: 16,
+    borderWidth: 1,
+    gap: 10,
+  },
+  aiPanelHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    flexWrap: "wrap",
+    gap: 8,
+  },
+  aiPanelTitle: { fontSize: 14, fontWeight: "700", letterSpacing: 0.3 },
+  speakButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 20,
+    borderWidth: 1,
+    gap: 4,
+  },
+  speakButtonText: { fontSize: 13, fontWeight: "600" },
+  aiLoading: { flexDirection: "row", alignItems: "center", gap: 10 },
+  aiLoadingText: { fontSize: 14, fontStyle: "italic" },
+  aiResponseText: { fontSize: 15, lineHeight: 23, fontWeight: "400" },
   promptCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 8 },
   promptHeader: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   promptLabel: { fontSize: 12, fontWeight: "700", letterSpacing: 0.5 },
@@ -388,13 +609,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: 48,
+    minHeight: 52,
   },
+  voiceButtonInner: { flexDirection: "row", alignItems: "center", gap: 10 },
   voiceButtonText: { fontSize: 15, fontWeight: "600" },
   textEditor: {
     fontSize: 17,
     lineHeight: 26,
-    minHeight: 260,
+    minHeight: 200,
     fontWeight: "400",
   },
 });

@@ -69,8 +69,9 @@ function getDaysWonThisYear(completions: any[], habits: any[]): number {
   return Object.values(dateMap).filter((s) => s.size >= habits.length).length;
 }
 
-function formatDate(): string {
-  return new Date().toLocaleDateString("en-US", {
+function formatDate(lang: string): string {
+  const locale = lang === "fr" ? "fr-FR" : lang === "pt" ? "pt-BR" : "en-US";
+  return new Date().toLocaleDateString(locale, {
     weekday: "long",
     month: "long",
     day: "numeric",
@@ -139,7 +140,7 @@ export default function HomeScreen() {
             <Text style={[styles.greeting, { color: colors.foreground }]}>
               {getGreeting(state.userName || "Ghost", lang)}
             </Text>
-            <Text style={[styles.date, { color: colors.muted }]}>{formatDate()}</Text>
+            <Text style={[styles.date, { color: colors.muted }]}>{formatDate(lang)}</Text>
           </View>
           <View style={[styles.streakBadge, { backgroundColor: "#F9731618" }]}>
             <Text style={styles.streakFire}>🔥</Text>
@@ -229,7 +230,7 @@ export default function HomeScreen() {
                 {t("home.checkIn")}
               </Text>
               <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                {lang === "fr" ? "La conscience de soi est aussi de la discipline" : lang === "pt" ? "Autoconsciência também é disciplina" : "Self-awareness is discipline too"}
+                {t("home.selfAwareness")}
               </Text>
             </View>
             <Text style={[styles.moodBannerArrow, { color: colors.muted }]}>›</Text>
@@ -239,10 +240,10 @@ export default function HomeScreen() {
             <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
             <View style={styles.moodBannerText}>
           <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-              {lang === "fr" ? "État mental enregistré" : lang === "pt" ? "Estado mental registrado" : "Mental state logged"}
+              {t("home.mentalStateLogged")}
             </Text>
             <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-              {MOOD_LABELS[state.todayMood?.level ?? 3]} · Keep going
+              {MOOD_LABELS[state.todayMood?.level ?? 3]} · {t("home.keepGoing")}
             </Text>
             </View>
           </View>
@@ -250,12 +251,12 @@ export default function HomeScreen() {
 
         {/* Quick Actions */}
         <View style={styles.quickActions}>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{lang === "fr" ? "Ton Arsenal" : lang === "pt" ? "Seu Arsenal" : "Your Arsenal"}</Text>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("home.quickActions")}</Text>
           <View style={styles.actionGrid}>
             {[
-              { emoji: "⚡", label: t("tabs.routine"), sub: `${todayCompletions.length}/${state.habits.length} ${lang === "fr" ? "faites" : lang === "pt" ? "feitos" : "done"}`, route: "/(tabs)/routine", accent: colors.primary },
-              { emoji: "📓", label: t("tabs.journal"), sub: `${state.journalEntries.length} ${lang === "fr" ? "entrées" : lang === "pt" ? "entradas" : "entries"}`, route: "/(tabs)/journal", accent: "#8B5CF6" },
-              { emoji: "📊", label: t("tabs.intel"), sub: lang === "fr" ? "Suis ta croissance" : lang === "pt" ? "Acompanhe seu crescimento" : "Track your growth", route: "/(tabs)/insights", accent: "#10B981" },
+              { emoji: "⚡", label: t("tabs.routine"), sub: `${todayCompletions.length}/${state.habits.length} ${t("home.done")}`, route: "/(tabs)/routine", accent: colors.primary },
+              { emoji: "📓", label: t("tabs.journal"), sub: `${state.journalEntries.length} ${t("home.entries")}`, route: "/(tabs)/journal", accent: "#8B5CF6" },
+              { emoji: "📊", label: t("tabs.intel"), sub: t("home.trackGrowth"), route: "/(tabs)/insights", accent: "#10B981" },
             ].map((action) => (
               <Pressable
                 key={action.label}
@@ -283,16 +284,16 @@ export default function HomeScreen() {
 
         {/* Ghost Mode Motivational Block */}
         <View style={[styles.ghostBlock, { backgroundColor: colors.foreground + "06", borderColor: colors.foreground + "12" }]}>
-          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 {lang === "fr" ? "Ghost Mode Actif" : lang === "pt" ? "Ghost Mode Ativo" : "Ghost Mode Active"}</Text>
+          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 {t("home.ghostModeActive")}</Text>
           <Text style={[styles.ghostBlockBody, { color: colors.muted }]}>
-            {lang === "fr" ? "Tu construis en silence. Chaque habitude, chaque entrée, chaque jour gagné — ça s'accumule. Reste invisible. Reste dangereux." : lang === "pt" ? "Você está construindo em silêncio. Cada hábito, cada entrada, cada dia ganho — acumula. Fique invisível. Fique perigoso." : "You're building in silence. Every habit completed, every entry written, every day won — it compounds. Stay invisible. Stay dangerous."}
+            {t("home.ghostModeBody")}
           </Text>
         </View>
 
         {/* Recent Journal Entries */}
         {recentEntries.length > 0 && (
           <View style={styles.recentSection}>
-            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{lang === "fr" ? "Entrées récentes" : lang === "pt" ? "Entradas recentes" : "Recent Entries"}</Text>
+            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("home.recentEntries")}</Text>
             {recentEntries.map((entry) => (
               <View
                 key={entry.id}
@@ -325,7 +326,7 @@ export default function HomeScreen() {
         <View style={styles.modalOverlay}>
           <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
             <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{lang === "fr" ? "État mental" : lang === "pt" ? "Estado mental" : "Mental State"}</Text>
+            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{t("home.mentalState")}</Text>
             <Text style={[styles.modalSub, { color: colors.muted }]}>{t("home.moodCheck")}</Text>
 
             <View style={styles.moodGrid}>
@@ -364,7 +365,7 @@ export default function HomeScreen() {
               ]}
             >
               <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
-                {lang === "fr" ? "Enregistrer" : lang === "pt" ? "Registrar" : "Log State"}
+                {t("home.logState")}
               </Text>
             </Pressable>
 
