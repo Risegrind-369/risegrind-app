@@ -9,10 +9,10 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 
 /**
- * Central AI Chat floating button — sits in the middle of the tab bar.
+ * Floating AI Chat Button — positioned at bottom-right corner.
  * Opens the full-screen AI mentor chat.
  */
-function AIChatTabButton() {
+function AIFloatingButton() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
@@ -25,11 +25,15 @@ function AIChatTabButton() {
       }}
       style={({ pressed }) => [
         styles.aiFab,
-        { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.92 : 1 }] },
+        {
+        backgroundColor: colors.accent,
+        shadowColor: colors.accent,
+          transform: [{ scale: pressed ? 0.92 : 1 }],
+        },
       ]}
-      accessibilityLabel={t("tabs.aiMentor")}
+      accessibilityLabel={t("tabs.aiMentor", { defaultValue: "AI Mentor" })}
     >
-      <Text style={styles.aiFabEmoji}>👻</Text>
+      <Text style={styles.aiFabEmoji}>✨</Text>
     </Pressable>
   );
 }
@@ -45,7 +49,7 @@ export default function TabLayout() {
     <View style={{ flex: 1 }}>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: colors.primary,
+          tabBarActiveTintColor: colors.accent,
           tabBarInactiveTintColor: colors.muted,
           headerShown: false,
           tabBarButton: HapticTab,
@@ -64,71 +68,65 @@ export default function TabLayout() {
           },
         }}
       >
+        {/* Tab 1: Home */}
         <Tabs.Screen
           name="index"
           options={{
-            title: t("tabs.home"),
+            title: t("tabs.home", { defaultValue: "Home" }),
             tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
           }}
         />
-        {/* index-premium hidden — legacy screen, not shown in tab bar */}
+
+        {/* Hidden screens — not shown in tab bar */}
         <Tabs.Screen
           name="index-premium"
           options={{ href: null }}
         />
         <Tabs.Screen
           name="routine"
-          options={{
-            title: t("tabs.routine"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="list.bullet" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="journal"
-          options={{
-            title: t("tabs.journal"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.fill" color={color} />,
-          }}
-        />
-        <Tabs.Screen
-          name="insights"
-          options={{
-            title: t("tabs.intel"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart.bar.fill" color={color} />,
-          }}
+          options={{ href: null }}
         />
         <Tabs.Screen
           name="quests"
-          options={{
-            title: t("tabs.quests"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="star.fill" color={color} />,
-          }}
+          options={{ href: null }}
         />
         <Tabs.Screen
           name="community"
-          options={{
-            title: t("tabs.community"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="person.2.fill" color={color} />,
-          }}
+          options={{ href: null }}
         />
         <Tabs.Screen
           name="profile"
+          options={{ href: null }}
+        />
+
+        {/* Tab 2: Journal */}
+        <Tabs.Screen
+          name="journal"
           options={{
-            title: t("tabs.profile"),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="person.fill" color={color} />,
+            title: t("tabs.journal", { defaultValue: "Journal" }),
+            tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.fill" color={color} />,
+          }}
+        />
+
+        {/* Tab 3: Intel (Insights) */}
+        <Tabs.Screen
+          name="insights"
+          options={{
+            title: t("tabs.intel", { defaultValue: "Intel" }),
+            tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart.bar.fill" color={color} />,
           }}
         />
       </Tabs>
 
-      {/* Floating AI Chat Button — centered above tab bar */}
+      {/* Floating AI Button — bottom-right corner */}
       <View
         style={[
           styles.fabContainer,
-          { bottom: tabBarHeight - 24 },
+          { bottom: bottomPadding + 16, right: 16 },
         ]}
         pointerEvents="box-none"
       >
-        <AIChatTabButton />
+        <AIFloatingButton />
       </View>
     </View>
   );
@@ -137,25 +135,22 @@ export default function TabLayout() {
 const styles = StyleSheet.create({
   fabContainer: {
     position: "absolute",
-    left: 0,
-    right: 0,
-    alignItems: "center",
     zIndex: 100,
     pointerEvents: "box-none",
   },
   aiFab: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
     alignItems: "center",
     justifyContent: "center",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 12,
   },
   aiFabEmoji: {
-    fontSize: 24,
+    fontSize: 28,
   },
 });

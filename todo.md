@@ -245,3 +245,67 @@
 - [x] Rebuild post-trial paywall (transparent pricing, social proof, RevenueCat)
 - [x] Wire up full onboarding navigation flow
 - [x] Update i18n keys for all new screens
+
+## Sprint 11 - Comprehensive App Polish & Conversion Optimization
+
+### Phase 1: Color Theme
+- [ ] Update theme.config.js: deep navy/black bg, warm terracotta/orange accents, soft olive, glowing orange highlights
+- [ ] Update progress ring: use glowing orange/terracotta gradient (never dark blue on dark bg)
+- [ ] Update streak fire animation: use orange/glow colors
+- [ ] Update all badges/achievements: use orange accent
+- [ ] Update graphs/charts: use orange for primary data series
+- [ ] Update paywall CTA buttons: use glowing orange
+
+### Phase 2: Full i18n Coverage
+- [ ] Audit all screens for hardcoded English text
+- [ ] Add i18n keys for: quests, challenges, badges, ranks, analytics labels, habit suggestions
+- [ ] Wire AI system prompt to use user's selected language
+- [ ] Update all 3 translation files (en/fr/pt) with new keys
+- [ ] Test language switching on all screens
+
+### Phase 3: Navigation Redesign
+- [ ] Reduce tab bar to 3 tabs: Home, Journal, Intel
+- [ ] Move AI chat FAB to bottom-right corner (outside tab bar)
+- [ ] Update tab icons and labels
+- [ ] Hide Community/Crew tab (merge into Intel if needed)
+- [ ] Update tab layout TypeScript
+
+### Phase 4: Journal Screen Rebuild
+- [ ] Replace "Save" button with prominent "AI Analysis" button
+- [ ] Show AI response BELOW user entry (not above)
+- [ ] Add "Save" button to top-right corner
+- [ ] Add "Cancel" button to top-left corner
+- [ ] Implement long-press delete on journal list items
+- [ ] Update journal entry form layout
+
+### Phase 5: Onboarding Enhancement
+- [ ] Keep Step 1: name + age
+- [ ] Reduce to exactly 3 questions (remove old Step 3):
+  - Q1: "Why do you currently feel like you're not good enough?"
+  - Q2: "How do you want to become better using RiseGrind?"
+  - Add bold instruction: "Write as much as possible..."
+- [ ] AI generates short, deeply personal, caring message
+- [ ] Build animated potential graphs: X-axis (3mo/6mo/1yr), Y-axis (improvement)
+  - Gray flat curve: "Without RiseGrind"
+  - Glowing orange steep curve: "With RiseGrind"
+  - Subtitle: "Most people stay here... You can be here in just 30 days."
+- [ ] AI suggests relevant morning habits based on answers
+- [ ] Pre-populate suggested habits in routine
+
+### Phase 6: Smart Habit Validation
+- [ ] Add habit validation logic: check for "bad habits" (alcohol, smoking, etc.)
+- [ ] Bad habits: no XP reward, gentle flag/suggestion
+- [ ] Suggest better alternatives based on context
+- [ ] Update habit creation flow
+
+### Phase 7: Testing & Polish
+- [ ] TypeScript: 0 errors
+- [ ] Test all 3 languages on all screens
+- [ ] Test navigation flow (3 tabs + AI FAB)
+- [ ] Test journal AI analysis workflow
+- [ ] Test onboarding with AI personalization
+- [ ] Test habit validation
+
+### Phase 8: Delivery
+- [ ] Save checkpoint
+- [ ] Deliver to user
