@@ -231,3 +231,4 @@
 ## Sprint 9 - Bug Fixes
 
 - [x] Fix "Maximum update depth exceeded" infinite loop crash on web preview
+- [x] Fix OnboardingGuard router.replace loop causing Maximum update depth exceeded

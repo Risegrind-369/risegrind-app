@@ -60,22 +60,36 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const segments = useSegments();
   const router = useRouter();
 
-  // Stringify segments to get a stable dependency value and avoid re-running
-  // the effect on every render just because the array reference changed.
+  // Guard against repeated navigation: only allow one redirect per "decision cycle".
+  // router.replace() causes Expo Router to update segments, which re-runs the effect;
+  // without this lock the effect fires again before the route has settled, creating
+  // an infinite loop of replace() calls.
+  const isNavigating = useRef(false);
+
+  // Stringify segments to get a stable primitive dependency.
   const segmentsKey = segments.join("/");
 
   useEffect(() => {
     if (state.isLoading || !isLanguageLoaded) return;
+    if (isNavigating.current) return;
+
     const inOnboarding = (segments[0] as string) === "onboarding";
-    // No language selected yet → show language picker first
+
     if (!language && !inOnboarding) {
+      isNavigating.current = true;
       router.replace("/onboarding/language" as never);
+      // Release the lock after the navigation settles (next tick is enough).
+      setTimeout(() => { isNavigating.current = false; }, 500);
       return;
     }
     if (!state.isOnboarded && !inOnboarding) {
+      isNavigating.current = true;
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
+      setTimeout(() => { isNavigating.current = false; }, 500);
     } else if (state.isOnboarded && inOnboarding) {
+      isNavigating.current = true;
       router.replace("/(tabs)" as never);
+      setTimeout(() => { isNavigating.current = false; }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);
