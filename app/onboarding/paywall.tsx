@@ -1,10 +1,8 @@
 /**
- * Paywall Screen
+ * Paywall Screen — Post-Trial Upgrade
  *
- * Shown during onboarding and when the user tries to access premium features.
- * Uses RevenueCat offerings to display real package prices when available.
- *
- * Trial: 3-day free trial → full access → then $4.99/month or $39.99/year
+ * Shown after the 3-day free trial ends.
+ * Transparent pricing, social proof, and RevenueCat integration.
  */
 import React, { useState } from "react";
 import {
@@ -19,6 +17,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
@@ -52,23 +51,19 @@ export default function PaywallScreen() {
   // Get real prices from RevenueCat if available
   const monthlyPkg = getMonthlyPackage();
   const annualPkg = getAnnualPackage();
-  const monthlyPrice =
-    (monthlyPkg as any)?.product?.priceString ?? "$4.99";
-  const annualPrice =
-    (annualPkg as any)?.product?.priceString ?? "$39.99";
+  const monthlyPrice = (monthlyPkg as any)?.product?.priceString ?? "$4.99";
+  const annualPrice = (annualPkg as any)?.product?.priceString ?? "$39.99";
 
   const handlePurchase = async () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsLoading(true);
     try {
-      // Select the right package based on plan choice
       let pkg: unknown = null;
       if (selectedPlan === "yearly" && annualPkg) {
         pkg = annualPkg;
       } else if (selectedPlan === "monthly" && monthlyPkg) {
         pkg = monthlyPkg;
       } else if (offerings && typeof offerings === "object") {
-        // Fallback: first available package
         const off = offerings as { current?: { availablePackages?: unknown[] } };
         pkg = off.current?.availablePackages?.[0] ?? null;
       }
@@ -77,6 +72,7 @@ export default function PaywallScreen() {
         const success = await purchasePackage(pkg);
         if (success) {
           dispatch({ type: "SET_PREMIUM", payload: true });
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           router.push("/onboarding/setup" as never);
           return;
         }
@@ -119,45 +115,51 @@ export default function PaywallScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
-        <View style={styles.header}>
+        <Animated.View entering={FadeInDown.delay(100).duration(600)} style={styles.header}>
           <Image source={{ uri: ICON_URL }} style={styles.icon} />
-          <View style={styles.badgeRow}>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>
-                {t("paywall.badge", { defaultValue: "3-DAY FREE TRIAL" })}
-              </Text>
-            </View>
-          </View>
           <Text style={[styles.title, { color: colors.foreground }]}>
             {t("paywall.title", { defaultValue: "Unlock Ghost Mode" })}
           </Text>
-          <Text style={[styles.trialCopy, { color: colors.muted }]}>
-            {t("paywall.trialCopy", {
-              defaultValue:
-                "Start your 3-day free trial – Full access to AI coach, unlimited habits, deep insights, and Ghost Mode tools.",
+          <Text style={[styles.subtitle, { color: colors.muted }]}>
+            {t("paywall.subtitle", {
+              defaultValue: "Less than one coffee per week to transform your mornings and build lifelong discipline.",
             })}
           </Text>
-        </View>
+        </Animated.View>
+
+        {/* Social Proof */}
+        <Animated.View
+          entering={FadeInDown.delay(200).duration(600)}
+          style={[styles.socialProof, { backgroundColor: colors.surface, borderColor: colors.border }]}
+        >
+          <Text style={[styles.socialProofText, { color: colors.foreground }]}>
+            {t("paywall.socialProof", {
+              defaultValue: "Join thousands of Ghosts who are quietly rebuilding themselves in silence.",
+            })}
+          </Text>
+        </Animated.View>
 
         {/* Features */}
-        <View style={[styles.featuresCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {FEATURES.map(({ icon, key, fallback }) => (
-            <View key={key} style={styles.featureRow}>
-              <Text style={styles.featureIcon}>{icon}</Text>
-              <Text style={[styles.featureText, { color: colors.foreground }]}>
-                {t(`paywall.${key}`, { defaultValue: fallback })}
-              </Text>
-            </View>
-          ))}
-        </View>
+        <Animated.View entering={FadeInDown.delay(300).duration(600)} style={styles.featuresContainer}>
+          <Text style={[styles.featuresTitle, { color: colors.foreground }]}>
+            {t("paywall.featuresTitle", { defaultValue: "What You Get" })}
+          </Text>
+          <View style={[styles.featuresCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {FEATURES.map(({ icon, key, fallback }) => (
+              <View key={key} style={styles.featureRow}>
+                <Text style={styles.featureIcon}>{icon}</Text>
+                <Text style={[styles.featureText, { color: colors.foreground }]}>
+                  {t(`paywall.${key}`, { defaultValue: fallback })}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </Animated.View>
 
         {/* Plan Selector */}
-        <View style={styles.plans}>
+        <Animated.View entering={FadeInDown.delay(400).duration(600)} style={styles.plans}>
           {/* Yearly — recommended */}
           <Pressable
             onPress={() => {
@@ -167,10 +169,8 @@ export default function PaywallScreen() {
             style={({ pressed }) => [
               styles.planCard,
               {
-                backgroundColor:
-                  selectedPlan === "yearly" ? "#F9731615" : colors.surface,
-                borderColor:
-                  selectedPlan === "yearly" ? "#F97316" : colors.border,
+                backgroundColor: selectedPlan === "yearly" ? "#E8A87C15" : colors.surface,
+                borderColor: selectedPlan === "yearly" ? "#E8A87C" : colors.border,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
@@ -178,17 +178,17 @@ export default function PaywallScreen() {
             <View style={styles.planBadgeRow}>
               <View style={[styles.saveBadge, { backgroundColor: "#22C55E" }]}>
                 <Text style={styles.saveBadgeText}>
-                  {t("paywall.save", { defaultValue: "Save 50%" })}
+                  {t("paywall.save", { defaultValue: "Save 44%" })}
                 </Text>
               </View>
               {selectedPlan === "yearly" && (
-                <Text style={[styles.checkmark, { color: "#F97316" }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: "#E8A87C" }]}>✓</Text>
               )}
             </View>
             <Text style={[styles.planName, { color: colors.foreground }]}>
               {t("paywall.yearly", { defaultValue: "Yearly" })}
             </Text>
-            <Text style={[styles.planPrice, { color: "#F97316" }]}>{annualPrice}</Text>
+            <Text style={[styles.planPrice, { color: "#E8A87C" }]}>{annualPrice}</Text>
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perYear", { defaultValue: "/year" })} · ~$3.33/mo
             </Text>
@@ -203,38 +203,36 @@ export default function PaywallScreen() {
             style={({ pressed }) => [
               styles.planCard,
               {
-                backgroundColor:
-                  selectedPlan === "monthly" ? "#F9731615" : colors.surface,
-                borderColor:
-                  selectedPlan === "monthly" ? "#F97316" : colors.border,
+                backgroundColor: selectedPlan === "monthly" ? "#E8A87C15" : colors.surface,
+                borderColor: selectedPlan === "monthly" ? "#E8A87C" : colors.border,
                 transform: [{ scale: pressed ? 0.98 : 1 }],
               },
             ]}
           >
             <View style={styles.planBadgeRow}>
               {selectedPlan === "monthly" && (
-                <Text style={[styles.checkmark, { color: "#F97316" }]}>✓</Text>
+                <Text style={[styles.checkmark, { color: "#E8A87C" }]}>✓</Text>
               )}
             </View>
             <Text style={[styles.planName, { color: colors.foreground }]}>
               {t("paywall.monthly", { defaultValue: "Monthly" })}
             </Text>
-            <Text style={[styles.planPrice, { color: "#F97316" }]}>{monthlyPrice}</Text>
+            <Text style={[styles.planPrice, { color: "#E8A87C" }]}>{monthlyPrice}</Text>
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perMonth", { defaultValue: "/month" })}
             </Text>
           </Pressable>
-        </View>
+        </Animated.View>
 
         {/* CTA */}
-        <View style={styles.ctaSection}>
+        <Animated.View entering={FadeInDown.delay(500).duration(600)} style={styles.ctaSection}>
           <Pressable
             onPress={handlePurchase}
             disabled={isLoading}
             style={({ pressed }) => [
               styles.ctaButton,
               {
-                backgroundColor: "#F97316",
+                backgroundColor: "#E8A87C",
                 transform: [{ scale: pressed ? 0.97 : 1 }],
                 opacity: isLoading ? 0.7 : 1,
               },
@@ -243,22 +241,15 @@ export default function PaywallScreen() {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <>
-                <Text style={styles.ctaText}>
-                  {t("paywall.startTrial", { defaultValue: "Start Free Trial" })}
-                </Text>
-                <Text style={styles.ctaSubText}>
-                  {t("paywall.trialNote", { defaultValue: "3 days free, then" })}{" "}
-                  {selectedPlan === "yearly" ? annualPrice + "/year" : monthlyPrice + "/month"}
-                </Text>
-              </>
+              <Text style={styles.ctaText}>
+                {t("paywall.unlock", { defaultValue: "Unlock Ghost Mode" })}
+              </Text>
             )}
           </Pressable>
 
           <Text style={[styles.legalText, { color: colors.muted }]}>
             {t("paywall.terms", {
-              defaultValue:
-                "Cancel anytime. Billed after 3-day free trial ends. No charge today.",
+              defaultValue: "Cancel anytime. No questions asked.",
             })}
           </Text>
 
@@ -270,7 +261,7 @@ export default function PaywallScreen() {
               {t("paywall.restore", { defaultValue: "Restore Purchases" })}
             </Text>
           </Pressable>
-        </View>
+        </Animated.View>
       </ScrollView>
     </ScreenContainer>
   );
@@ -293,41 +284,42 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     marginBottom: 4,
   },
-  badgeRow: {
-    flexDirection: "row",
-  },
-  badge: {
-    backgroundColor: "#F9731620",
-    paddingHorizontal: 14,
-    paddingVertical: 5,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: "#F9731640",
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: "800",
-    letterSpacing: 1.5,
-    color: "#F97316",
-  },
   title: {
-    fontSize: 34,
+    fontSize: 32,
     fontWeight: "800",
-    textAlign: "center",
     letterSpacing: -0.5,
-    lineHeight: 42,
-  },
-  trialCopy: {
-    fontSize: 15,
+    lineHeight: 40,
     textAlign: "center",
-    lineHeight: 23,
-    paddingHorizontal: 8,
+  },
+  subtitle: {
+    fontSize: 16,
+    lineHeight: 24,
+    textAlign: "center",
+  },
+  socialProof: {
+    borderRadius: 12,
+    borderWidth: 1,
+    padding: 16,
+  },
+  socialProofText: {
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 20,
+    textAlign: "center",
+  },
+  featuresContainer: {
+    gap: 12,
+  },
+  featuresTitle: {
+    fontSize: 16,
+    fontWeight: "700",
+    letterSpacing: 0.2,
   },
   featuresCard: {
-    borderRadius: 20,
-    padding: 20,
-    gap: 14,
+    borderRadius: 14,
     borderWidth: 1,
+    padding: 16,
+    gap: 12,
   },
   featureRow: {
     flexDirection: "row",
@@ -335,46 +327,44 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   featureIcon: {
-    fontSize: 20,
+    fontSize: 24,
     width: 28,
+    textAlign: "center",
   },
   featureText: {
-    fontSize: 15,
-    fontWeight: "500",
     flex: 1,
-    lineHeight: 22,
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 20,
   },
   plans: {
-    flexDirection: "row",
     gap: 12,
   },
   planCard: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 16,
+    borderRadius: 14,
     borderWidth: 2,
-    gap: 4,
+    padding: 16,
+    gap: 8,
   },
   planBadgeRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    minHeight: 22,
-    marginBottom: 4,
+    minHeight: 24,
   },
   saveBadge: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
     borderRadius: 6,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
   },
   saveBadgeText: {
-    fontSize: 9,
-    fontWeight: "800",
+    fontSize: 11,
+    fontWeight: "700",
     color: "#fff",
-    letterSpacing: 0.5,
+    letterSpacing: 0.2,
   },
   checkmark: {
-    fontSize: 16,
+    fontSize: 20,
     fontWeight: "700",
   },
   planName: {
@@ -382,44 +372,37 @@ const styles = StyleSheet.create({
     fontWeight: "700",
   },
   planPrice: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: "800",
+    letterSpacing: -0.5,
   },
   planNote: {
     fontSize: 12,
-    lineHeight: 18,
   },
   ctaSection: {
-    gap: 14,
-    alignItems: "center",
+    gap: 12,
+    marginTop: 8,
   },
   ctaButton: {
-    width: "100%",
-    height: 62,
-    borderRadius: 18,
+    height: 56,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
-    gap: 2,
   },
   ctaText: {
     color: "#fff",
-    fontSize: 18,
-    fontWeight: "800",
+    fontSize: 17,
+    fontWeight: "700",
     letterSpacing: 0.2,
   },
-  ctaSubText: {
-    color: "rgba(255,255,255,0.75)",
-    fontSize: 12,
-    fontWeight: "500",
-  },
   legalText: {
-    fontSize: 11,
+    fontSize: 12,
     textAlign: "center",
-    lineHeight: 17,
-    paddingHorizontal: 16,
+    lineHeight: 18,
   },
   restoreText: {
-    fontSize: 14,
+    fontSize: 13,
+    textAlign: "center",
     fontWeight: "500",
   },
 });

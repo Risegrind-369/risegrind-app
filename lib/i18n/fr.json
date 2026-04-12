@@ -44,12 +44,60 @@
       "encrypted": "Chiffré",
       "private": "Journal Privé",
       "mentor": "Mentor IA"
+    },
+    "step1": {
+      "greeting": "Bienvenue en Ghost Mode",
+      "subtitle": "Commençons par les bases.",
+      "nameLabel": "Prénom",
+      "namePlaceholder": "ex: Alex",
+      "ageLabel": "Âge",
+      "agePlaceholder": "ex: 28",
+      "continue": "Continuer"
+    },
+    "step2": {
+      "title": "Pourquoi sentez-vous que vous n'êtes pas assez bien?",
+      "subtitle": "Soyez honnête.",
+      "placeholder": "Partagez...",
+      "continue": "Continuer"
+    },
+    "step3": {
+      "title": "Comment voulez-vous vous améliorer?",
+      "subtitle": "Peignez votre futur moi.",
+      "placeholder": "Je veux...",
+      "continue": "Continuer"
+    },
+    "step4": {
+      "title": "Votre Message Personnel",
+      "generating": "Analyse...",
+      "subtitle": "Ceci est votre fondation.",
+      "continue": "Voir Potentiel"
+    },
+    "step5": {
+      "title": "Votre Potentiel",
+      "subtitle": "Voyez la différence.",
+      "without": "Sans\nRiseGrind",
+      "with": "Avec\nRiseGrind",
+      "annotation": "30 jours.",
+      "continue": "C'est Parti"
+    },
+    "step6": {
+      "title": "Prêt?",
+      "trialCopy": "3 jours gratuits.",
+      "featuresTitle": "Fonctionnalités",
+      "feature1": "Ghost Mode",
+      "feature2": "Mentor IA",
+      "feature3": "Habitudes illimitées",
+      "feature4": "Ghost Intel",
+      "feature5": "Quêtes",
+      "feature6": "Journal vocal",
+      "startTrial": "Essai Gratuit",
+      "legal": "Annulez anytime."
     }
   },
   "paywall": {
     "badge": "3 JOURS D'ESSAI GRATUIT",
     "title": "Débloquer Ghost Mode",
-    "subtitle": "Tout ce qu'il vous faut pour bâtir une routine matinale indestructible.",
+    "subtitle": "Moins d'un café par semaine.",
     "trialCopy": "Commencez votre essai gratuit de 3 jours – Accès complet au coach IA, habitudes illimitées, analyses approfondies et outils Ghost Mode.",
     "feature1": "Ghost Mode — boîte à outils discipline complète",
     "feature2": "Mentor IA Journal — clarté et direction quotidiennes",
@@ -60,18 +108,21 @@
     "trialNote": "3 jours gratuits, puis",
     "monthly": "Mensuel",
     "yearly": "Annuel",
-    "save": "Économisez 50%",
+    "save": "Économisez 44%",
     "perMonth": "/mois",
     "perYear": "/an",
     "startTrial": "Commencer l'essai gratuit",
     "restore": "Restaurer les achats",
-    "terms": "Annulez à tout moment. Facturation après 3 jours d'essai gratuit. Aucun frais aujourd'hui.",
+    "terms": "Annulez anytime.",
     "purchaseFailed": "Achat Échoué",
     "purchaseError": "Quelque chose s'est mal passé. Réessayez.",
     "restoreSuccess": "Restauré !",
     "restoreSuccessMsg": "Vos achats ont été restaurés.",
     "restoreFailed": "Restauration Échouée",
-    "restoreFailedMsg": "Aucun achat trouvé à restaurer."
+    "restoreFailedMsg": "Aucun achat trouvé à restaurer.",
+    "socialProof": "Rejoignez des milliers.",
+    "featuresTitle": "Fonctionnalités",
+    "unlock": "Débloquer"
   },
   "paywallTrigger": {
     "title": "Votre essai gratuit vous attend",

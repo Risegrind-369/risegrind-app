@@ -44,12 +44,60 @@
       "encrypted": "Criptografado",
       "private": "Diário Privado",
       "mentor": "Mentor IA"
+    },
+    "step1": {
+      "greeting": "Bem-vindo",
+      "subtitle": "Vamos começar.",
+      "nameLabel": "Nome",
+      "namePlaceholder": "ex: Alex",
+      "ageLabel": "Idade",
+      "agePlaceholder": "ex: 28",
+      "continue": "Continuar"
+    },
+    "step2": {
+      "title": "Por que não é bom o suficiente?",
+      "subtitle": "Seja honesto.",
+      "placeholder": "Compartilhe...",
+      "continue": "Continuar"
+    },
+    "step3": {
+      "title": "Como melhorar?",
+      "subtitle": "Seu futuro eu.",
+      "placeholder": "Quero...",
+      "continue": "Continuar"
+    },
+    "step4": {
+      "title": "Sua Mensagem",
+      "generating": "Analisando...",
+      "subtitle": "Sua fundação.",
+      "continue": "Ver Potencial"
+    },
+    "step5": {
+      "title": "Seu Potencial",
+      "subtitle": "Veja a diferença.",
+      "without": "Sem\nRiseGrind",
+      "with": "Com\nRiseGrind",
+      "annotation": "30 dias.",
+      "continue": "Vamos Lá"
+    },
+    "step6": {
+      "title": "Pronto?",
+      "trialCopy": "3 dias grátis.",
+      "featuresTitle": "Recursos",
+      "feature1": "Ghost Mode",
+      "feature2": "Mentor IA",
+      "feature3": "Hábitos ilimitados",
+      "feature4": "Ghost Intel",
+      "feature5": "Missões",
+      "feature6": "Diário vocal",
+      "startTrial": "Teste Grátis",
+      "legal": "Cancele anytime."
     }
   },
   "paywall": {
     "badge": "3 DIAS DE TESTE GRÁTIS",
     "title": "Desbloquear Ghost Mode",
-    "subtitle": "Tudo que você precisa para construir uma rotina matinal inabalaível.",
+    "subtitle": "Menos de um café por semana.",
     "trialCopy": "Comece seu teste gratuito de 3 dias – Acesso completo ao coach de IA, hábitos ilimitados, insights profundos e ferramentas Ghost Mode.",
     "feature1": "Ghost Mode — kit completo de disciplina",
     "feature2": "Mentor IA Diário — clareza e direção diárias",
@@ -60,18 +108,21 @@
     "trialNote": "3 dias grátis, depois",
     "monthly": "Mensal",
     "yearly": "Anual",
-    "save": "Economize 50%",
+    "save": "Economize 44%",
     "perMonth": "/mês",
     "perYear": "/ano",
     "startTrial": "Começar teste grátis",
     "restore": "Restaurar compras",
-    "terms": "Cancele a qualquer momento. Cobrado após 3 dias de teste gratuito. Sem cobrança hoje.",
+    "terms": "Cancele anytime.",
     "purchaseFailed": "Compra Falhou",
     "purchaseError": "Algo deu errado. Tente novamente.",
     "restoreSuccess": "Restaurado!",
     "restoreSuccessMsg": "Suas compras foram restauradas.",
     "restoreFailed": "Restauração Falhou",
-    "restoreFailedMsg": "Nenhuma compra encontrada para restaurar."
+    "restoreFailedMsg": "Nenhuma compra encontrada para restaurar.",
+    "socialProof": "Junte-se a milhares.",
+    "featuresTitle": "Recursos",
+    "unlock": "Desbloquear"
   },
   "paywallTrigger": {
     "title": "Seu teste gratuito espera por você",

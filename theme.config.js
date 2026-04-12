@@ -1,17 +1,18 @@
 /** @type {const} */
 const themeColors = {
-  primary: { light: '#3B82F6', dark: '#60A5FA' },
-  background: { light: '#FFFFFF', dark: '#0F0F0F' },
-  surface: { light: '#F8FAFC', dark: '#1A1A2E' },
-  foreground: { light: '#0F172A', dark: '#F1F5F9' },
-  muted: { light: '#64748B', dark: '#94A3B8' },
-  border: { light: '#E2E8F0', dark: '#1E293B' },
-  success: { light: '#10B981', dark: '#34D399' },
-  warning: { light: '#F97316', dark: '#FB923C' },
-  error: { light: '#EF4444', dark: '#F87171' },
-  accent: { light: '#8B5CF6', dark: '#A78BFA' },
-  card: { light: '#FFFFFF', dark: '#1E1E2E' },
-  tint: { light: '#3B82F6', dark: '#60A5FA' },
+  // Earth palette: deep navy, warm terracotta, soft olive, glowing orange
+  primary: { light: '#1F2937', dark: '#1F2937' }, // Deep navy
+  background: { light: '#FAFAF8', dark: '#0F0F0F' }, // Off-white / deep black
+  surface: { light: '#F3F1ED', dark: '#1A1A2E' }, // Warm beige / dark navy
+  foreground: { light: '#1F2937', dark: '#F1F5F9' }, // Deep navy / light
+  muted: { light: '#78716C', dark: '#A89968' }, // Warm gray / soft olive
+  border: { light: '#E7E5E0', dark: '#2D2D3D' }, // Warm border / dark
+  success: { light: '#84CC16', dark: '#BEF264' }, // Olive green
+  warning: { light: '#E8A87C', dark: '#F5B895' }, // Warm terracotta / lighter terracotta
+  error: { light: '#DC2626', dark: '#EF4444' }, // Red
+  accent: { light: '#E8A87C', dark: '#F5B895' }, // Terracotta accent
+  card: { light: '#FAFAF8', dark: '#1E1E2E' }, // Off-white / dark navy
+  tint: { light: '#E8A87C', dark: '#F5B895' }, // Terracotta tint
 };
 
 module.exports = { themeColors };

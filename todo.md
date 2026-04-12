@@ -232,3 +232,16 @@
 
 - [x] Fix "Maximum update depth exceeded" infinite loop crash on web preview
 - [x] Fix OnboardingGuard router.replace loop causing Maximum update depth exceeded
+
+## Sprint 10 - Onboarding Rebuild
+
+- [x] Update theme colors to earth palette (deep navy, terracotta, olive, orange)
+- [x] Build onboarding Step 1: name + age screen
+- [x] Build onboarding Step 2: empathy question screen
+- [x] Build onboarding Step 3: future goal question screen
+- [x] Build AI personalization message screen (server LLM call)
+- [x] Build animated comparison graphs screen (Without vs With RiseGrind)
+- [x] Build free trial reveal screen with premium feature list
+- [x] Rebuild post-trial paywall (transparent pricing, social proof, RevenueCat)
+- [x] Wire up full onboarding navigation flow
+- [x] Update i18n keys for all new screens

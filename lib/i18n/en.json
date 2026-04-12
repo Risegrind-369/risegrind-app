@@ -44,12 +44,60 @@
       "encrypted": "Encrypted",
       "private": "Journal Private",
       "mentor": "AI Mentor"
+    },
+    "step1": {
+      "greeting": "Welcome to Ghost Mode",
+      "subtitle": "Let's start with the basics so we can personalize your journey.",
+      "nameLabel": "First Name",
+      "namePlaceholder": "e.g., Alex",
+      "ageLabel": "Age",
+      "agePlaceholder": "e.g., 28",
+      "continue": "Continue"
+    },
+    "step2": {
+      "title": "Why do you feel like you're not good enough right now?",
+      "subtitle": "Be honest. This helps us understand your starting point.",
+      "placeholder": "Share what's on your mind...",
+      "continue": "Continue"
+    },
+    "step3": {
+      "title": "How do you want to become better using RiseGrind?",
+      "subtitle": "Paint a picture of your future self.",
+      "placeholder": "I want to build...",
+      "continue": "Continue"
+    },
+    "step4": {
+      "title": "Your Personal Message",
+      "generating": "Analyzing your answers...",
+      "subtitle": "This is your foundation. Let's show you what's possible.",
+      "continue": "See Your Potential"
+    },
+    "step5": {
+      "title": "Your Potential",
+      "subtitle": "See the difference 30 days can make.",
+      "without": "Without\nRiseGrind",
+      "with": "With\nRiseGrind",
+      "annotation": "Most people stay here... You can be here in just 30 days.",
+      "continue": "Let's Go"
+    },
+    "step6": {
+      "title": "Ready to Enter Ghost Mode?",
+      "trialCopy": "Enjoy 3 full days of RiseGrind completely free – no card required right now.",
+      "featuresTitle": "What You Get",
+      "feature1": "Ghost Mode — full discipline toolkit",
+      "feature2": "AI Journal Mentor — daily clarity & direction",
+      "feature3": "Unlimited habits & streak protection",
+      "feature4": "Ghost Intel — mood trends & habit analytics",
+      "feature5": "Side Quests — bonus discipline challenges",
+      "feature6": "Voice journaling with AI response playback",
+      "startTrial": "Start My Free Trial",
+      "legal": "No card required. Cancel anytime."
     }
   },
   "paywall": {
     "badge": "3-DAY FREE TRIAL",
     "title": "Unlock Ghost Mode",
-    "subtitle": "Everything you need to build an unbreakable morning routine.",
+    "subtitle": "Less than one coffee per week to transform your mornings and build lifelong discipline.",
     "trialCopy": "Start your 3-day free trial – Full access to AI coach, unlimited habits, deep insights, and Ghost Mode tools.",
     "feature1": "Ghost Mode — full discipline toolkit",
     "feature2": "AI Journal Mentor — daily clarity & direction",
@@ -60,18 +108,21 @@
     "trialNote": "3 days free, then",
     "monthly": "Monthly",
     "yearly": "Yearly",
-    "save": "Save 50%",
+    "save": "Save 44%",
     "perMonth": "/month",
     "perYear": "/year",
     "startTrial": "Start Free Trial",
     "restore": "Restore Purchases",
-    "terms": "Cancel anytime. Billed after 3-day free trial ends. No charge today.",
+    "terms": "Cancel anytime. No questions asked.",
     "purchaseFailed": "Purchase Failed",
     "purchaseError": "Something went wrong. Please try again.",
     "restoreSuccess": "Restored!",
     "restoreSuccessMsg": "Your purchases have been restored.",
     "restoreFailed": "Restore Failed",
-    "restoreFailedMsg": "No purchases found to restore."
+    "restoreFailedMsg": "No purchases found to restore.",
+    "socialProof": "Join thousands of Ghosts who are quietly rebuilding themselves in silence.",
+    "featuresTitle": "What You Get",
+    "unlock": "Unlock Ghost Mode"
   },
   "paywallTrigger": {
     "title": "Your Free Trial Awaits",
