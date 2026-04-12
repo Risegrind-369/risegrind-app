@@ -15,7 +15,7 @@ import "@/global.css";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Platform } from "react-native";
@@ -42,6 +42,14 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
 
+// ─── Stable module-level constant for SafeAreaProvider initialMetrics ─────────
+// MUST be computed once outside the component so it never changes reference,
+// preventing SafeAreaProvider from treating every render as a new "initial" value.
+const STABLE_INITIAL_METRICS = initialWindowMetrics ?? {
+  insets: DEFAULT_WEB_INSETS,
+  frame: DEFAULT_WEB_FRAME,
+};
+
 export const unstable_settings = {
   anchor: "(tabs)",
 };
@@ -51,6 +59,10 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { language, isLanguageLoaded } = useLanguage();
   const segments = useSegments();
   const router = useRouter();
+
+  // Stringify segments to get a stable dependency value and avoid re-running
+  // the effect on every render just because the array reference changed.
+  const segmentsKey = segments.join("/");
 
   useEffect(() => {
     if (state.isLoading || !isLanguageLoaded) return;
@@ -65,17 +77,22 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     } else if (state.isOnboarded && inOnboarding) {
       router.replace("/(tabs)" as never);
     }
-  }, [state.isOnboarded, state.isLoading, segments, language, isLanguageLoaded]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);
 
   return <>{children}</>;
 }
 
 export default function RootLayout() {
-  const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
-  const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;
+  // On web we override the SafeArea contexts with values from the parent iframe.
+  // Start from the stable module-level metrics so SafeAreaProvider never gets
+  // a new initialMetrics reference.
+  const [insets, setInsets] = useState<EdgeInsets>(STABLE_INITIAL_METRICS.insets);
+  const [frame, setFrame] = useState<Rect>(STABLE_INITIAL_METRICS.frame);
 
-  const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
-  const [frame, setFrame] = useState<Rect>(initialFrame);
+  // Keep the last-applied insets/frame so we can skip no-op state updates.
+  const lastInsets = useRef(insets);
+  const lastFrame = useRef(frame);
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
@@ -83,8 +100,25 @@ export default function RootLayout() {
   }, []);
 
   const handleSafeAreaUpdate = useCallback((metrics: Metrics) => {
-    setInsets(metrics.insets);
-    setFrame(metrics.frame);
+    const { insets: newInsets, frame: newFrame } = metrics;
+    // Only update state when values actually changed to prevent render loops.
+    const insetsChanged =
+      newInsets.top !== lastInsets.current.top ||
+      newInsets.bottom !== lastInsets.current.bottom ||
+      newInsets.left !== lastInsets.current.left ||
+      newInsets.right !== lastInsets.current.right;
+    const frameChanged =
+      newFrame.width !== lastFrame.current.width ||
+      newFrame.height !== lastFrame.current.height;
+
+    if (insetsChanged) {
+      lastInsets.current = newInsets;
+      setInsets(newInsets);
+    }
+    if (frameChanged) {
+      lastFrame.current = newFrame;
+      setFrame(newFrame);
+    }
   }, []);
 
   useEffect(() => {
@@ -105,18 +139,6 @@ export default function RootLayout() {
       }),
   );
   const [trpcClient] = useState(() => createTRPCClient());
-
-  const providerInitialMetrics = useMemo(() => {
-    const metrics = initialWindowMetrics ?? { insets: initialInsets, frame: initialFrame };
-    return {
-      ...metrics,
-      insets: {
-        ...metrics.insets,
-        top: Math.max(metrics.insets.top, 16),
-        bottom: Math.max(metrics.insets.bottom, 12),
-      },
-    };
-  }, [initialInsets, initialFrame]);
 
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>
@@ -157,7 +179,12 @@ export default function RootLayout() {
   if (shouldOverrideSafeArea) {
     return (
       <ThemeProvider>
-        <SafeAreaProvider initialMetrics={providerInitialMetrics}>
+        {/*
+          Pass the stable module-level constant as initialMetrics so
+          SafeAreaProvider never sees a new object reference and never
+          triggers an internal state update on re-render.
+        */}
+        <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>
           <SafeAreaFrameContext.Provider value={frame}>
             <SafeAreaInsetsContext.Provider value={insets}>
               {content}
@@ -170,7 +197,7 @@ export default function RootLayout() {
 
   return (
     <ThemeProvider>
-      <SafeAreaProvider initialMetrics={providerInitialMetrics}>{content}</SafeAreaProvider>
+      <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>{content}</SafeAreaProvider>
     </ThemeProvider>
   );
 }

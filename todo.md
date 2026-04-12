@@ -227,3 +227,7 @@
 - [x] Add real-time customerInfo listener for instant unlock after purchase
 - [x] Update paywall copy: "Start your 3-day free trial – Full access..."
 - [x] Ensure premium feature gating (habits, AI, voice, quests) uses entitlement check
+
+## Sprint 9 - Bug Fixes
+
+- [x] Fix "Maximum update depth exceeded" infinite loop crash on web preview
