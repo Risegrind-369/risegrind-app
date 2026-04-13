@@ -6,6 +6,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
+import { showSuperwallPaywall } from "@/lib/superwall-provider";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -93,8 +94,18 @@ export default function SettingsScreen() {
             {t("settings.subscription", { defaultValue: "Subscription" })}
           </Text>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {/* Manage Subscription — shows Superwall paywall immediately, even during trial */}
             <Pressable
-              onPress={() => router.push("/onboarding/paywall" as never)}
+              onPress={async () => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+                // On native: Superwall handles the beautiful paywall UI
+                // On web/Expo Go: fall back to in-app paywall screen
+                try {
+                  await showSuperwallPaywall("manage_subscription");
+                } catch {
+                  router.push("/onboarding/paywall" as never);
+                }
+              }}
               style={({ pressed }) => [
                 styles.settingButton,
                 {
@@ -104,7 +115,7 @@ export default function SettingsScreen() {
               ]}
             >
               <Text style={styles.settingButtonText}>
-                {t("settings.managePlan", { defaultValue: "Manage Subscription" })}
+                💳 {t("settings.managePlan", { defaultValue: "Manage Subscription" })}
               </Text>
             </Pressable>
           </View>

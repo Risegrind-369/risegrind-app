@@ -376,3 +376,11 @@
 - [x] Fix 6: Haptics on rank unlock (Heavy impact + Success notification)
 - [x] Fix 7: Removed "Listen to AI" / "🔊 Listen" button from journal AI analysis section
 - [x] TypeScript: 0 errors
+
+## Sprint 15 - 4 Specific Fixes
+
+- [x] Fix "Clea" → "Clear" button in journal/AI chat screen
+- [x] Ensure Quick Actions labels are fully translated (no English left when switching language)
+- [x] Add Manage Subscription button in Settings → shows Superwall paywall immediately
+- [x] Build weekly summary pop-up (7-day completion %, streak, habits, mood trend, XP earned)
+- [x] TypeScript: 0 errors

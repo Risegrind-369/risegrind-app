@@ -18,6 +18,8 @@ import { XPBar } from "@/components/ui/xp-bar";
 import * as Haptics from "expo-haptics";
 import { AnimatedStreakFire } from "@/components/animated-streak-fire";
 import { RankUnlockAnimation } from "@/components/rank-unlock-animation";
+import { WeeklySummaryModal } from "@/components/weekly-summary-modal";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const GHOST_SLOGANS_EN = [
   "Go Ghost. Build Yourself. Change Everything.",
@@ -99,6 +101,41 @@ export default function HomeScreen() {
   // Rank unlock animation state
   const [showRankUnlock, setShowRankUnlock] = useState(false);
   const prevRankRef = useRef<string | null>(null);
+
+  // Weekly summary state
+  const [showWeeklySummary, setShowWeeklySummary] = useState(false);
+  const [weekXpEarned, setWeekXpEarned] = useState(0);
+
+  // Check if weekly summary should show (every 7 days after first active day)
+  useEffect(() => {
+    const checkWeeklySummary = async () => {
+      try {
+        const lastShownStr = await AsyncStorage.getItem("@risegrind_weekly_summary_shown");
+        const lastShown = lastShownStr ? parseInt(lastShownStr, 10) : 0;
+        const now = Date.now();
+        const sevenDays = 7 * 24 * 60 * 60 * 1000;
+        // Only show if onboarded and 7 days have passed since last shown (or first time after 7 days of use)
+        if (state.isOnboarded && now - lastShown >= sevenDays) {
+          // Calculate XP earned in the last 7 days (approximate: 10 XP per habit completion)
+          const today = new Date();
+          const weekDates: string[] = [];
+          for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(d.getDate() - i);
+            weekDates.push(d.toISOString().split("T")[0]);
+          }
+          const weekCompletions = state.completions.filter((c) => weekDates.includes(c.date));
+          const estimatedXP = weekCompletions.length * 10;
+          setWeekXpEarned(estimatedXP);
+          setShowWeeklySummary(true);
+          await AsyncStorage.setItem("@risegrind_weekly_summary_shown", String(now));
+        }
+      } catch (e) {
+        // Silently fail
+      }
+    };
+    checkWeeklySummary();
+  }, []);
 
   // Detect streak increase
   useEffect(() => {
@@ -423,6 +460,14 @@ export default function HomeScreen() {
           rank === "Grind Master" ? "💎" : "👑"
         }
         onDismiss={() => setShowRankUnlock(false)}
+      />
+
+      {/* Weekly Summary Pop-up — shows every 7 days */}
+      <WeeklySummaryModal
+        visible={showWeeklySummary}
+        onDismiss={() => setShowWeeklySummary(false)}
+        state={state}
+        weekXpEarned={weekXpEarned}
       />
     </ScreenContainer>
   );

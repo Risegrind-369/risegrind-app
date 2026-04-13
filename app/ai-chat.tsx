@@ -375,7 +375,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 16, fontWeight: "700" },
   headerSub: { fontSize: 11, marginTop: 1 },
   backBtn: { fontSize: 18, fontWeight: "600" },
-  clearBtn: { fontSize: 13 },
+  clearBtn: { fontSize: 13, minWidth: 40, textAlign: "right" },
   contextBar: {
     flexDirection: "row",
     paddingHorizontal: 16,

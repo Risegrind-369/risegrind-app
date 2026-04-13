@@ -170,7 +170,10 @@
     "ghostModeBody": "Tu construis en silence. Chaque habitude, chaque entrée, chaque jour gagné — ça s'accumule. Reste invisible. Reste dangereux.",
     "recentEntries": "Entrées récentes",
     "mentalState": "État mental",
-    "keepGoing": "Continue"
+    "keepGoing": "Continue",
+    "routine": "Routine",
+    "journal": "Journal",
+    "insights": "Analyses"
   },
   "routine": {
     "title": "Routine Matinale",
