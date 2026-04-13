@@ -173,7 +173,13 @@
     "keepGoing": "Continue",
     "routine": "Routine",
     "journal": "Journal",
-    "insights": "Analyses"
+    "insights": "Analyses",
+    "rankDescription": "Tu construis en silence. Chaque habitude, chaque entrée, chaque jour s'accumule. Reste dangereux.",
+    "yourRank": "Ton Rang",
+    "moodLogged": "État mental enregistré",
+    "howAreYou": "Comment tu te sens aujourd'hui ?",
+    "logMood": "Appuie pour enregistrer ton humeur",
+    "howAreYouFeeling": "Comment tu te sens aujourd'hui ?"
   },
   "routine": {
     "title": "Routine Matinale",

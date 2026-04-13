@@ -73,16 +73,22 @@ Generate a short, deeply personal message that acknowledges their feelings and i
             ],
           });
           const content = response?.choices?.[0]?.message?.content ?? "";
+          const localizedFallback = input.language === "fr"
+            ? `Je te vois, ${input.name}. Tu es ici parce que tu sais que tu peux être plus. Avec RiseGrind, tu le seras.`
+            : input.language === "pt"
+            ? `Eu te vejo, ${input.name}. Você está aqui porque sabe que pode ser mais. Com o RiseGrind, você será.`
+            : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`;
           return {
-            message: typeof content === "string" && content.length > 0
-              ? content
-              : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`,
+            message: typeof content === "string" && content.length > 0 ? content : localizedFallback,
           };
         } catch (e) {
           console.error("Onboarding AI error:", e);
-          return {
-            message: `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`,
-          };
+          const localizedFallback2 = input.language === "fr"
+            ? `Je te vois, ${input.name}. Tu es ici parce que tu sais que tu peux être plus. Avec RiseGrind, tu le seras.`
+            : input.language === "pt"
+            ? `Eu te vejo, ${input.name}. Você está aqui porque sabe que pode ser mais. Com o RiseGrind, você será.`
+            : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`;
+          return { message: localizedFallback2 };
         }
       }),
 
@@ -300,15 +306,30 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           console.error("LLM error:", e);
         }
 
-        // Fallback
-        return {
-          insight: `${input.streak} days straight. ${input.xp} XP earned. You're not the same person you were when you started. Don't stop now.`,
-          suggestions: [
-            "Add a 5-minute breathing exercise right after waking up",
-            "Journal immediately after your morning routine — capture the momentum",
-            "Lock in a consistent wake-up time. Your circadian rhythm is your foundation.",
-          ],
-        };
+        // Fallback — localized
+        const fallbackInsight = input.language === "fr"
+          ? `${input.streak} jours consécutifs. ${input.xp} XP gagnés. Tu n'es plus la même personne qu'au début. N'arrête pas maintenant.`
+          : input.language === "pt"
+          ? `${input.streak} dias seguidos. ${input.xp} XP ganhos. Você não é mais a mesma pessoa de quando começou. Não pare agora.`
+          : `${input.streak} days straight. ${input.xp} XP earned. You're not the same person you were when you started. Don't stop now.`;
+        const fallbackSuggestions = input.language === "fr"
+          ? [
+              "Ajoute un exercice de respiration de 5 minutes au réveil",
+              "Écris dans ton journal juste après ta routine — capture l'élan",
+              "Fixe une heure de réveil constante. Ton rythme circadien est ta base.",
+            ]
+          : input.language === "pt"
+          ? [
+              "Adicione um exercício de respiração de 5 minutos ao acordar",
+              "Escreva no diário logo após sua rotina — capture o momentum",
+              "Defina um horário de despertar consistente. Seu ritmo circadiano é sua base.",
+            ]
+          : [
+              "Add a 5-minute breathing exercise right after waking up",
+              "Journal immediately after your morning routine — capture the momentum",
+              "Lock in a consistent wake-up time. Your circadian rhythm is your foundation.",
+            ];
+        return { insight: fallbackInsight, suggestions: fallbackSuggestions };
       }),
 
     chat: publicProcedure

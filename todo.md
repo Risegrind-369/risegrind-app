@@ -415,3 +415,13 @@
 - [x] Update onboarding navigation flow (step3 → q4 → q5 → q6 → q7 → step4 → step4b → step5)
 - [x] Update step4-ai-message to pass all new params
 - [x] TypeScript: 0 errors
+
+## Sprint 17 - Language Fix (AI Responses + Static Texts)
+
+- [x] Fix journal analyzeEntry mutation: pass language, instruct LLM to respond in user's language
+- [x] Fix insights AI weekly review: pass language, respond in user's language
+- [x] Fix AI chat (ai-chat.tsx): pass language to every message, respond in user's language
+- [x] Fix rank description / motivational copy on Home screen: use i18n keys
+- [x] Fix "Your Rank" section: rank name and subtitle fully translated
+- [x] Fix all remaining hardcoded English motivational strings
+- [x] TypeScript: 0 errors
