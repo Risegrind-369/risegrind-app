@@ -141,7 +141,7 @@ export default function Step5GraphsScreen() {
             />
             <LineGraph
               points={steepLinePoints}
-              color="#E8A87C"
+              color={colors.accent}
               label={t("onboarding.step5.with", { defaultValue: "With\nRiseGrind" })}
               delay={400}
               colors={colors}
@@ -164,7 +164,7 @@ export default function Step5GraphsScreen() {
               style={({ pressed }) => [
                 styles.button,
                 {
-                  backgroundColor: "#E8A87C",
+                  backgroundColor: colors.accent,
                   transform: [{ scale: pressed ? 0.97 : 1 }],
                 },
               ]}

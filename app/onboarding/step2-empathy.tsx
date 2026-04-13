@@ -1,8 +1,8 @@
 /**
  * Onboarding Step 2: Empathy Question
  *
- * "Why do you feel like you're not good enough right now?"
- * Open text field with empathetic tone.
+ * "Why do you currently feel like you're not good enough?"
+ * Open text field with empathetic tone and bold instruction.
  */
 import React, { useState } from "react";
 import {
@@ -28,7 +28,7 @@ export default function Step2EmpathyScreen() {
   const { t } = useTranslation();
   const params = useLocalSearchParams<{ name?: string; age?: string }>();
   const [answer, setAnswer] = useState("");
-  const isValid = answer.trim().length > 10; // At least 10 chars
+  const isValid = answer.trim().length > 20; // At least 20 chars for meaningful response
 
   const handleContinue = () => {
     if (!isValid) return;
@@ -49,68 +49,80 @@ export default function Step2EmpathyScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-          <View style={styles.container}>
-            {/* Header */}
-            <Animated.View entering={FadeInDown.delay(100).duration(600)} style={styles.header}>
-              <Text style={[styles.title, { color: colors.foreground }]}>
-                {t("onboarding.step2.title", {
-                  defaultValue: "Why do you feel like you're not good enough right now?",
-                })}
-              </Text>
-              <Text style={[styles.subtitle, { color: colors.muted }]}>
-                {t("onboarding.step2.subtitle", {
-                  defaultValue: "Be honest. This helps us understand your starting point.",
-                })}
-              </Text>
-            </Animated.View>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          {/* Progress Indicator */}
+          <Animated.View
+            entering={FadeInDown.delay(100)}
+            style={[styles.progressBar, { backgroundColor: colors.accent }]}
+          />
 
-            {/* Text Area */}
-            <Animated.View entering={FadeInDown.delay(200).duration(600)} style={styles.inputContainer}>
-              <TextInput
-                style={[
-                  styles.textArea,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: answer.length > 0 ? "#E8A87C" : colors.border,
-                    color: colors.foreground,
-                  },
-                ]}
-                placeholder={t("onboarding.step2.placeholder", {
-                  defaultValue: "Share what's on your mind...",
-                })}
-                placeholderTextColor={colors.muted}
-                value={answer}
-                onChangeText={setAnswer}
-                multiline
-                autoFocus
-                maxLength={500}
-              />
-              <Text style={[styles.charCount, { color: colors.muted }]}>
-                {answer.length}/500
-              </Text>
-            </Animated.View>
+          {/* Question */}
+          <Animated.View entering={FadeInDown.delay(200)}>
+            <Text style={[styles.question, { color: colors.foreground }]}>
+              {t("onboarding.empathyQuestion", {
+                defaultValue: "Why do you currently feel like you're not good enough?",
+              })}
+            </Text>
+          </Animated.View>
 
-            {/* Continue Button */}
-            <Animated.View entering={FadeInDown.delay(300).duration(600)} style={styles.footer}>
-              <Pressable
-                onPress={handleContinue}
-                disabled={!isValid}
-                style={({ pressed }) => [
-                  styles.button,
-                  {
-                    backgroundColor: isValid ? "#E8A87C" : colors.border,
-                    transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
-                    opacity: isValid ? 1 : 0.5,
-                  },
-                ]}
-              >
-                <Text style={styles.buttonText}>
-                  {t("onboarding.step2.continue", { defaultValue: "Continue" })}
-                </Text>
-              </Pressable>
-            </Animated.View>
-          </View>
+          {/* Instruction with Bold */}
+          <Animated.View entering={FadeInDown.delay(300)} style={styles.instructionContainer}>
+            <Text style={[styles.instructionText, { color: colors.muted }]}>
+              {t("onboarding.empathyInstruction", {
+                defaultValue:
+                  "Write as much as possible and be super detailed so the AI can be 100% personalized to what you say.",
+              })}
+            </Text>
+          </Animated.View>
+
+          {/* Text Input */}
+          <Animated.View entering={FadeInDown.delay(400)} style={{ flex: 1 }}>
+            <TextInput
+              style={[
+                styles.textInput,
+                {
+                  color: colors.foreground,
+                  borderColor: answer.trim().length > 0 ? colors.accent : colors.border,
+                  backgroundColor: colors.surface,
+                },
+              ]}
+              placeholder={t("onboarding.empathyPlaceholder", {
+                defaultValue: "Share what's holding you back...",
+              })}
+              placeholderTextColor={colors.muted}
+              value={answer}
+              onChangeText={setAnswer}
+              multiline
+              textAlignVertical="top"
+              autoFocus
+            />
+            <Text style={[styles.charCount, { color: colors.muted }]}>
+              {answer.trim().length} {t("onboarding.characters", { defaultValue: "characters" })}
+            </Text>
+          </Animated.View>
+
+          {/* Continue Button */}
+          <Animated.View entering={FadeInDown.delay(500)}>
+            <Pressable
+              onPress={handleContinue}
+              disabled={!isValid}
+              style={({ pressed }) => [
+                styles.button,
+                {
+                  backgroundColor: isValid ? colors.accent : colors.muted + "30",
+                  transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
+                },
+              ]}
+            >
+              <Text style={[styles.buttonText, { opacity: isValid ? 1 : 0.5 }]}>
+                {t("common.continue", { defaultValue: "Continue" })}
+              </Text>
+            </Pressable>
+          </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>
     </ScreenContainer>
@@ -120,56 +132,58 @@ export default function Step2EmpathyScreen() {
 const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
-    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 24,
+    gap: 20,
   },
-  container: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    gap: 32,
+  progressBar: {
+    height: 3,
+    borderRadius: 1.5,
+    width: "50%",
   },
-  header: {
-    gap: 12,
-  },
-  title: {
+  question: {
     fontSize: 28,
     fontWeight: "800",
-    letterSpacing: -0.5,
     lineHeight: 36,
+    letterSpacing: -0.5,
   },
-  subtitle: {
+  instructionContainer: {
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderLeftWidth: 3,
+    borderLeftColor: "#D97706",
+  },
+  instructionText: {
+    fontSize: 14,
+    fontWeight: "500",
+    lineHeight: 20,
+  },
+  textInput: {
+    flex: 1,
     fontSize: 16,
     lineHeight: 24,
-  },
-  inputContainer: {
-    gap: 8,
-  },
-  textArea: {
-    minHeight: 140,
-    borderRadius: 12,
-    borderWidth: 2,
+    borderWidth: 1.5,
+    borderRadius: 14,
     padding: 16,
-    fontSize: 16,
-    lineHeight: 24,
-    textAlignVertical: "top",
+    minHeight: 180,
   },
   charCount: {
     fontSize: 12,
+    fontWeight: "500",
+    marginTop: 8,
     textAlign: "right",
   },
-  footer: {
-    gap: 16,
-    marginTop: 16,
-  },
   button: {
-    height: 56,
+    paddingVertical: 16,
+    paddingHorizontal: 20,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
   },
   buttonText: {
     color: "#fff",
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
-    letterSpacing: 0.2,
+    letterSpacing: 0.3,
   },
 });
