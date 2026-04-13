@@ -498,28 +498,6 @@ export default function JournalScreen() {
                     <Text style={[styles.aiResponseTitle, { color: colors.accent }]}>
                       ⚡ {t("journal.aiMentor", { defaultValue: "AI Mentor" })}
                     </Text>
-                    <Pressable
-                      onPress={() => handleSpeak(aiResponse)}
-                      style={({ pressed }) => [
-                        styles.speakButton,
-                        {
-                          backgroundColor: isSpeaking ? colors.accent + "20" : colors.surface,
-                          borderColor: isSpeaking ? colors.accent : colors.border,
-                          opacity: pressed ? 0.7 : 1,
-                        },
-                      ]}
-                    >
-                      <Text
-                        style={[
-                          styles.speakButtonText,
-                          { color: isSpeaking ? colors.accent : colors.muted },
-                        ]}
-                      >
-                        {isSpeaking
-                          ? `🔊 ${t("journal.speaking", { defaultValue: "Speaking" })}`
-                          : `🔊 ${t("journal.listen", { defaultValue: "Listen" })}`}
-                      </Text>
-                    </Pressable>
                   </View>
                   <Text style={[styles.aiResponseText, { color: colors.foreground }]}>
                     {aiResponse}

@@ -16,6 +16,8 @@ import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-cont
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { XPBar } from "@/components/ui/xp-bar";
 import * as Haptics from "expo-haptics";
+import { AnimatedStreakFire } from "@/components/animated-streak-fire";
+import { RankUnlockAnimation } from "@/components/rank-unlock-animation";
 
 const GHOST_SLOGANS_EN = [
   "Go Ghost. Build Yourself. Change Everything.",
@@ -90,6 +92,31 @@ export default function HomeScreen() {
   const [sloganIndex] = useState(() => Math.floor(Math.random() * slogans.length));
   const sloganOpacity = useRef(new Animated.Value(0)).current;
 
+  // Streak animation state
+  const [streakIncreasing, setStreakIncreasing] = useState(false);
+  const prevStreakRef = useRef(state.streak);
+
+  // Rank unlock animation state
+  const [showRankUnlock, setShowRankUnlock] = useState(false);
+  const prevRankRef = useRef<string | null>(null);
+
+  // Detect streak increase
+  useEffect(() => {
+    if (state.streak > prevStreakRef.current) {
+      setStreakIncreasing(true);
+      setTimeout(() => setStreakIncreasing(false), 600);
+    }
+    prevStreakRef.current = state.streak;
+  }, [state.streak]);
+
+  // Detect rank change (skip initial mount)
+  useEffect(() => {
+    if (prevRankRef.current !== null && rank !== prevRankRef.current) {
+      setShowRankUnlock(true);
+    }
+    prevRankRef.current = rank;
+  }, [rank]);
+
   const todayStr = new Date().toISOString().split("T")[0];
   const hasMoodToday = !!state.todayMood;
   const daysWon = getDaysWonThisYear(state.completions, state.habits);
@@ -151,10 +178,7 @@ export default function HomeScreen() {
               </Text>
               <Text style={[styles.date, { color: colors.muted }]}>{formatDate(lang)}</Text>
             </View>
-            <View style={[styles.streakBadge, { backgroundColor: "#F9731618" }]}>
-              <Text style={styles.streakFire}>🔥</Text>
-              <Text style={[styles.streakCount, { color: "#F97316" }]}>{state.streak}</Text>
-            </View>
+            <AnimatedStreakFire streak={state.streak} isIncreasing={streakIncreasing} size={64} />
           </View>
 
           {/* Ghost Mode Slogan Banner */}
@@ -276,7 +300,7 @@ export default function HomeScreen() {
                 <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.journal")}</Text>
               </Pressable>
               <Pressable
-                onPress={() => router.push("/(tabs)/intel" as never)}
+                onPress={() => router.push("/(tabs)/insights" as never)}
                 style={({ pressed }) => [
                   styles.actionCard,
                   { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
@@ -325,19 +349,7 @@ export default function HomeScreen() {
           )}
         </ScrollView>
 
-        {/* Connect Button (bottom-left) */}
-        <Pressable
-          onPress={() => router.push("/friends" as never)}
-          style={({ pressed }) => [
-            styles.connectButton,
-            {
-              backgroundColor: colors.accent,
-              opacity: pressed ? 0.8 : 1,
-            },
-          ]}
-        >
-          <Text style={styles.connectButtonText}>👥</Text>
-        </Pressable>
+
 
 
       </View>
@@ -400,6 +412,18 @@ export default function HomeScreen() {
           </Pressable>
         </View>
       </Modal>
+
+      {/* Rank Unlock Celebration Overlay */}
+      <RankUnlockAnimation
+        visible={showRankUnlock}
+        rankName={t(`ranks.${rank}`, { defaultValue: rank })}
+        rankEmoji={
+          rank === "Early Riser" ? "🌅" :
+          rank === "Morning Warrior" ? "⚔️" :
+          rank === "Grind Master" ? "💎" : "👑"
+        }
+        onDismiss={() => setShowRankUnlock(false)}
+      />
     </ScreenContainer>
   );
 }

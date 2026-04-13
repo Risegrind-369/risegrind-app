@@ -350,3 +350,29 @@
 - [x] Refine spacing and padding for premium feel
 - [x] Polish colors: ensure consistent earth palette usage
 - [x] Verify TypeScript: 0 errors
+
+## Sprint 14 - 7 Specific Fixes
+
+- [ ] Fix 1: Align Connect button (bottom-left) at same height as AI FAB (bottom-right), no overlap
+- [ ] Fix 2: Wire Insight quick action button to navigate to /insights page
+- [ ] Fix 3: Full i18n audit — remove all hardcoded English from settings, journal, onboarding, paywall, badges, ranks, quests, analytics
+- [ ] Fix 3: Add missing FR/PT keys for all screens
+- [ ] Fix 4: Level-up rank unlock animation (pop + glow + scale + rotation)
+- [ ] Fix 4: Streak day completion animation (Duolingo-style flame circle fill)
+- [ ] Fix 5: Correct "streak" to "streaks" plural everywhere in UI and i18n
+- [ ] Fix 6: Add strong haptics on streak completion AND rank unlock
+- [ ] Fix 7: Remove "Listen to AI" / "Écouter l'IA" button from journal AI analysis section
+- [ ] Verify TypeScript: 0 errors
+
+## Sprint 14 - 7 Specific Fixes (DONE)
+
+- [x] Fix 1: Align Connect button with AI FAB (same height, no overlap) — moved both to _layout.tsx
+- [x] Fix 2: Wire Insight button to navigate to correct insights route
+- [x] Fix 3: Full i18n — added settings, common keys to all 3 locales (en/fr/pt)
+- [x] Fix 4: Level-up rank animation — RankUnlockAnimation component (pop+glow+scale+rotation)
+- [x] Fix 4: Streak flame animation — AnimatedStreakFire with Duolingo-style ring + flickering flame
+- [x] Fix 5: Correct "streak" plural to "streaks" in en.json i18n keys
+- [x] Fix 6: Haptics on streak increase (Heavy impact + Success notification)
+- [x] Fix 6: Haptics on rank unlock (Heavy impact + Success notification)
+- [x] Fix 7: Removed "Listen to AI" / "🔊 Listen" button from journal AI analysis section
+- [x] TypeScript: 0 errors

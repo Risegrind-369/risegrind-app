@@ -9,6 +9,40 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 
 /**
+ * Floating Connect Button — positioned at bottom-left, same height as AI FAB.
+ * Opens the friends / community bottom sheet.
+ */
+function ConnectFloatingButton({ bottom }: { bottom: number }) {
+  const colors = useColors();
+  const router = useRouter();
+
+  return (
+    <View
+      style={[styles.fabContainer, { bottom, left: 16 }]}
+      pointerEvents="box-none"
+    >
+      <Pressable
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          router.push("/friends" as never);
+        }}
+        style={({ pressed }) => [
+          styles.connectFab,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            transform: [{ scale: pressed ? 0.92 : 1 }],
+          },
+        ]}
+        accessibilityLabel="Connect with friends"
+      >
+        <Text style={styles.connectFabIcon}>👥</Text>
+      </Pressable>
+    </View>
+  );
+}
+
+/**
  * Floating AI Chat Button — positioned above Intel tab.
  * Message icon with centered "AI" text overlay.
  */
@@ -135,6 +169,9 @@ export default function TabLayout() {
       >
         <AIFloatingButton />
       </View>
+
+      {/* Connect Button — same height as AI FAB, bottom-left */}
+      <ConnectFloatingButton bottom={bottomPadding + 70} />
     </View>
   );
 }
@@ -167,4 +204,20 @@ const styles = StyleSheet.create({
     color: "#fff",
     letterSpacing: 0.5,
   } as any,
+  connectFab: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  connectFabIcon: {
+    fontSize: 22,
+  },
 });

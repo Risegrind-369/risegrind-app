@@ -63,7 +63,7 @@ export default function SettingsScreen() {
                 {t("settings.name", { defaultValue: "Name" })}
               </Text>
               <Text style={[styles.settingValue, { color: colors.foreground }]}>
-                {state.userName || "Ghost"}
+                {state.userName || t("settings.ghost", { defaultValue: "Ghost" })}
               </Text>
             </View>
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
@@ -72,7 +72,7 @@ export default function SettingsScreen() {
                 {t("settings.rank", { defaultValue: "Rank" })}
               </Text>
               <Text style={[styles.settingValue, { color: colors.accent }]}>
-                {state.xp < 100 ? "Early Riser" : state.xp < 500 ? "Morning Warrior" : state.xp < 1500 ? "Grind Master" : "Grind Legend"}
+                {t(`ranks.${state.xp < 100 ? "Early Riser" : state.xp < 500 ? "Morning Warrior" : state.xp < 1500 ? "Grind Master" : "Grind Legend"}`)}
               </Text>
             </View>
             <View style={[styles.divider, { backgroundColor: colors.border }]} />
@@ -133,7 +133,7 @@ export default function SettingsScreen() {
                     {lang === "en" ? "🇺🇸" : lang === "fr" ? "🇫🇷" : "🇧🇷"}
                   </Text>
                   <Text style={[styles.languageName, { color: colors.foreground }]}>
-                    {lang === "en" ? "English" : lang === "fr" ? "Français" : "Português"}
+                    {t(`lang.${lang}`)}
                   </Text>
                   {i18n.language === lang && (
                     <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>

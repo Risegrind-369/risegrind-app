@@ -444,6 +444,21 @@
     "share": "Partager",
     "copy": "Copier",
     "close": "Fermer",
-    "ok": "OK"
+    "ok": "OK",
+    "back": "Retour",
+    "logout": "Déconnexion"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "profile": "Profil",
+    "name": "Nom",
+    "rank": "Rang",
+    "xp": "XP Total",
+    "ghost": "Fantôme",
+    "subscription": "Abonnement",
+    "managePlan": "Gérer l'abonnement",
+    "language": "Langue",
+    "logoutTitle": "Déconnexion ?",
+    "logoutMessage": "Es-tu sûr de vouloir te déconnecter ?"
   }
 }

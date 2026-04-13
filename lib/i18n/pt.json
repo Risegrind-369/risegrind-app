@@ -444,6 +444,21 @@
     "share": "Compartilhar",
     "copy": "Copiar",
     "close": "Fechar",
-    "ok": "OK"
+    "ok": "OK",
+    "back": "Voltar",
+    "logout": "Sair"
+  },
+  "settings": {
+    "title": "Configurações",
+    "profile": "Perfil",
+    "name": "Nome",
+    "rank": "Rank",
+    "xp": "XP Total",
+    "ghost": "Fantasma",
+    "subscription": "Assinatura",
+    "managePlan": "Gerenciar Assinatura",
+    "language": "Idioma",
+    "logoutTitle": "Sair?",
+    "logoutMessage": "Tem certeza que deseja sair?"
   }
 }
