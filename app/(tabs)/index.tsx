@@ -339,19 +339,7 @@ export default function HomeScreen() {
           <Text style={styles.connectButtonText}>👥</Text>
         </Pressable>
 
-        {/* AI FAB (bottom-right, above Intel tab) */}
-        <Pressable
-          onPress={() => router.push("/ai-chat" as never)}
-          style={({ pressed }) => [
-            styles.aiFab,
-            {
-              backgroundColor: colors.accent,
-              opacity: pressed ? 0.8 : 1,
-            },
-          ]}
-        >
-          <Text style={styles.aiFabText}>🎤</Text>
-        </Pressable>
+
       </View>
 
       {/* Mood Picker Modal */}
