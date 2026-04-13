@@ -26,6 +26,7 @@ import Animated, {
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import { AppState, MoodEntry, HabitCompletion, Habit } from "@/lib/app-context";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
@@ -51,7 +52,8 @@ function getMoodColor(avg: number, accent: string, success: string, warning: str
 export function WeeklySummaryModal({ visible, onDismiss, state, weekXpEarned }: WeeklySummaryModalProps) {
   const colors = useColors();
   const { t, i18n } = useTranslation();
-  const lang = i18n.language;
+  const { language: userLanguage } = useLanguage();
+  const lang = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
 
   // ─── Animation values ────────────────────────────────────────────────────────
   const containerScale = useSharedValue(0.8);

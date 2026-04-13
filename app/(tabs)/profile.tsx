@@ -51,7 +51,8 @@ export default function ProfileScreen() {
   const colorScheme = useColorScheme();
   const { language, setLanguage } = useLanguage();
   const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const { language: userLanguage } = useLanguage();
+  const lang = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const [showNameEdit, setShowNameEdit] = useState(false);
   const [editName, setEditName] = useState(state.userName);
 

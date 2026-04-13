@@ -11,6 +11,7 @@ import {
   Animated,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, type Habit } from "@/lib/app-context";
@@ -114,7 +115,8 @@ function HabitRow({
 export default function RoutineScreen() {
   const colors = useColors();
   const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const { language: userLanguage } = useLanguage();
+  const lang = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const { state, dispatch, todayCompletions, todayProgress } = useApp();
   const [showAddModal, setShowAddModal] = useState(false);
   const [newHabitName, setNewHabitName] = useState("");

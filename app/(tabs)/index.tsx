@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
@@ -86,7 +87,8 @@ export default function HomeScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const { language: userLanguage } = useLanguage();
+  const lang = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const slogans = lang === "fr" ? GHOST_SLOGANS_FR : lang === "pt" ? GHOST_SLOGANS_PT : GHOST_SLOGANS_EN;
   const { state, dispatch, todayCompletions, todayProgress, rank } = useApp();
   const [showMoodPicker, setShowMoodPicker] = useState(false);

@@ -425,3 +425,9 @@
 - [x] Fix "Your Rank" section: rank name and subtitle fully translated
 - [x] Fix all remaining hardcoded English motivational strings
 - [x] TypeScript: 0 errors
+
+## Sprint 18 - AI Language Bug Fix
+
+- [x] Fix AI always responding in French regardless of selected language
+- [x] Audit useLanguage hook and language resolution in ai-chat, journal, insights
+- [x] TypeScript: 0 errors

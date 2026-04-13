@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import {
   View,
   Text,
@@ -115,7 +116,9 @@ export default function JournalScreen() {
   const colors = useColors();
   const { state, dispatch } = useApp();
   const { t, i18n } = useTranslation();
-  const locale = i18n.language || "en";
+  const { language: userLanguage } = useLanguage();
+  // Use userLanguage from context (source of truth) instead of i18n.language which can lag
+  const locale = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
 
   const localizedPrompts = useMemo(() => {

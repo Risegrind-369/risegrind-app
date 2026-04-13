@@ -9,6 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, type SideQuest } from "@/lib/app-context";
@@ -122,7 +123,8 @@ export default function QuestsScreen() {
   const colors = useColors();
   const { state, dispatch } = useApp();
   const { t, i18n } = useTranslation();
-  const lang = i18n.language || "en";
+  const { language: userLanguage } = useLanguage();
+  const lang = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const [selectedQuest, setSelectedQuest] = useState<SideQuest | null>(null);
   const [shareQuest, setShareQuest] = useState<SideQuest | null>(null);
   const [filter, setFilter] = useState<"all" | "active" | "available" | "completed">("all");

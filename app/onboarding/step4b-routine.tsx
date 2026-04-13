@@ -16,6 +16,7 @@ import {
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/lib/language-context";
 import Animated, {
   FadeInDown,
   FadeIn,
@@ -36,6 +37,7 @@ export default function Step4bRoutineScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { language: userLanguage } = useLanguage();
   const { dispatch } = useApp();
   const params = useLocalSearchParams<{
     name?: string;
@@ -85,7 +87,7 @@ export default function Step4bRoutineScreen() {
         motivationStyle: params.motivationStyle || "tough_love",
         empathyAnswer: params.empathyAnswer || "I want to be better",
         goalAnswer: params.goalAnswer || "Build discipline",
-        language: (i18n.language?.slice(0, 2) as "en" | "fr" | "pt") || "en",
+        language: (userLanguage || i18n.language?.slice(0, 2) as "en" | "fr" | "pt" || "en"),
       },
       {
         onSuccess: (data) => {
