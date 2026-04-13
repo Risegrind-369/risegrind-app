@@ -337,3 +337,16 @@
 - [x] Connect Superwall to RevenueCat in dashboard
 - [x] Use Superwall to present paywall after trial ends
 - [x] Verify TypeScript: 0 errors
+
+## Sprint 13 - Premium Polish & iOS Minimalism
+
+- [x] Update AI button: message icon with centered "AI" text
+- [x] Reposition AI FAB: above Intel tab, not overlapping
+- [x] Add Side Quests tab to bottom navigation (4th tab)
+- [x] Remove "-home.-" prefix from i18n keys in quick actions
+- [x] Remove "-home.-" prefix from mood log labels
+- [x] Add subtle fade-in animations on screen load
+- [x] Add scale transitions on button press
+- [x] Refine spacing and padding for premium feel
+- [x] Polish colors: ensure consistent earth palette usage
+- [x] Verify TypeScript: 0 errors

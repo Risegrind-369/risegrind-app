@@ -9,8 +9,8 @@ import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
 
 /**
- * Floating AI Chat Button — positioned at bottom-right corner.
- * Opens the full-screen AI mentor chat.
+ * Floating AI Chat Button — positioned above Intel tab.
+ * Message icon with centered "AI" text overlay.
  */
 function AIFloatingButton() {
   const colors = useColors();
@@ -26,14 +26,15 @@ function AIFloatingButton() {
       style={({ pressed }) => [
         styles.aiFab,
         {
-        backgroundColor: colors.accent,
-        shadowColor: colors.accent,
+          backgroundColor: colors.accent,
+          shadowColor: colors.accent,
           transform: [{ scale: pressed ? 0.92 : 1 }],
         },
       ]}
       accessibilityLabel={t("tabs.aiMentor", { defaultValue: "AI Mentor" })}
     >
-      <Text style={styles.aiFabEmoji}>✨</Text>
+      <Text style={styles.aiFabIcon}>💬</Text>
+      <Text style={styles.aiFabText}>AI</Text>
     </Pressable>
   );
 }
@@ -78,16 +79,13 @@ export default function TabLayout() {
         />
 
         {/* Hidden screens — not shown in tab bar */}
+        {/* Hidden screens — not shown in tab bar */}
         <Tabs.Screen
           name="index-premium"
           options={{ href: null }}
         />
         <Tabs.Screen
           name="routine"
-          options={{ href: null }}
-        />
-        <Tabs.Screen
-          name="quests"
           options={{ href: null }}
         />
         <Tabs.Screen
@@ -116,13 +114,22 @@ export default function TabLayout() {
             tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart.bar.fill" color={color} />,
           }}
         />
+
+        {/* Tab 4: Side Quests */}
+        <Tabs.Screen
+          name="quests"
+          options={{
+            title: t("tabs.quests", { defaultValue: "Quests" }),
+            tabBarIcon: ({ color }) => <IconSymbol size={24} name="star.fill" color={color} />,
+          }}
+        />
       </Tabs>
 
-      {/* Floating AI Button — bottom-right corner */}
+      {/* Floating AI Button — above Intel tab, bottom-right */}
       <View
         style={[
           styles.fabContainer,
-          { bottom: bottomPadding + 16, right: 16 },
+          { bottom: bottomPadding + 70, right: 16 },
         ]}
         pointerEvents="box-none"
       >
@@ -150,7 +157,14 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     elevation: 12,
   },
-  aiFabEmoji: {
-    fontSize: 28,
-  },
+  aiFabIcon: {
+    fontSize: 20,
+    marginBottom: 2,
+  } as any,
+  aiFabText: {
+    fontSize: 10,
+    fontWeight: "800",
+    color: "#fff",
+    letterSpacing: 0.5,
+  } as any,
 });
