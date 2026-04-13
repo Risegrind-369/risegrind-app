@@ -322,3 +322,18 @@
 - [ ] Phase 5: Onboarding - 3 questions, animated graphs
 - [ ] Phase 6: Smart habit validation
 - [ ] Phase 2: Full i18n audit
+
+
+## Sprint 12 - Specific Updates (Settings, Trial, Superwall)
+
+- [x] Add Settings button (gear icon) to home screen header
+- [x] Create Settings screen with Profile, Subscription, Language, other settings
+- [x] Reposition AI FAB to bottom-right (above Intel tab)
+- [x] Add Connect button (bottom-left) for friends
+- [x] Build friends bottom sheet with Add friend functionality (real first names only)
+- [x] Implement 3-day trial logic: show trial screen at launch, full access for 3 days
+- [x] Implement paywall block after 3 days: full-screen paywall, cannot enter app until paid
+- [x] Install and initialize Superwall SDK
+- [x] Connect Superwall to RevenueCat in dashboard
+- [x] Use Superwall to present paywall after trial ends
+- [x] Verify TypeScript: 0 errors

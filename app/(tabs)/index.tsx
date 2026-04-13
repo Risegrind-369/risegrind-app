@@ -130,252 +130,286 @@ export default function HomeScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header */}
-        <View style={styles.header}>
-          <View style={{ flex: 1 }}>
-            <Text style={[styles.greeting, { color: colors.foreground }]}>
-              {getGreeting(state.userName || "Ghost", lang)}
-            </Text>
-            <Text style={[styles.date, { color: colors.muted }]}>{formatDate(lang)}</Text>
-          </View>
-          <View style={[styles.streakBadge, { backgroundColor: "#F9731618" }]}>
-            <Text style={styles.streakFire}>🔥</Text>
-            <Text style={[styles.streakCount, { color: "#F97316" }]}>{state.streak}</Text>
-          </View>
-        </View>
-
-        {/* Ghost Mode Slogan Banner */}
-        <Animated.View
-          style={[
-            styles.sloganBanner,
-            { backgroundColor: colors.foreground + "08", borderColor: colors.foreground + "14" },
-            { opacity: sloganOpacity },
-          ]}
+      <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
         >
-          <Text style={styles.ghostIcon}>👻</Text>
-          <Text style={[styles.sloganText, { color: colors.foreground }]}>
-            {slogans[sloganIndex]}
-          </Text>
-        </Animated.View>
-
-        {/* Progress Ring + Stats */}
-        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <View style={styles.ringSection}>
-            <ProgressRing
-              progress={todayProgress}
-              size={150}
-              strokeWidth={14}
-              color={colors.primary}
-              label={t("home.progress")}
+          {/* Header */}
+          <View style={styles.header}>
+            {/* Settings Button (left) */}
+            <Pressable
+              onPress={() => router.push("/settings" as never)}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
             >
-              <Text style={[styles.ringPercent, { color: colors.foreground }]}>
-                {Math.round(todayProgress * 100)}%
-              </Text>
-              <Text style={[styles.ringLabel, { color: colors.muted }]}>
-                {todayCompletions.length}/{state.habits.length}
-              </Text>
-            </ProgressRing>
+              <Text style={styles.headerIcon}>⚙️</Text>
+            </Pressable>
 
-            <View style={styles.statsColumn}>
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.foreground }]}>{state.streak}</Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>{t("home.streak")}</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: "#F97316" }]}>{daysWon}</Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>{t("insights.daysWon")}</Text>
-              </View>
-              <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
-              <View style={styles.statItem}>
-                <Text style={[styles.statValue, { color: colors.foreground }]}>
-                  {state.xp.toLocaleString()}
-                </Text>
-                <Text style={[styles.statLabel, { color: colors.muted }]}>XP</Text>
-              </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.greeting, { color: colors.foreground }]}>
+                {getGreeting(state.userName || "Ghost", lang)}
+              </Text>
+              <Text style={[styles.date, { color: colors.muted }]}>{formatDate(lang)}</Text>
+            </View>
+            <View style={[styles.streakBadge, { backgroundColor: "#F9731618" }]}>
+              <Text style={styles.streakFire}>🔥</Text>
+              <Text style={[styles.streakCount, { color: "#F97316" }]}>{state.streak}</Text>
             </View>
           </View>
 
-          {/* Rank + XP */}
-          <View style={styles.rankRow}>
-            <View style={[styles.rankBadge, { backgroundColor: colors.primary + "18" }]}>
-              <Text style={[styles.rankText, { color: colors.primary }]}>⚡ {rank}</Text>
-            </View>
-          </View>
-          <View style={styles.xpSection}>
-            <XPBar xp={state.xp} />
-          </View>
-        </View>
-
-        {/* Mood Check-in */}
-        {!hasMoodToday ? (
-          <Pressable
-            onPress={() => setShowMoodPicker(true)}
-            style={({ pressed }) => [
-              styles.moodBanner,
-              {
-                backgroundColor: colors.primary + "12",
-                borderColor: colors.primary + "40",
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
+          {/* Ghost Mode Slogan Banner */}
+          <Animated.View
+            style={[
+              styles.sloganBanner,
+              { backgroundColor: colors.foreground + "08", borderColor: colors.foreground + "14" },
+              { opacity: sloganOpacity },
             ]}
           >
-            <Text style={styles.moodBannerEmoji}>🧠</Text>
-            <View style={styles.moodBannerText}>
-              <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-                {t("home.checkIn")}
-              </Text>
-              <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                {t("home.selfAwareness")}
-              </Text>
-            </View>
-            <Text style={[styles.moodBannerArrow, { color: colors.muted }]}>›</Text>
-          </Pressable>
-        ) : (
-          <View style={[styles.moodDone, { backgroundColor: colors.success + "12", borderColor: colors.success + "40" }]}>
-            <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
-            <View style={styles.moodBannerText}>
-          <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
-              {t("home.mentalStateLogged")}
+            <Text style={styles.ghostIcon}>👻</Text>
+            <Text style={[styles.sloganText, { color: colors.foreground }]}>
+              {slogans[sloganIndex]}
             </Text>
-            <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-              {MOOD_LABELS[state.todayMood?.level ?? 3]} · {t("home.keepGoing")}
-            </Text>
-            </View>
-          </View>
-        )}
+          </Animated.View>
 
-        {/* Quick Actions */}
-        <View style={styles.quickActions}>
-          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("home.quickActions")}</Text>
-          <View style={styles.actionGrid}>
-            {[
-              { emoji: "⚡", label: t("tabs.routine"), sub: `${todayCompletions.length}/${state.habits.length} ${t("home.done")}`, route: "/(tabs)/routine", accent: colors.primary },
-              { emoji: "📓", label: t("tabs.journal"), sub: `${state.journalEntries.length} ${t("home.entries")}`, route: "/(tabs)/journal", accent: "#8B5CF6" },
-              { emoji: "📊", label: t("tabs.intel"), sub: t("home.trackGrowth"), route: "/(tabs)/insights", accent: "#10B981" },
-            ].map((action) => (
-              <Pressable
-                key={action.label}
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                  router.push(action.route as any);
-                }}
-                style={({ pressed }) => [
-                  styles.actionCard,
-                  {
-                    backgroundColor: action.accent + "12",
-                    borderColor: action.accent + "30",
-                    borderWidth: 1,
-                    transform: [{ scale: pressed ? 0.95 : 1 }],
-                  },
-                ]}
+          {/* Progress Ring + Stats */}
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            <View style={styles.ringSection}>
+              <ProgressRing
+                progress={todayProgress}
+                size={150}
+                strokeWidth={14}
+                color={colors.primary}
+                label={t("home.progress")}
               >
-                <Text style={styles.actionEmoji}>{action.emoji}</Text>
-                <Text style={[styles.actionLabel, { color: colors.foreground }]}>{action.label}</Text>
-                <Text style={[styles.actionSub, { color: colors.muted }]}>{action.sub}</Text>
-              </Pressable>
-            ))}
-          </View>
-        </View>
-
-        {/* Ghost Mode Motivational Block */}
-        <View style={[styles.ghostBlock, { backgroundColor: colors.foreground + "06", borderColor: colors.foreground + "12" }]}>
-          <Text style={[styles.ghostBlockTitle, { color: colors.foreground }]}>👻 {t("home.ghostModeActive")}</Text>
-          <Text style={[styles.ghostBlockBody, { color: colors.muted }]}>
-            {t("home.ghostModeBody")}
-          </Text>
-        </View>
-
-        {/* Recent Journal Entries */}
-        {recentEntries.length > 0 && (
-          <View style={styles.recentSection}>
-            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>{t("home.recentEntries")}</Text>
-            {recentEntries.map((entry) => (
-              <View
-                key={entry.id}
-                style={[styles.entryCard, { backgroundColor: colors.surface, borderColor: colors.border }]}
-              >
-                <Text style={[styles.entryDate, { color: colors.muted }]}>
-                  {new Date(entry.createdAt).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })}
+                <Text style={[styles.ringPercent, { color: colors.foreground }]}>
+                  {Math.round(todayProgress * 100)}%
                 </Text>
-                <Text
-                  style={[styles.entryContent, { color: colors.foreground }]}
-                  numberOfLines={2}
-                >
-                  {entry.content}
+                <Text style={[styles.ringLabel, { color: colors.muted }]}>
+                  {todayCompletions.length}/{state.habits.length}
+                </Text>
+              </ProgressRing>
+
+              <View style={styles.statsColumn}>
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: colors.foreground }]}>{state.streak}</Text>
+                  <Text style={[styles.statLabel, { color: colors.muted }]}>{t("home.streak")}</Text>
+                </View>
+                <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: "#F97316" }]}>{daysWon}</Text>
+                  <Text style={[styles.statLabel, { color: colors.muted }]}>{t("insights.daysWon")}</Text>
+                </View>
+                <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
+                <View style={styles.statItem}>
+                  <Text style={[styles.statValue, { color: colors.foreground }]}>
+                    {state.xp.toLocaleString()}
+                  </Text>
+                  <Text style={[styles.statLabel, { color: colors.muted }]}>XP</Text>
+                </View>
+              </View>
+            </View>
+
+            <View style={styles.xpSection}>
+              <XPBar xp={state.xp} />
+            </View>
+          </View>
+
+          {/* Mood Banner or Mood Picker CTA */}
+          {hasMoodToday ? (
+            <Pressable
+              onPress={() => setShowMoodPicker(true)}
+              style={[styles.moodDone, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <Text style={styles.moodBannerEmoji}>{state.todayMood?.emoji}</Text>
+              <View style={styles.moodBannerText}>
+                <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
+                  {t("home.moodLogged")}
+                </Text>
+                <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
+                  {MOOD_LABELS[state.todayMood?.level || 3]}
                 </Text>
               </View>
-            ))}
+              <Text style={styles.moodBannerArrow}>→</Text>
+            </Pressable>
+          ) : (
+            <Pressable
+              onPress={() => setShowMoodPicker(true)}
+              style={[styles.moodBanner, { backgroundColor: colors.accent + "15", borderColor: colors.accent + "30" }]}
+            >
+              <Text style={styles.moodBannerEmoji}>😊</Text>
+              <View style={styles.moodBannerText}>
+                <Text style={[styles.moodBannerTitle, { color: colors.foreground }]}>
+                  {t("home.howAreYou")}
+                </Text>
+                <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
+                  {t("home.logMood")}
+                </Text>
+              </View>
+              <Text style={styles.moodBannerArrow}>→</Text>
+            </Pressable>
+          )}
+
+          {/* Quick Actions */}
+          <View style={styles.quickActions}>
+            <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+              {t("home.quickActions")}
+            </Text>
+            <View style={styles.actionGrid}>
+              <Pressable
+                onPress={() => router.push("/(tabs)/routine" as never)}
+                style={({ pressed }) => [
+                  styles.actionCard,
+                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
+                <Text style={styles.actionEmoji}>📋</Text>
+                <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.routine")}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/(tabs)/journal" as never)}
+                style={({ pressed }) => [
+                  styles.actionCard,
+                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
+                <Text style={styles.actionEmoji}>📝</Text>
+                <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.journal")}</Text>
+              </Pressable>
+              <Pressable
+                onPress={() => router.push("/(tabs)/intel" as never)}
+                style={({ pressed }) => [
+                  styles.actionCard,
+                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
+                ]}
+              >
+                <Text style={styles.actionEmoji}>📊</Text>
+                <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.insights")}</Text>
+              </Pressable>
+            </View>
           </View>
-        )}
-      </ScrollView>
 
-      {/* Mood Picker Modal */}
-      <Modal
-        visible={showMoodPicker}
-        transparent
-        animationType="slide"
-      >
-        <View style={styles.modalOverlay}>
-          <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
-            <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
-            <Text style={[styles.modalTitle, { color: colors.foreground }]}>{t("home.mentalState")}</Text>
-            <Text style={[styles.modalSub, { color: colors.muted }]}>{t("home.moodCheck")}</Text>
+          {/* Rank Card */}
+          <View style={[styles.ghostBlock, { backgroundColor: colors.accent + "10", borderColor: colors.accent + "30" }]}>
+            <View style={styles.rankRow}>
+              <Text style={[styles.ghostBlockTitle, { color: colors.accent }]}>
+                👑 {t("home.yourRank")}
+              </Text>
+              <Text style={[styles.rankText, { color: colors.accent }]}>{rank}</Text>
+            </View>
+            <Text style={[styles.ghostBlockBody, { color: colors.muted }]}>
+              {t("home.rankDescription")}
+            </Text>
+          </View>
 
-            <View style={styles.moodGrid}>
-              {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
+          {/* Recent Journal Entries */}
+          {recentEntries.length > 0 && (
+            <View style={styles.quickActions}>
+              <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+                {t("home.recentEntries")}
+              </Text>
+              {recentEntries.map((entry) => (
                 <Pressable
-                  key={level}
-                  onPress={() => handleMoodSelect(level)}
-                  style={({ pressed }) => [
-                    styles.moodOption,
-                    {
-                      backgroundColor:
-                        selectedMood === level ? colors.primary + "20" : colors.surface,
-                      borderColor:
-                        selectedMood === level ? colors.primary : colors.border,
-                      transform: [{ scale: pressed ? 0.92 : selectedMood === level ? 1.05 : 1 }],
-                    },
-                  ]}
+                  key={entry.id}
+                  onPress={() => router.push("/(tabs)/journal" as never)}
+                  style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
                 >
-                  <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
-                  <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
-                    {MOOD_LABELS[level]}
+                  <Text style={[styles.entryPreviewTitle, { color: colors.muted }]}>
+                    {new Date(entry.createdAt).toLocaleDateString(lang === "fr" ? "fr-FR" : lang === "pt" ? "pt-BR" : "en-US")}
+                  </Text>
+                  <Text style={[styles.entryPreviewText, { color: colors.foreground }]} numberOfLines={2}>
+                    {entry.content}
                   </Text>
                 </Pressable>
               ))}
             </View>
+          )}
+        </ScrollView>
 
-            <Pressable
-              onPress={handleMoodSave}
-              disabled={!selectedMood}
-              style={({ pressed }) => [
-                styles.saveMoodButton,
-                {
-                  backgroundColor: selectedMood ? colors.primary : colors.border,
-                  transform: [{ scale: pressed ? 0.97 : 1 }],
-                },
-              ]}
-            >
-              <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
-                {t("home.logState")}
-              </Text>
-            </Pressable>
+        {/* Connect Button (bottom-left) */}
+        <Pressable
+          onPress={() => router.push("/friends" as never)}
+          style={({ pressed }) => [
+            styles.connectButton,
+            {
+              backgroundColor: colors.accent,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
+        >
+          <Text style={styles.connectButtonText}>👥</Text>
+        </Pressable>
 
-            <Pressable
-              onPress={() => setShowMoodPicker(false)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
-            >
-              <Text style={[styles.cancelText, { color: colors.muted }]}>{t("common.cancel")}</Text>
-            </Pressable>
+        {/* AI FAB (bottom-right, above Intel tab) */}
+        <Pressable
+          onPress={() => router.push("/ai-chat" as never)}
+          style={({ pressed }) => [
+            styles.aiFab,
+            {
+              backgroundColor: colors.accent,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
+        >
+          <Text style={styles.aiFabText}>🎤</Text>
+        </Pressable>
+      </View>
+
+      {/* Mood Picker Modal */}
+      <Modal
+        visible={showMoodPicker}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowMoodPicker(false)}
+      >
+        <View style={[styles.moodModalContainer, { backgroundColor: colors.background }]}>
+          <Text style={[styles.moodModalTitle, { color: colors.foreground }]}>
+            {t("home.howAreYouFeeling")}
+          </Text>
+
+          <View style={styles.moodGrid}>
+            {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
+              <Pressable
+                key={level}
+                onPress={() => handleMoodSelect(level)}
+                style={({ pressed }) => [
+                  styles.moodOption,
+                  {
+                    borderColor: selectedMood === level ? colors.primary : colors.border,
+                    backgroundColor: selectedMood === level ? colors.primary + "15" : colors.surface,
+                    transform: [{ scale: pressed ? 0.92 : selectedMood === level ? 1.05 : 1 }],
+                  },
+                ]}
+              >
+                <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
+                <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
+                  {MOOD_LABELS[level]}
+                </Text>
+              </Pressable>
+            ))}
           </View>
+
+          <Pressable
+            onPress={handleMoodSave}
+            disabled={!selectedMood}
+            style={({ pressed }) => [
+              styles.saveMoodButton,
+              {
+                backgroundColor: selectedMood ? colors.primary : colors.border,
+                transform: [{ scale: pressed ? 0.97 : 1 }],
+              },
+            ]}
+          >
+            <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
+              {t("home.logState")}
+            </Text>
+          </Pressable>
+
+          <Pressable
+            onPress={() => setShowMoodPicker(false)}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
+          >
+            <Text style={[styles.cancelText, { color: colors.muted }]}>{t("common.cancel")}</Text>
+          </Pressable>
         </View>
       </Modal>
     </ScreenContainer>
@@ -383,16 +417,24 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    position: "relative",
+  },
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 16,
-    paddingBottom: 32,
+    paddingBottom: 120,
     gap: 16,
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "flex-start",
+    gap: 12,
+  },
+  headerIcon: {
+    fontSize: 24,
   },
   greeting: {
     fontSize: 22,
@@ -542,91 +584,90 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
-  actionSub: {
-    fontSize: 11,
-    textAlign: "center",
-  },
-  recentSection: {
-    gap: 10,
-  },
-  entryCard: {
-    borderRadius: 14,
-    padding: 14,
-    borderWidth: 1,
-    gap: 4,
-  },
-  entryDate: {
+  entryPreviewTitle: {
     fontSize: 12,
     fontWeight: "600",
+    textTransform: "uppercase",
+    letterSpacing: 0.3,
   },
-  entryContent: {
+  entryPreviewText: {
     fontSize: 14,
     lineHeight: 20,
   },
-  // Modal
-  modalOverlay: {
+  moodModalContainer: {
     flex: 1,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    justifyContent: "flex-end",
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+    justifyContent: "center",
+    gap: 24,
   },
-  modalSheet: {
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    padding: 24,
-    paddingBottom: 40,
-    gap: 12,
-    alignItems: "center",
-  },
-  modalHandle: {
-    width: 40,
-    height: 4,
-    borderRadius: 2,
-    marginBottom: 8,
-  },
-  modalTitle: {
+  moodModalTitle: {
     fontSize: 24,
     fontWeight: "800",
+    textAlign: "center",
     letterSpacing: -0.3,
-  },
-  modalSub: {
-    fontSize: 15,
-    marginBottom: 8,
   },
   moodGrid: {
     flexDirection: "row",
-    gap: 10,
-    marginVertical: 8,
+    justifyContent: "space-around",
+    gap: 8,
   },
   moodOption: {
-    alignItems: "center",
-    justifyContent: "center",
-    width: 58,
-    height: 72,
-    borderRadius: 16,
+    flex: 1,
+    borderRadius: 14,
     borderWidth: 2,
-    gap: 4,
+    padding: 12,
+    alignItems: "center",
+    gap: 6,
   },
   moodEmoji: {
-    fontSize: 28,
+    fontSize: 32,
   },
   moodLevelLabel: {
-    fontSize: 10,
+    fontSize: 11,
     fontWeight: "600",
+    textAlign: "center",
   },
   saveMoodButton: {
-    width: "100%",
-    height: 52,
+    paddingVertical: 16,
     borderRadius: 14,
     alignItems: "center",
-    justifyContent: "center",
-    marginTop: 8,
   },
   saveMoodText: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: "700",
   },
   cancelText: {
-    fontSize: 15,
+    fontSize: 16,
     fontWeight: "500",
+    textAlign: "center",
+  },
+  connectButton: {
+    position: "absolute",
+    bottom: 80,
+    left: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+  },
+  connectButtonText: {
+    fontSize: 24,
+  },
+  aiFab: {
+    position: "absolute",
+    bottom: 80,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 10,
+  },
+  aiFabText: {
+    fontSize: 24,
   },
 });
