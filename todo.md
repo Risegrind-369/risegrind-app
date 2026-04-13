@@ -384,3 +384,34 @@
 - [x] Add Manage Subscription button in Settings → shows Superwall paywall immediately
 - [x] Build weekly summary pop-up (7-day completion %, streak, habits, mood trend, XP earned)
 - [x] TypeScript: 0 errors
+
+## Sprint 16 - Personalized Onboarding Questionnaire
+
+- [ ] Audit current onboarding flow and plan questionnaire architecture
+- [ ] Build Q1: What is your main goal? (multi-select: fitness, discipline, career, mental health, relationships, finances)
+- [ ] Build Q2: What is your biggest problem right now? (multi-select: procrastination, lack of focus, low energy, bad habits, stress, no routine)
+- [ ] Build Q3: What time do you wake up? (time picker or options: 4-5am, 5-6am, 6-7am, 7-8am, 8am+)
+- [ ] Build Q4: How do you prefer to be motivated? (options: tough love, gentle encouragement, data/stats, challenges)
+- [ ] Build Q5: How many habits do you want to build? (1-3, 4-6, 7+)
+- [ ] Build Q6: What is your biggest obstacle to consistency? (free text or options)
+- [ ] Extend app-context with userProfile (goals, problems, wakeTime, motivationStyle, habitCount, obstacle)
+- [ ] Build AI generation screen: use profile to generate personalized morning routine via server LLM
+- [ ] Wire journal: use userProfile to personalize AI analysis prompts and daily journal starters
+- [ ] Update onboarding navigation to include new question screens
+- [ ] Add i18n keys for all question screens (EN/FR/PT)
+- [ ] TypeScript: 0 errors
+
+## Sprint 16 - Personalized Onboarding Questionnaire
+
+- [x] Build Q4: Main Goals multi-select screen
+- [x] Build Q5: Biggest Problems multi-select screen
+- [x] Build Q6: Wake time selection screen
+- [x] Build Q7: Motivation/coaching style screen
+- [x] Extend app-context with UserProfile and GeneratedRoutine types
+- [x] Add SET_USER_PROFILE and SET_GENERATED_ROUTINE actions to reducer
+- [x] Add generateRoutine mutation to server (LLM-powered)
+- [x] Build step4b-routine: AI routine generation reveal screen
+- [x] Wire journal screen to use personalized prompts from generatedRoutine
+- [x] Update onboarding navigation flow (step3 → q4 → q5 → q6 → q7 → step4 → step4b → step5)
+- [x] Update step4-ai-message to pass all new params
+- [x] TypeScript: 0 errors

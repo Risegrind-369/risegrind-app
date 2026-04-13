@@ -38,7 +38,7 @@ export default function Step3GoalScreen() {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push({
-      pathname: "/onboarding/step4-ai-message",
+      pathname: "/onboarding/q4-goals",
       params: {
         name: params.name || "",
         age: params.age || "",

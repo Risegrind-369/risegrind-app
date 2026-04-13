@@ -60,6 +60,32 @@ export interface SideQuest {
 
 export type Rank = "Early Riser" | "Morning Warrior" | "Grind Master" | "Grind Legend";
 
+/** Collected during onboarding questionnaire */
+export interface UserProfile {
+  goals: string[];         // e.g. ["discipline", "fitness"]
+  problems: string[];      // e.g. ["procrastination", "low_energy"]
+  wakeTime: string;        // e.g. "5am"
+  motivationStyle: string; // e.g. "tough_love"
+  empathyAnswer: string;
+  goalAnswer: string;
+  age: string;
+}
+
+/** AI-generated morning routine from onboarding answers */
+export interface GeneratedHabit {
+  name: string;
+  icon: string;
+  durationMin: number;
+  reason: string; // why this habit was chosen for this user
+}
+
+export interface GeneratedRoutine {
+  habits: GeneratedHabit[];
+  journalPrompts: string[]; // 5 personalized daily prompts
+  coachingTone: string;     // summary of AI coaching style
+  createdAt: number;
+}
+
 export interface GhostFriend {
   code: string;
   name: string;
@@ -73,6 +99,8 @@ export interface AppState {
   isOnboarded: boolean;
   userName: string;
   isPremium: boolean;
+  userProfile: UserProfile | null;
+  generatedRoutine: GeneratedRoutine | null;
 
   // Mood
   moodEntries: MoodEntry[];
@@ -102,6 +130,8 @@ export interface AppState {
 export type AppAction =
   | { type: "SET_ONBOARDED"; payload: { userName: string } }
   | { type: "SET_PREMIUM"; payload: boolean }
+  | { type: "SET_USER_PROFILE"; payload: UserProfile }
+  | { type: "SET_GENERATED_ROUTINE"; payload: GeneratedRoutine }
   | { type: "SET_MOOD"; payload: MoodEntry }
   | { type: "ADD_HABIT"; payload: Habit }
   | { type: "UPDATE_HABIT"; payload: Habit }
@@ -279,6 +309,8 @@ const INITIAL_STATE: AppState = {
   isOnboarded: false,
   userName: "",
   isPremium: false,
+  userProfile: null,
+  generatedRoutine: null,
   moodEntries: [],
   todayMood: null,
   habits: DEFAULT_HABITS,
@@ -307,6 +339,27 @@ function appReducer(state: AppState, action: AppAction): AppState {
 
     case "SET_PREMIUM":
       return { ...state, isPremium: action.payload };
+
+    case "SET_USER_PROFILE":
+      return { ...state, userProfile: action.payload };
+
+    case "SET_GENERATED_ROUTINE": {
+      // Replace default habits with AI-generated ones if this is first-time generation
+      const newHabits: Habit[] = action.payload.habits.map((h, i) => ({
+        id: `ai_h${i + 1}`,
+        name: h.name,
+        icon: h.icon,
+        durationMin: h.durationMin,
+        isDefault: true,
+        order: i,
+      }));
+      return {
+        ...state,
+        generatedRoutine: action.payload,
+        // Only replace habits if they haven't been customized yet (still all defaults)
+        habits: state.habits.every((h) => h.isDefault) ? newHabits : state.habits,
+      };
+    }
 
     case "SET_MOOD": {
       const existing = state.moodEntries.filter((m) => m.date !== action.payload.date);

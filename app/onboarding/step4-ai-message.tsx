@@ -32,6 +32,10 @@ export default function Step4AIMessageScreen() {
     age?: string;
     empathyAnswer?: string;
     goalAnswer?: string;
+    selectedGoals?: string;
+    selectedProblems?: string;
+    wakeTime?: string;
+    motivationStyle?: string;
   }>();
 
   const [message, setMessage] = useState<string | null>(null);
@@ -48,6 +52,10 @@ export default function Step4AIMessageScreen() {
           age: params.age || "unknown",
           empathyAnswer: params.empathyAnswer || "",
           goalAnswer: params.goalAnswer || "",
+          selectedGoals: params.selectedGoals || "",
+          selectedProblems: params.selectedProblems || "",
+          wakeTime: params.wakeTime || "6am",
+          motivationStyle: params.motivationStyle || "tough_love",
           language: (language as "en" | "fr" | "pt") || "en",
         });
         setMessage(result.message);
@@ -67,11 +75,18 @@ export default function Step4AIMessageScreen() {
 
   const handleContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Navigate to routine generation screen with all collected data
     router.push({
-      pathname: "/onboarding/step5-graphs",
+      pathname: "/onboarding/step4b-routine",
       params: {
         name: params.name || "",
         age: params.age || "",
+        empathyAnswer: params.empathyAnswer || "",
+        goalAnswer: params.goalAnswer || "",
+        selectedGoals: params.selectedGoals || "",
+        selectedProblems: params.selectedProblems || "",
+        wakeTime: params.wakeTime || "6am",
+        motivationStyle: params.motivationStyle || "tough_love",
       },
     } as never);
   };

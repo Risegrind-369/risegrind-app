@@ -26,6 +26,10 @@ export const appRouter = router({
           age: z.string().min(1),
           empathyAnswer: z.string().min(10),
           goalAnswer: z.string().min(10),
+          selectedGoals: z.string().optional().default(""),
+          selectedProblems: z.string().optional().default(""),
+          wakeTime: z.string().optional().default("6am"),
+          motivationStyle: z.string().optional().default("tough_love"),
           language: z.enum(["en", "fr", "pt"]).optional().default("en"),
         })
       )
@@ -46,12 +50,17 @@ Rules:
 - End with a forward-looking, motivational statement
 - Ghost Mode tone: calm confidence, maximum impact`;
 
+        const goalsStr = input.selectedGoals ? `Goals: ${input.selectedGoals.replace(/,/g, ", ")}` : "";
+        const problemsStr = input.selectedProblems ? `Obstacles: ${input.selectedProblems.replace(/,/g, ", ")}` : "";
+
         const userMessage = `User profile:
-- Name: ${input.name}
-- Age: ${input.age}
+- Name: ${input.name}, Age: ${input.age}
+- Wake time: ${input.wakeTime}
+- Coaching style preference: ${input.motivationStyle}
+${goalsStr}
+${problemsStr}
 
 Why they feel not good enough: "${input.empathyAnswer}"
-
 Their goal with RiseGrind: "${input.goalAnswer}"
 
 Generate a short, deeply personal message that acknowledges their feelings and inspires them.`;
@@ -74,6 +83,105 @@ Generate a short, deeply personal message that acknowledges their feelings and i
           return {
             message: `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`,
           };
+        }
+      }),
+
+    generateRoutine: publicProcedure
+      .input(
+        z.object({
+          name: z.string().min(1),
+          age: z.string().min(1),
+          selectedGoals: z.string(),
+          selectedProblems: z.string(),
+          wakeTime: z.string(),
+          motivationStyle: z.string(),
+          empathyAnswer: z.string(),
+          goalAnswer: z.string(),
+          language: z.enum(["en", "fr", "pt"]).optional().default("en"),
+        })
+      )
+      .mutation(async ({ input }) => {
+        const langInstruction = input.language === "fr"
+          ? "Réponds UNIQUEMENT en français. Tous les noms d'habitudes et prompts doivent être en français."
+          : input.language === "pt"
+          ? "Responda APENAS em português brasileiro. Todos os nomes de hábitos e prompts devem ser em português."
+          : "Respond ONLY in English.";
+
+        const systemPrompt = `You are a Ghost Mode AI morning routine architect. ${langInstruction}
+
+Your task: Based on the user's profile, generate a HIGHLY PERSONALIZED morning routine and journal prompts.
+
+Return ONLY valid JSON in this exact format:
+{
+  "habits": [
+    { "name": "Habit Name", "icon": "emoji", "durationMin": 10, "reason": "Why this habit for this specific user" }
+  ],
+  "journalPrompts": [
+    "Personalized prompt 1",
+    "Personalized prompt 2",
+    "Personalized prompt 3",
+    "Personalized prompt 4",
+    "Personalized prompt 5"
+  ],
+  "coachingTone": "One sentence describing the AI's coaching approach for this user"
+}
+
+Rules:
+- Generate exactly 5-7 habits tailored to their goals and problems
+- Each habit must directly address their specific goals or obstacles
+- Journal prompts must reference their personal goals and struggles
+- Coaching tone must match their motivation style preference
+- Wake time determines habit timing (e.g., if 4am, include extreme early-riser habits)
+- Be specific, not generic — reference their actual goals and problems`;
+
+        const userMessage = `User: ${input.name}, ${input.age} years old
+Wake time: ${input.wakeTime}
+Coaching style: ${input.motivationStyle}
+Goals: ${input.selectedGoals.replace(/,/g, ", ")}
+Obstacles: ${input.selectedProblems.replace(/,/g, ", ")}
+In their own words — struggle: "${input.empathyAnswer}"
+In their own words — goal: "${input.goalAnswer}"
+
+Generate their personalized morning routine and journal prompts.`;
+
+        const fallbackRoutine = {
+          habits: [
+            { name: "Wake Up", icon: "⏰", durationMin: 0, reason: "Start the day with intention" },
+            { name: "Hydrate", icon: "💧", durationMin: 2, reason: "Rehydrate after sleep" },
+            { name: "Meditate", icon: "🧘", durationMin: 10, reason: "Clear your mind" },
+            { name: "Exercise", icon: "💪", durationMin: 30, reason: "Build physical strength" },
+            { name: "Journal", icon: "📓", durationMin: 10, reason: "Reflect and plan" },
+          ],
+          journalPrompts: [
+            "What is the one thing I must accomplish today?",
+            "What am I grateful for right now?",
+            "What habit am I most proud of this week?",
+            "What is holding me back and how do I overcome it?",
+            "How will I show up differently today than yesterday?",
+          ],
+          coachingTone: "Direct, motivating, and focused on consistent daily action.",
+        };
+
+        try {
+          const response = await invokeLLM({
+            messages: [
+              { role: "system" as const, content: systemPrompt },
+              { role: "user" as const, content: userMessage },
+            ],
+          });
+          const content = response?.choices?.[0]?.message?.content ?? "";
+          if (typeof content === "string" && content.length > 0) {
+            // Extract JSON from response (handle markdown code blocks)
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              const parsed = JSON.parse(jsonMatch[0]);
+              return { ...parsed, createdAt: Date.now() };
+            }
+          }
+          return { ...fallbackRoutine, createdAt: Date.now() };
+        } catch (e) {
+          console.error("Routine generation error:", e);
+          return { ...fallbackRoutine, createdAt: Date.now() };
         }
       }),
   }),

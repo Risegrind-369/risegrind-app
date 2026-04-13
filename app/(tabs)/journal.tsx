@@ -119,13 +119,18 @@ export default function JournalScreen() {
   const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
 
   const localizedPrompts = useMemo(() => {
+    // Use AI-generated personalized prompts if available
+    const aiPrompts = state.generatedRoutine?.journalPrompts;
+    if (Array.isArray(aiPrompts) && aiPrompts.length > 0) {
+      return aiPrompts;
+    }
     try {
       const arr = t("journal.prompts", { returnObjects: true }) as string[];
       return Array.isArray(arr) && arr.length > 0 ? arr : FALLBACK_PROMPTS;
     } catch {
       return FALLBACK_PROMPTS;
     }
-  }, [t]);
+  }, [t, state.generatedRoutine?.journalPrompts]);
 
   const [showEditor, setShowEditor] = useState(false);
   const [content, setContent] = useState("");
