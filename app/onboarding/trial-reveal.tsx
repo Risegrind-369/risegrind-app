@@ -1,10 +1,11 @@
-import React, { useEffect } from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
+import { useRevenueCat } from "@/lib/revenuecat-provider";
 import * as Haptics from "expo-haptics";
 
 export default function TrialRevealScreen() {
@@ -12,14 +13,41 @@ export default function TrialRevealScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { state, dispatch } = useApp();
+  const { packages, purchasePackage, isNativeBuild } = useRevenueCat();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Trial is automatically managed by RevenueCat
-  // This screen just shows the trial offer
+  // Find the trial package
+  const trialPackage = packages?.find(
+    (pkg: any) => pkg.product.subscriptionOptions?.some((opt: any) => opt.billingPeriod?.unit === 'DAY' && opt.billingPeriod?.value === 3)
+  );
 
-  const handleStartTrial = () => {
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    // Trial period starts automatically
-    router.replace("/(tabs)" as never);
+  const handleStartTrial = async () => {
+    try {
+      setIsLoading(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+
+      if (isNativeBuild && trialPackage) {
+        // Purchase the trial product via RevenueCat (native build only)
+        const success = await purchasePackage(trialPackage);
+        if (success) {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          router.replace("/(tabs)" as never);
+        } else {
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+        }
+      } else {
+        // In Expo Go/web: just grant trial access locally
+        // Store trial start time in AsyncStorage
+        const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+        await AsyncStorage.setItem('trialStartedAt', Date.now().toString());
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        router.replace("/(tabs)" as never);
+      }
+    } catch (error) {
+      console.error('[TrialReveal] Error starting trial:', error);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -72,17 +100,23 @@ export default function TrialRevealScreen() {
         {/* CTA Button */}
         <Pressable
           onPress={handleStartTrial}
+          disabled={isLoading}
           style={({ pressed }) => [
             styles.ctaButton,
             {
               backgroundColor: colors.accent,
-              transform: [{ scale: pressed ? 0.97 : 1 }],
+              opacity: isLoading ? 0.6 : pressed ? 0.9 : 1,
+              transform: [{ scale: pressed && !isLoading ? 0.97 : 1 }],
             },
           ]}
         >
-          <Text style={styles.ctaButtonText}>
-            {t("trial.startTrial", { defaultValue: "Start Your 3-Day Trial" })}
-          </Text>
+          {isLoading ? (
+            <ActivityIndicator color="#fff" />
+          ) : (
+            <Text style={styles.ctaButtonText}>
+              {t("trial.startTrial", { defaultValue: "Start Your 3-Day Trial" })}
+            </Text>
+          )}
         </Pressable>
 
         {/* Fine Print */}

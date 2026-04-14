@@ -25,6 +25,7 @@ import Animated, {
   Easing,
   FadeInDown,
 } from "react-native-reanimated";
+import { Svg, Line, Path, Circle } from "react-native-svg";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
@@ -84,96 +85,72 @@ function LineGraph({
       style={[styles.graphContainer, animatedStyle]}
     >
       <View style={[styles.graph, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} style={styles.svg}>
+        <Svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} style={styles.svg}>
           {/* Grid lines */}
-          <line x1="0" y1={GRAPH_HEIGHT * 0.25} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.25} stroke={colors.border} strokeWidth="1" opacity="0.3" />
-          <line x1="0" y1={GRAPH_HEIGHT * 0.5} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.5} stroke={colors.border} strokeWidth="1" opacity="0.3" />
-          <line x1="0" y1={GRAPH_HEIGHT * 0.75} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.75} stroke={colors.border} strokeWidth="1" opacity="0.3" />
+          <Line x1="0" y1={GRAPH_HEIGHT * 0.25} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.25} stroke={colors.border} strokeWidth="1" opacity="0.3" />
+          <Line x1="0" y1={GRAPH_HEIGHT * 0.5} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.5} stroke={colors.border} strokeWidth="1" opacity="0.3" />
+          <Line x1="0" y1={GRAPH_HEIGHT * 0.75} x2={GRAPH_WIDTH} y2={GRAPH_HEIGHT * 0.75} stroke={colors.border} strokeWidth="1" opacity="0.3" />
 
           {/* Line */}
-          <path d={pathD} stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+          <Path d={pathD} stroke={color} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round" />
 
           {/* End dot */}
           {points.length > 0 && (
-            <circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="4" fill={color} />
+            <Circle cx={points[points.length - 1].x} cy={points[points.length - 1].y} r="4" fill={color} />
           )}
-        </svg>
+        </Svg>
       </View>
-      <Text style={[styles.graphLabel, { color: colors.foreground }]}>{label}</Text>
+      <Text style={[styles.label, { color: colors.muted }]}>{label}</Text>
     </Animated.View>
   );
 }
 
-export default function Step5GraphsScreen() {
-  const colors = useColors();
+export default function Step5Graphs() {
   const router = useRouter();
   const { t } = useTranslation();
-
-  const handleContinue = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/onboarding/step6-trial-reveal" as never);
-  };
+  const colors = useColors();
 
   return (
-    <ScreenContainer containerClassName="bg-background">
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.container}>
+    <ScreenContainer className="p-6">
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
+        <View className="gap-8 flex-1">
           {/* Header */}
-          <Animated.View entering={FadeInDown.delay(100).duration(600)} style={styles.header}>
-            <Text style={[styles.title, { color: colors.foreground }]}>
-              {t("onboarding.step5.title", { defaultValue: "Your Potential" })}
-            </Text>
-            <Text style={[styles.subtitle, { color: colors.muted }]}>
-              {t("onboarding.step5.subtitle", {
-                defaultValue: "See the difference 30 days can make.",
-              })}
-            </Text>
-          </Animated.View>
+          <View className="items-center gap-2">
+            <Text className="text-3xl font-bold text-foreground">{t("onboarding.graphs.title")}</Text>
+            <Text className="text-base text-muted text-center">{t("onboarding.graphs.subtitle")}</Text>
+          </View>
 
           {/* Graphs */}
-          <View style={styles.graphsRow}>
+          <View style={styles.graphsContainer}>
             <LineGraph
               points={flatLinePoints}
-              color="#9CA3AF"
-              label={t("onboarding.step5.without", { defaultValue: "Without\nRiseGrind" })}
-              delay={200}
+              color={colors.muted}
+              label={t("onboarding.graphs.without")}
+              delay={0}
               colors={colors}
             />
             <LineGraph
               points={steepLinePoints}
               color={colors.accent}
-              label={t("onboarding.step5.with", { defaultValue: "With\nRiseGrind" })}
-              delay={400}
+              label={t("onboarding.graphs.with")}
+              delay={200}
               colors={colors}
             />
           </View>
 
-          {/* Annotation */}
-          <Animated.View entering={FadeInDown.delay(600).duration(600)} style={styles.annotation}>
-            <Text style={[styles.annotationText, { color: colors.muted }]}>
-              {t("onboarding.step5.annotation", {
-                defaultValue: "Most people stay here... You can be here in just 30 days.",
-              })}
-            </Text>
-          </Animated.View>
-
-          {/* Continue Button */}
-          <Animated.View entering={FadeInDown.delay(700).duration(600)} style={styles.footer}>
-            <Pressable
-              onPress={handleContinue}
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  backgroundColor: colors.accent,
-                  transform: [{ scale: pressed ? 0.97 : 1 }],
-                },
-              ]}
-            >
-              <Text style={styles.buttonText}>
-                {t("onboarding.step5.continue", { defaultValue: "Let's Go" })}
-              </Text>
-            </Pressable>
-          </Animated.View>
+          {/* CTA */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/onboarding/step6-trial-reveal");
+            }}
+            style={({ pressed }) => [
+              styles.button,
+              { backgroundColor: colors.accent, opacity: pressed ? 0.8 : 1 },
+            ]}
+          >
+            <Text style={styles.buttonText}>{t("onboarding.graphs.next")}</Text>
+          </Pressable>
         </View>
       </ScrollView>
     </ScreenContainer>
@@ -181,34 +158,14 @@ export default function Step5GraphsScreen() {
 }
 
 const styles = StyleSheet.create({
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-  },
-  container: {
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-    gap: 32,
-  },
-  header: {
-    gap: 12,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: "800",
-    letterSpacing: -0.5,
-    lineHeight: 40,
-  },
-  subtitle: {
-    fontSize: 16,
-    lineHeight: 24,
-  },
-  graphsRow: {
+  graphsContainer: {
     flexDirection: "row",
     gap: 16,
     justifyContent: "center",
   },
   graphContainer: {
+    flex: 1,
+    alignItems: "center",
     gap: 8,
   },
   graph: {
@@ -219,39 +176,23 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   svg: {
-    overflow: "visible",
+    width: "100%",
+    height: "100%",
   },
-  graphLabel: {
-    fontSize: 13,
+  label: {
+    fontSize: 12,
     fontWeight: "600",
-    textAlign: "center",
-    lineHeight: 18,
-  },
-  annotation: {
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 12,
-    backgroundColor: "rgba(232, 168, 124, 0.1)",
-  },
-  annotationText: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-  },
-  footer: {
-    gap: 16,
-    marginTop: 16,
   },
   button: {
-    height: 56,
-    borderRadius: 14,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 12,
     alignItems: "center",
-    justifyContent: "center",
+    marginTop: 16,
   },
   buttonText: {
-    color: "#fff",
-    fontSize: 17,
-    fontWeight: "700",
-    letterSpacing: 0.2,
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#ffffff",
   },
 });

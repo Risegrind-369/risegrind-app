@@ -119,9 +119,34 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
         Purchases.getOfferings(),
       ]);
 
-      const isPremium = !!customerInfo.entitlements.active['premium'];
-      const isTrialActive = isPremium &&
+      let isPremium = !!customerInfo.entitlements.active['premium'];
+      let isTrialActive = isPremium &&
         customerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+      
+      // Check for local trial start time (set when user taps "Start Trial" in trial-reveal.tsx)
+      if (!isPremium) {
+        try {
+          const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+          const trialStartedAt = await AsyncStorage.getItem('trialStartedAt');
+          if (trialStartedAt) {
+            const startTime = parseInt(trialStartedAt, 10);
+            const now = Date.now();
+            const trialDurationMs = 3 * 24 * 60 * 60 * 1000; // 72 hours
+            if (now - startTime < trialDurationMs) {
+              console.log('[RevenueCat] ✅ Trial is active (local timer)');
+              isPremium = true;
+              isTrialActive = true;
+            } else {
+              console.log('[RevenueCat] ⏰ Trial has expired (local timer)');
+              // Clear expired trial marker
+              await AsyncStorage.removeItem('trialStartedAt');
+            }
+          }
+        } catch (err) {
+          console.warn('[RevenueCat] Error checking local trial:', err);
+        }
+      }
+      
       const allPackages: any[] = offerings.current?.availablePackages ?? [];
 
       console.log(`[RevenueCat] isPremium=${isPremium}, isTrialActive=${isTrialActive}, packages=${allPackages.length}`);
@@ -137,10 +162,30 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       });
 
       // Real-time listener: updates state instantly after purchase, trial activation, or cancellation
-      Purchases.addCustomerInfoUpdateListener((newCustomerInfo) => {
-        const newIsPremium = !!newCustomerInfo.entitlements.active['premium'];
-        const newIsTrialActive = newIsPremium &&
+      Purchases.addCustomerInfoUpdateListener(async (newCustomerInfo) => {
+        let newIsPremium = !!newCustomerInfo.entitlements.active['premium'];
+        let newIsTrialActive = newIsPremium &&
           newCustomerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+        
+        // Also check local trial timer
+        if (!newIsPremium) {
+          try {
+            const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+            const trialStartedAt = await AsyncStorage.getItem('trialStartedAt');
+            if (trialStartedAt) {
+              const startTime = parseInt(trialStartedAt, 10);
+              const now = Date.now();
+              const trialDurationMs = 3 * 24 * 60 * 60 * 1000; // 72 hours
+              if (now - startTime < trialDurationMs) {
+                newIsPremium = true;
+                newIsTrialActive = true;
+              }
+            }
+          } catch (err) {
+            console.warn('[RevenueCat] Error checking local trial in listener:', err);
+          }
+        }
+        
         console.log(`[RevenueCat] 🔄 CustomerInfo updated: isPremium=${newIsPremium}, isTrialActive=${newIsTrialActive}`);
         setState((prev) => ({
           ...prev,
@@ -181,6 +226,13 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     if (!IS_NATIVE_BUILD) {
       // Demo mode: simulate successful purchase in Expo Go / web
       console.log('[RevenueCat] Demo mode: simulating purchase');
+      try {
+        const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+        // Also set trial start time for consistency
+        await AsyncStorage.setItem('trialStartedAt', Date.now().toString());
+      } catch (err) {
+        console.warn('[RevenueCat] Error setting trial start time in demo mode:', err);
+      }
       setState((prev) => ({ ...prev, isPremium: true, isTrialActive: true }));
       return true;
     }
@@ -206,13 +258,33 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     }
   };
 
-  // ─── Check Entitlement (fresh fetch) ──────────────────────────────────────
+  // ─── Check Entitlement (fresh fetch) ──────────────────────────────────
   const checkEntitlement = async (): Promise<boolean> => {
     if (!IS_NATIVE_BUILD) return state.isPremium;
     try {
       const { default: Purchases } = await import('react-native-purchases');
       const customerInfo = await Purchases.getCustomerInfo();
-      return !!customerInfo.entitlements.active['premium'];
+      let isPremium = !!customerInfo.entitlements.active['premium'];
+      
+      // Also check local trial timer
+      if (!isPremium) {
+        try {
+          const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+          const trialStartedAt = await AsyncStorage.getItem('trialStartedAt');
+          if (trialStartedAt) {
+            const startTime = parseInt(trialStartedAt, 10);
+            const now = Date.now();
+            const trialDurationMs = 3 * 24 * 60 * 60 * 1000; // 72 hours
+            if (now - startTime < trialDurationMs) {
+              isPremium = true;
+            }
+          }
+        } catch (err) {
+          console.warn('[RevenueCat] Error checking local trial in checkEntitlement:', err);
+        }
+      }
+      
+      return isPremium;
     } catch (error) {
       console.error('[RevenueCat] Failed to check entitlement:', error);
       return state.isPremium;

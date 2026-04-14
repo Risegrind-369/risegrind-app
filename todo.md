@@ -431,3 +431,10 @@
 - [x] Fix AI always responding in French regardless of selected language
 - [x] Audit useLanguage hook and language resolution in ai-chat, journal, insights
 - [x] TypeScript: 0 errors
+
+## Sprint 19 - Critical Bug Fixes
+
+- [ ] Fix LineGraph render error: lowercase <line> → capitalized <Line> from react-native-svg
+- [ ] Fix trial logic: ensure 100% access during 3-day free trial, only block after trial ends
+- [ ] Add web search capability to AI mutations for fact-checking and real-time info
+- [ ] Verify TypeScript: 0 errors

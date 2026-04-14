@@ -6,6 +6,7 @@ import { publicProcedure, router } from "./_core/trpc";
 import { invokeLLM } from "./_core/llm";
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
+import { getSearchContextForEntry } from "./web-search";
 
 export const appRouter = router({
   system: systemRouter,
@@ -215,8 +216,17 @@ Generate their personalized morning routine and journal prompts.`;
         const recentContext = input.recentEntries.length > 0
           ? `Recent journal context: ${input.recentEntries.slice(0, 3).join(" | ")}`
           : "No previous journal entries.";
-        const systemPrompt = `You are a Ghost Mode AI mentor — an elite discipline coach who understands the human mind deeply. ${langInstruction}\n\nYour job:\n1. Acknowledge what they shared with empathy and precision\n2. Identify a key insight or pattern from their words\n3. Give ONE specific, actionable next step\n4. End with a powerful 1-sentence motivational push in Ghost Mode style\n\nRules:\n- Be concise: 3-5 sentences total\n- Be intelligent: reference specific things they wrote\n- Zero generic advice. Be specific to THEIR situation.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- Never be preachy. Be like a coach who respects the athlete's time.`;
-        const userMessage = `My journal entry today:\n"${input.entryContent}"\n\nMy mood today: ${moodDesc}\nMy current streak: ${input.streak} days\n${recentContext}\n\nGive me your honest, sharp analysis and one clear action step.`;
+        
+        // Fetch web search context for health/habit-related topics
+        let searchContext = "";
+        try {
+          searchContext = await getSearchContextForEntry(input.entryContent);
+        } catch (err) {
+          console.warn("[analyzeEntry] Web search failed, continuing without it:", err);
+        }
+        
+        const systemPrompt = `You are a Ghost Mode AI mentor — an elite discipline coach who understands the human mind deeply. ${langInstruction}\n\nYour job:\n1. Acknowledge what they shared with empathy and precision\n2. Identify a key insight or pattern from their words\n3. Give ONE specific, actionable next step\n4. End with a powerful 1-sentence motivational push in Ghost Mode style\n\nRules:\n- Be concise: 3-5 sentences total\n- Be intelligent: reference specific things they wrote\n- Zero generic advice. Be specific to THEIR situation.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- Never be preachy. Be like a coach who respects the athlete's time.\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
+        const userMessage = `My journal entry today:\n"${input.entryContent}"\n\nMy mood today: ${moodDesc}\nMy current streak: ${input.streak} days\n${recentContext}${searchContext}\n\nGive me your honest, sharp analysis and one clear action step.`;
         try {
           const response = await invokeLLM({
             messages: [
@@ -272,6 +282,16 @@ Generate their personalized morning routine and journal prompts.`;
           : input.language === "pt"
           ? "Respond in Brazilian Portuguese (português brasileiro). Keep the Ghost Mode tone — direct, no fluff."
           : "Respond in English. Keep the Ghost Mode tone — direct, no fluff.";
+        
+        // Fetch web search context for habit-related topics
+        let searchContext = "";
+        try {
+          const searchQuery = `${input.habitNames} ${input.recentMoods}`.slice(0, 200);
+          searchContext = await getSearchContextForEntry(searchQuery);
+        } catch (err) {
+          console.warn("[generateInsights] Web search failed, continuing without it:", err);
+        }
+        
         const prompt = `You are a Ghost Mode discipline coach — direct, motivating, no fluff. ${langInstruction} Based on this user's data, give a sharp 2-3 sentence insight and 3 specific action items.
 
 User data:
@@ -280,7 +300,7 @@ User data:
 - Habit completion rate: ${input.habitRate}%
 - Recent moods (last 7 days): ${input.recentMoods || "No mood data yet"}
 - Recent journal excerpts: ${input.journalExcerpts || "No journal entries yet"}
-- Current habits: ${input.habitNames}
+- Current habits: ${input.habitNames}${searchContext}
 
 Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestions": ["...", "...", "..."]}`;
 
@@ -359,14 +379,22 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           input.stepsToday != null ? `Steps today: ${input.stepsToday.toLocaleString()}` : null,
           input.sleepLastNight != null ? `Sleep last night: ${input.sleepLastNight}h` : null,
         ].filter(Boolean);
+        
+        // Fetch web search context for health/habit-related questions
+        let searchContext = "";
+        try {
+          searchContext = await getSearchContextForEntry(input.message);
+        } catch (err) {
+          console.warn("[chat] Web search failed, continuing without it:", err);
+        }
 
-        const systemPrompt = `You are a Ghost Mode AI mentor — a sharp, no-nonsense discipline coach. ${langInstruction}\n\nUser context: ${contextParts.join(" | ")}\n\nRules:\n- Be concise (2-4 sentences max per response)\n- Use the user's data when relevant\n- When asked for charts/reports, respond with a text-based visual using ASCII or emoji bars\n- Never be preachy. Be like a coach who respects the athlete's time.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal`;
+        const systemPrompt = `You are a Ghost Mode AI mentor — a sharp, no-nonsense discipline coach. ${langInstruction}\n\nUser context: ${contextParts.join(" | ")}\n\nRules:\n- Be concise (2-4 sentences max per response)\n- Use the user's data when relevant\n- When asked for charts/reports, respond with a text-based visual using ASCII or emoji bars\n- Never be preachy. Be like a coach who respects the athlete's time.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
 
         try {
           const messages = [
             { role: "system" as const, content: systemPrompt },
             ...input.history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
-            { role: "user" as const, content: input.message },
+            { role: "user" as const, content: input.message + searchContext },
           ];
           const response = await invokeLLM({ messages });
           const content = response?.choices?.[0]?.message?.content ?? "";

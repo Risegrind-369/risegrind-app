@@ -28,6 +28,7 @@ export function PaywallTriggerProvider({ children }: PaywallTriggerProps) {
   const { t } = useTranslation();
 
   useEffect(() => {
+    // Don't show paywall if user has premium or active trial
     if (isPremium) {
       setShowPaywall(false);
       return;
@@ -37,6 +38,22 @@ export function PaywallTriggerProvider({ children }: PaywallTriggerProps) {
 
   const checkAndTriggerPaywall = async () => {
     try {
+      // First check if user has an active trial (set in trial-reveal.tsx)
+      const trialStartedAt = await AsyncStorage.getItem('trialStartedAt');
+      if (trialStartedAt) {
+        const startTime = parseInt(trialStartedAt, 10);
+        const now = Date.now();
+        const trialDurationMs = 3 * 24 * 60 * 60 * 1000; // 72 hours
+        if (now - startTime < trialDurationMs) {
+          // Trial is still active, don't show paywall
+          console.log('[PaywallTrigger] Trial is active, not showing paywall');
+          return;
+        } else {
+          // Trial has expired, clear the marker
+          await AsyncStorage.removeItem('trialStartedAt');
+        }
+      }
+      
       const savedStartTime = await AsyncStorage.getItem('appStartTime');
       const now = Date.now();
 
@@ -49,7 +66,7 @@ export function PaywallTriggerProvider({ children }: PaywallTriggerProps) {
       const startTime = parseInt(savedStartTime, 10);
       const daysPassed = (now - startTime) / (1000 * 60 * 60 * 24);
 
-      // Show paywall between day 1 and day 2 of usage
+      // Show paywall between day 1 and day 2 of usage (only if no active trial)
       if (daysPassed >= 1 && daysPassed < 2) {
         const alreadyShown = await AsyncStorage.getItem('paywallShownDay1');
         if (!alreadyShown) {
