@@ -15,6 +15,13 @@
       "when": 1776247621473,
       "tag": "0001_nervous_champions",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1776249816699,
+      "tag": "0002_outstanding_albert_cleary",
+      "breakpoints": true
     }
   ]
 }

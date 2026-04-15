@@ -107,7 +107,7 @@ Generate a short, deeply personal message that acknowledges their feelings and i
           language: z.enum(["en", "fr", "pt"]).optional().default("en"),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const langInstruction = input.language === "fr"
           ? "Réponds UNIQUEMENT en français. Tous les noms d'habitudes et prompts doivent être en français."
           : input.language === "pt"
@@ -170,6 +170,26 @@ Generate their personalized morning routine and journal prompts.`;
         };
 
         try {
+          // Save user profile with onboarding answers
+          if (ctx.user?.id) {
+            try {
+              const { saveUserProfile } = await import("./user-profile");
+              await saveUserProfile(ctx.user.id, {
+                firstName: input.name,
+                age: parseInt(input.age, 10),
+                empathyAnswer: input.empathyAnswer,
+                goalAnswer: input.goalAnswer,
+                mainGoals: input.selectedGoals.split(",").map(g => g.trim()),
+                biggestProblems: input.selectedProblems.split(",").map(p => p.trim()),
+                wakeTime: input.wakeTime,
+                motivationStyle: input.motivationStyle,
+                language: input.language,
+              });
+            } catch (err) {
+              console.warn("[generateRoutine] Failed to save user profile:", err);
+            }
+          }
+
           const response = await invokeLLM({
             messages: [
               { role: "system" as const, content: systemPrompt },
@@ -365,12 +385,26 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           language: z.enum(["en", "fr", "pt"]).optional().default("en"),
         })
       )
-      .mutation(async ({ input }) => {
+      .mutation(async ({ input, ctx }) => {
         const langInstruction = input.language === "fr"
           ? "Réponds UNIQUEMENT en français. Tu es un mentor Ghost Mode — direct, motivant, sans fioritures."
           : input.language === "pt"
           ? "Responda APENAS em português brasileiro. Você é um mentor Ghost Mode — direto, motivador, sem rodeios."
           : "Respond ONLY in English. You are a Ghost Mode mentor — direct, motivating, no fluff.";
+
+        // Fetch user profile for personalization
+        let personalizationContext = "";
+        if (ctx.user?.id) {
+          try {
+            const { getUserProfile, buildPersonalizationContext } = await import("./user-profile");
+            const profile = await getUserProfile(ctx.user.id);
+            if (profile) {
+              personalizationContext = buildPersonalizationContext(profile);
+            }
+          } catch (err) {
+            console.warn("[chat] Failed to fetch user profile:", err);
+          }
+        }
 
         const contextParts = [
           `Streak: ${input.streak} days`,
@@ -388,7 +422,7 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
           console.warn("[chat] Web search failed, continuing without it:", err);
         }
 
-        const systemPrompt = `You are a Ghost Mode AI mentor — a sharp, no-nonsense discipline coach. ${langInstruction}\n\nUser context: ${contextParts.join(" | ")}\n\nRules:\n- Be concise (2-4 sentences max per response)\n- Use the user's data when relevant\n- When asked for charts/reports, respond with a text-based visual using ASCII or emoji bars\n- Never be preachy. Be like a coach who respects the athlete's time.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
+        const systemPrompt = `You are a Ghost Mode AI mentor — a sharp, no-nonsense discipline coach. ${langInstruction}\n\nUser Profile:\n${personalizationContext}\n\nCurrent Stats: ${contextParts.join(" | ")}\n\nRules:\n- Be concise (2-4 sentences max per response)\n- Reference their personal goals and challenges when relevant\n- Use their name naturally in conversation\n- When asked for charts/reports, respond with a text-based visual using ASCII or emoji bars\n- Never be preachy. Be like a coach who respects the athlete's time.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
 
         try {
           const messages = [

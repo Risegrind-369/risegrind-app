@@ -68,7 +68,7 @@ export default function Step3GoalScreen() {
           {/* Question */}
           <Animated.View entering={FadeInDown.delay(200)}>
             <Text style={[styles.question, { color: colors.foreground }]}>
-              {t("onboarding.goalQuestion", {
+              {t("onboarding.step3.title", {
                 defaultValue: "How do you want to become better using RiseGrind?",
               })}
             </Text>

@@ -26,6 +26,38 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
+ * User profile table for storing personalized onboarding answers.
+ * Used to personalize AI mentor, routine generation, and insights.
+ */
+export const userProfiles = mysqlTable("userProfiles", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  /** User's first name from onboarding */
+  firstName: varchar("firstName", { length: 100 }),
+  /** User's age from onboarding */
+  age: int("age"),
+  /** Answer to 'Why don't you feel good enough?' */
+  empathyAnswer: text("empathyAnswer"),
+  /** Answer to 'How do you want to become better?' */
+  goalAnswer: text("goalAnswer"),
+  /** Main goals selected (JSON array) */
+  mainGoals: text("mainGoals"),
+  /** Biggest problems selected (JSON array) */
+  biggestProblems: text("biggestProblems"),
+  /** Preferred wake time */
+  wakeTime: varchar("wakeTime", { length: 10 }),
+  /** Motivation/coaching style preference */
+  motivationStyle: varchar("motivationStyle", { length: 100 }),
+  /** Language preference (en, fr, pt) */
+  language: varchar("language", { length: 10 }).default("en"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type UserProfile = typeof userProfiles.$inferSelect;
+export type InsertUserProfile = typeof userProfiles.$inferInsert;
+
+/**
  * Weekly challenges table for tracking challenges that reset every week.
  * Each user gets a fresh set of challenges every Monday.
  */

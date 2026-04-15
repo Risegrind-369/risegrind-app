@@ -63,7 +63,7 @@ export default function Step2EmpathyScreen() {
           {/* Question */}
           <Animated.View entering={FadeInDown.delay(200)}>
             <Text style={[styles.question, { color: colors.foreground }]}>
-              {t("onboarding.empathyQuestion", {
+              {t("onboarding.step2.title", {
                 defaultValue: "Why do you currently feel like you're not good enough?",
               })}
             </Text>
