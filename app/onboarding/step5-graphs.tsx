@@ -333,7 +333,9 @@ export default function Step5Graphs() {
 const styles = StyleSheet.create({
   graphContainer: {
     alignItems: "center",
+    justifyContent: "center",
     gap: 12,
+    width: "100%",
   },
   graph: {
     borderRadius: 14,

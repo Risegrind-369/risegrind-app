@@ -77,7 +77,7 @@ export default function Step3GoalScreen() {
           {/* Instruction with Bold */}
           <Animated.View entering={FadeInDown.delay(300)} style={styles.instructionContainer}>
             <Text style={[styles.instructionText, { color: colors.muted }]}>
-              {t("onboarding.goalInstruction", {
+              {t("onboarding.step3.instruction", {
                 defaultValue:
                   "Write as much as possible and be super detailed so the AI can be 100% personalized to what you say.",
               })}
@@ -95,7 +95,7 @@ export default function Step3GoalScreen() {
                   backgroundColor: colors.surface,
                 },
               ]}
-              placeholder={t("onboarding.goalPlaceholder", {
+              placeholder={t("onboarding.step3.placeholder", {
                 defaultValue: "Describe your vision for yourself...",
               })}
               placeholderTextColor={colors.muted}

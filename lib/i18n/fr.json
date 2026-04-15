@@ -56,14 +56,16 @@
     },
     "step2": {
       "title": "Pourquoi sentez-vous que vous n'êtes pas assez bien?",
-      "subtitle": "Soyez honnête.",
-      "placeholder": "Partagez...",
+      "subtitle": "Soyez honnête. Cela nous aide à comprendre votre point de départ.",
+      "placeholder": "Partagez ce qui vous retient...",
+      "instruction": "Écrivez autant que possible et soyez très détaillé pour que l'IA soit 100% personnalisée à ce que vous dites.",
       "continue": "Continuer"
     },
     "step3": {
-      "title": "Comment voulez-vous vous améliorer?",
-      "subtitle": "Peignez votre futur moi.",
-      "placeholder": "Je veux...",
+      "title": "Comment voulez-vous vous améliorer avec RiseGrind?",
+      "subtitle": "Peignez un portrait de votre moi futur.",
+      "placeholder": "Je veux construire...",
+      "instruction": "Écrivez autant que possible et soyez très détaillé pour que l'IA soit 100% personnalisée à ce que vous dites.",
       "continue": "Continuer"
     },
     "step4": {

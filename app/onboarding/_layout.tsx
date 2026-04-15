@@ -1,6 +1,15 @@
 import { Stack } from "expo-router";
+import { useThemeContext } from "@/lib/theme-provider";
+import { useEffect } from "react";
 
 export default function OnboardingLayout() {
+  const { setColorScheme } = useThemeContext();
+
+  // Force light theme for onboarding
+  useEffect(() => {
+    setColorScheme("light");
+  }, []);
+
   return (
     <Stack screenOptions={{ headerShown: false, animation: "slide_from_right" }}>
       {/* Language selection */}

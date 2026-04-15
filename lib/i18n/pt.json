@@ -55,15 +55,17 @@
       "continue": "Continuar"
     },
     "step2": {
-      "title": "Por que não é bom o suficiente?",
-      "subtitle": "Seja honesto.",
-      "placeholder": "Compartilhe...",
+      "title": "Por que você sente que não é bom o suficiente agora?",
+      "subtitle": "Seja honesto. Isso nos ajuda a entender seu ponto de partida.",
+      "placeholder": "Compartilhe o que o retém...",
+      "instruction": "Escreva o máximo possível e seja muito detalhado para que a IA seja 100% personalizada para o que você diz.",
       "continue": "Continuar"
     },
     "step3": {
-      "title": "Como melhorar?",
-      "subtitle": "Seu futuro eu.",
-      "placeholder": "Quero...",
+      "title": "Como você quer melhorar usando RiseGrind?",
+      "subtitle": "Pinte um retrato de seu eu futuro.",
+      "placeholder": "Quero construir...",
+      "instruction": "Escreva o máximo possível e seja muito detalhado para que a IA seja 100% personalizada para o que você diz.",
       "continue": "Continuar"
     },
     "step4": {

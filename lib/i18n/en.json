@@ -58,12 +58,14 @@
       "title": "Why do you feel like you're not good enough right now?",
       "subtitle": "Be honest. This helps us understand your starting point.",
       "placeholder": "Share what's on your mind...",
+      "instruction": "Write as much as possible and be super detailed so the AI can be 100% personalized to what you say.",
       "continue": "Continue"
     },
     "step3": {
       "title": "How do you want to become better using RiseGrind?",
       "subtitle": "Paint a picture of your future self.",
       "placeholder": "I want to build...",
+      "instruction": "Write as much as possible and be super detailed so the AI can be 100% personalized to what you say.",
       "continue": "Continue"
     },
     "step4": {

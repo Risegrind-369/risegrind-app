@@ -72,7 +72,7 @@ export default function Step2EmpathyScreen() {
           {/* Instruction with Bold */}
           <Animated.View entering={FadeInDown.delay(300)} style={styles.instructionContainer}>
             <Text style={[styles.instructionText, { color: colors.muted }]}>
-              {t("onboarding.empathyInstruction", {
+              {t("onboarding.step2.instruction", {
                 defaultValue:
                   "Write as much as possible and be super detailed so the AI can be 100% personalized to what you say.",
               })}
@@ -90,7 +90,7 @@ export default function Step2EmpathyScreen() {
                   backgroundColor: colors.surface,
                 },
               ]}
-              placeholder={t("onboarding.empathyPlaceholder", {
+              placeholder={t("onboarding.step2.placeholder", {
                 defaultValue: "Share what's holding you back...",
               })}
               placeholderTextColor={colors.muted}
