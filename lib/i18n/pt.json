@@ -74,24 +74,24 @@
     },
     "step5": {
       "title": "Seu Potencial",
-      "subtitle": "Veja a diferença.",
+      "subtitle": "Veja a diferença que 30 dias podem fazer.",
       "without": "Sem\nRiseGrind",
       "with": "Com\nRiseGrind",
-      "annotation": "30 dias.",
+      "annotation": "A maioria fica aqui... Você pode estar aqui em apenas 30 dias.",
       "continue": "Vamos Lá"
     },
     "step6": {
-      "title": "Pronto?",
-      "trialCopy": "3 dias grátis.",
-      "featuresTitle": "Recursos",
-      "feature1": "Ghost Mode",
-      "feature2": "Mentor IA",
-      "feature3": "Hábitos ilimitados",
-      "feature4": "Ghost Intel",
-      "feature5": "Missões",
-      "feature6": "Diário vocal",
-      "startTrial": "Teste Grátis",
-      "legal": "Cancele anytime."
+      "title": "Pronto para Entrar no Ghost Mode?",
+      "trialCopy": "Aproveite 3 dias completos de RiseGrind totalmente grátis – nenhum cartão necessário agora.",
+      "featuresTitle": "O que você ganha",
+      "feature1": "Ghost Mode — kit de ferramentas de disciplina completo",
+      "feature2": "Mentor IA Diário — clareza diária e direção",
+      "feature3": "Hábitos ilimitados e proteção de sequência",
+      "feature4": "Ghost Intel — tendências de humor e análise de hábitos",
+      "feature5": "Missões Secundárias — desafios de disciplina bônus",
+      "feature6": "Diário vocal com reprodução de resposta IA",
+      "startTrial": "Comece Meu Teste Grátis",
+      "legal": "Nenhum cartão necessário. Cancele a qualquer momento."
     }
   },
   "paywall": {

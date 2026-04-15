@@ -1,16 +1,16 @@
 /**
- * Onboarding Step 5: Cal AI-Style Animated Comparison Graphs
+ * Onboarding Step 5: Cal AI-Style Single Comparison Graph
  *
- * Shows two side-by-side line graphs with:
+ * Shows ONE large graph with both lines overlaid:
  * - Smooth bezier curves (not straight lines)
  * - X-axis labels (3 Days, 7 Days, 30 Days)
  * - Y-axis labels (0%, 50%, 100%)
- * - Left: "Without RiseGrind" (flat, gray line)
- * - Right: "With RiseGrind" (steep, orange line)
+ * - Gray flat line: "Without RiseGrind"
+ * - Orange steep line: "With RiseGrind"
  *
  * Uses Reanimated for smooth animations.
  */
-import React, { useState, useEffect } from "react";
+import React, { useEffect } from "react";
 import {
   View,
   Text,
@@ -34,9 +34,9 @@ import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
-const GRAPH_WIDTH = (SCREEN_WIDTH - 48 - 16) / 2; // Two graphs with gap
-const GRAPH_HEIGHT = 200;
-const PADDING = 40; // Space for axis labels
+const GRAPH_WIDTH = SCREEN_WIDTH - 48; // Full width with padding
+const GRAPH_HEIGHT = 240;
+const PADDING = 45; // Space for axis labels
 const INNER_WIDTH = GRAPH_WIDTH - PADDING;
 const INNER_HEIGHT = GRAPH_HEIGHT - PADDING;
 const DATA_POINTS = 3; // 3 Days, 7 Days, 30 Days
@@ -84,167 +84,39 @@ function generateSmoothPath(points: { x: number; y: number }[]): string {
   return path;
 }
 
-function LineGraph({
-  points,
-  color,
-  label,
-  delay,
-  colors,
-}: {
-  points: { x: number; y: number; label: string }[];
-  color: string;
-  label: string;
-  delay: number;
-  colors: ReturnType<typeof useColors>;
-}) {
-  const pathLength = useSharedValue(0);
-
-  useEffect(() => {
-    pathLength.value = withTiming(1, {
-      duration: 1200,
-      easing: Easing.out(Easing.cubic),
-    });
-  }, []);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: pathLength.value,
-  }));
-
-  // Generate smooth bezier path
-  const pathD = generateSmoothPath(points);
-
-  return (
-    <Animated.View
-      entering={FadeInDown.delay(delay).duration(600)}
-      style={[styles.graphContainer, animatedStyle]}
-    >
-      <View style={[styles.graph, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-        <Svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} style={styles.svg}>
-          {/* Y-axis labels (0%, 50%, 100%) */}
-          <SvgText
-            x="5"
-            y={INNER_HEIGHT + 15}
-            fontSize="10"
-            fill={colors.muted}
-            textAnchor="start"
-          >
-            0%
-          </SvgText>
-          <SvgText
-            x="5"
-            y={INNER_HEIGHT / 2 + 15}
-            fontSize="10"
-            fill={colors.muted}
-            textAnchor="start"
-          >
-            50%
-          </SvgText>
-          <SvgText
-            x="5"
-            y={15}
-            fontSize="10"
-            fill={colors.muted}
-            textAnchor="start"
-          >
-            100%
-          </SvgText>
-
-          {/* Y-axis */}
-          <Line
-            x1={PADDING - 10}
-            y1="0"
-            x2={PADDING - 10}
-            y2={INNER_HEIGHT}
-            stroke={colors.border}
-            strokeWidth="1"
-            opacity="0.5"
-          />
-
-          {/* X-axis */}
-          <Line
-            x1={PADDING - 10}
-            y1={INNER_HEIGHT}
-            x2={GRAPH_WIDTH}
-            y2={INNER_HEIGHT}
-            stroke={colors.border}
-            strokeWidth="1"
-            opacity="0.5"
-          />
-
-          {/* Horizontal grid lines */}
-          <Line
-            x1={PADDING - 10}
-            y1={INNER_HEIGHT * 0.25}
-            x2={GRAPH_WIDTH}
-            y2={INNER_HEIGHT * 0.25}
-            stroke={colors.border}
-            strokeWidth="1"
-            opacity="0.2"
-          />
-          <Line
-            x1={PADDING - 10}
-            y1={INNER_HEIGHT * 0.5}
-            x2={GRAPH_WIDTH}
-            y2={INNER_HEIGHT * 0.5}
-            stroke={colors.border}
-            strokeWidth="1"
-            opacity="0.2"
-          />
-          <Line
-            x1={PADDING - 10}
-            y1={INNER_HEIGHT * 0.75}
-            x2={GRAPH_WIDTH}
-            y2={INNER_HEIGHT * 0.75}
-            stroke={colors.border}
-            strokeWidth="1"
-            opacity="0.2"
-          />
-
-          {/* Smooth curve path */}
-          <Path
-            d={pathD}
-            stroke={color}
-            strokeWidth="2.5"
-            fill="none"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-
-          {/* Data point dots */}
-          {points.map((p, i) => (
-            <Circle
-              key={i}
-              cx={p.x + PADDING - 10}
-              cy={p.y}
-              r="3.5"
-              fill={color}
-            />
-          ))}
-
-          {/* X-axis labels (3D, 7D, 30D) */}
-          {points.map((p, i) => (
-            <SvgText
-              key={`label-${i}`}
-              x={p.x + PADDING - 10}
-              y={INNER_HEIGHT + 20}
-              fontSize="10"
-              fill={colors.muted}
-              textAnchor="middle"
-            >
-              {p.label}
-            </SvgText>
-          ))}
-        </Svg>
-      </View>
-      <Text style={[styles.label, { color: colors.muted }]}>{label}</Text>
-    </Animated.View>
-  );
-}
-
 export default function Step5Graphs() {
   const router = useRouter();
   const { t } = useTranslation();
   const colors = useColors();
+
+  const flatPathLength = useSharedValue(0);
+  const steepPathLength = useSharedValue(0);
+
+  useEffect(() => {
+    flatPathLength.value = withTiming(1, {
+      duration: 1000,
+      easing: Easing.out(Easing.cubic),
+    });
+
+    setTimeout(() => {
+      steepPathLength.value = withTiming(1, {
+        duration: 1200,
+        easing: Easing.out(Easing.cubic),
+      });
+    }, 200);
+  }, []);
+
+  const flatAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: flatPathLength.value,
+  }));
+
+  const steepAnimatedStyle = useAnimatedStyle(() => ({
+    opacity: steepPathLength.value,
+  }));
+
+  // Generate smooth bezier paths
+  const flatPathD = generateSmoothPath(flatLinePoints);
+  const steepPathD = generateSmoothPath(steepLinePoints);
 
   return (
     <ScreenContainer className="p-6">
@@ -252,31 +124,189 @@ export default function Step5Graphs() {
         <View className="gap-8 flex-1">
           {/* Header */}
           <View className="items-center gap-2">
-            <Text className="text-3xl font-bold text-foreground">{t("onboarding.graphs.title", { defaultValue: "Your Potential" })}</Text>
-            <Text className="text-base text-muted text-center">{t("onboarding.graphs.subtitle", { defaultValue: "See what's possible in 30 days" })}</Text>
+            <Text className="text-3xl font-bold text-foreground">
+              {t("onboarding.step5.title", { defaultValue: "Your Potential" })}
+            </Text>
+            <Text className="text-base text-muted text-center">
+              {t("onboarding.step5.subtitle", { defaultValue: "See the difference 30 days can make." })}
+            </Text>
           </View>
 
-          {/* Graphs */}
-          <View style={styles.graphsContainer}>
-            <LineGraph
-              points={flatLinePoints}
-              color={colors.muted}
-              label={t("onboarding.graphs.without", { defaultValue: "Without RiseGrind" })}
-              delay={0}
-              colors={colors}
-            />
-            <LineGraph
-              points={steepLinePoints}
-              color={colors.accent}
-              label={t("onboarding.graphs.with", { defaultValue: "With RiseGrind" })}
-              delay={200}
-              colors={colors}
-            />
+          {/* Single Mutual Graph */}
+          <Animated.View
+            entering={FadeInDown.delay(0).duration(600)}
+            style={[styles.graphContainer, flatAnimatedStyle]}
+          >
+            <View style={[styles.graph, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+              <Svg width={GRAPH_WIDTH} height={GRAPH_HEIGHT} style={styles.svg}>
+                {/* Y-axis labels (0%, 50%, 100%) */}
+                <SvgText
+                  x="8"
+                  y={INNER_HEIGHT + 20}
+                  fontSize="11"
+                  fill={colors.muted}
+                  textAnchor="start"
+                  fontWeight="500"
+                >
+                  0%
+                </SvgText>
+                <SvgText
+                  x="8"
+                  y={INNER_HEIGHT / 2 + 20}
+                  fontSize="11"
+                  fill={colors.muted}
+                  textAnchor="start"
+                  fontWeight="500"
+                >
+                  50%
+                </SvgText>
+                <SvgText
+                  x="8"
+                  y={20}
+                  fontSize="11"
+                  fill={colors.muted}
+                  textAnchor="start"
+                  fontWeight="500"
+                >
+                  100%
+                </SvgText>
+
+                {/* Y-axis */}
+                <Line
+                  x1={PADDING - 10}
+                  y1="0"
+                  x2={PADDING - 10}
+                  y2={INNER_HEIGHT}
+                  stroke={colors.border}
+                  strokeWidth="1"
+                  opacity="0.5"
+                />
+
+                {/* X-axis */}
+                <Line
+                  x1={PADDING - 10}
+                  y1={INNER_HEIGHT}
+                  x2={GRAPH_WIDTH}
+                  y2={INNER_HEIGHT}
+                  stroke={colors.border}
+                  strokeWidth="1"
+                  opacity="0.5"
+                />
+
+                {/* Horizontal grid lines */}
+                <Line
+                  x1={PADDING - 10}
+                  y1={INNER_HEIGHT * 0.25}
+                  x2={GRAPH_WIDTH}
+                  y2={INNER_HEIGHT * 0.25}
+                  stroke={colors.border}
+                  strokeWidth="1"
+                  opacity="0.15"
+                />
+                <Line
+                  x1={PADDING - 10}
+                  y1={INNER_HEIGHT * 0.5}
+                  x2={GRAPH_WIDTH}
+                  y2={INNER_HEIGHT * 0.5}
+                  stroke={colors.border}
+                  strokeWidth="1"
+                  opacity="0.15"
+                />
+                <Line
+                  x1={PADDING - 10}
+                  y1={INNER_HEIGHT * 0.75}
+                  x2={GRAPH_WIDTH}
+                  y2={INNER_HEIGHT * 0.75}
+                  stroke={colors.border}
+                  strokeWidth="1"
+                  opacity="0.15"
+                />
+
+                {/* Flat line (without RiseGrind) */}
+                <Animated.View style={flatAnimatedStyle}>
+                  <Path
+                    d={flatPathD}
+                    stroke={colors.muted}
+                    strokeWidth="2.5"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    opacity="0.6"
+                  />
+                </Animated.View>
+
+                {/* Steep line (with RiseGrind) */}
+                <Animated.View style={steepAnimatedStyle}>
+                  <Path
+                    d={steepPathD}
+                    stroke={colors.accent}
+                    strokeWidth="3"
+                    fill="none"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </Animated.View>
+
+                {/* Flat line data points */}
+                {flatLinePoints.map((p, i) => (
+                  <Circle
+                    key={`flat-${i}`}
+                    cx={p.x + PADDING - 10}
+                    cy={p.y}
+                    r="3"
+                    fill={colors.muted}
+                    opacity="0.6"
+                  />
+                ))}
+
+                {/* Steep line data points */}
+                {steepLinePoints.map((p, i) => (
+                  <Circle
+                    key={`steep-${i}`}
+                    cx={p.x + PADDING - 10}
+                    cy={p.y}
+                    r="3.5"
+                    fill={colors.accent}
+                  />
+                ))}
+
+                {/* X-axis labels (3D, 7D, 30D) */}
+                {flatLinePoints.map((p, i) => (
+                  <SvgText
+                    key={`label-${i}`}
+                    x={p.x + PADDING - 10}
+                    y={INNER_HEIGHT + 25}
+                    fontSize="11"
+                    fill={colors.muted}
+                    textAnchor="middle"
+                    fontWeight="500"
+                  >
+                    {p.label}
+                  </SvgText>
+                ))}
+              </Svg>
+            </View>
+          </Animated.View>
+
+          {/* Legend */}
+          <View style={styles.legend}>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: colors.muted }]} />
+              <Text style={[styles.legendText, { color: colors.muted }]}>
+                {t("onboarding.step5.without", { defaultValue: "Without RiseGrind" })}
+              </Text>
+            </View>
+            <View style={styles.legendItem}>
+              <View style={[styles.legendDot, { backgroundColor: colors.accent }]} />
+              <Text style={[styles.legendText, { color: colors.foreground }]}>
+                {t("onboarding.step5.with", { defaultValue: "With RiseGrind" })}
+              </Text>
+            </View>
           </View>
 
-          {/* Subtitle text */}
-          <Text style={[styles.subtitle, { color: colors.muted }]}>
-            {t("onboarding.graphs.description", { defaultValue: "Most people stay here... You can be here in just 30 days." })}
+          {/* Description */}
+          <Text style={[styles.description, { color: colors.muted }]}>
+            {t("onboarding.step5.annotation", { defaultValue: "Most people stay here... You can be here in just 30 days." })}
           </Text>
 
           {/* CTA */}
@@ -290,7 +320,9 @@ export default function Step5Graphs() {
               { backgroundColor: colors.accent, opacity: pressed ? 0.8 : 1 },
             ]}
           >
-            <Text style={styles.buttonText}>{t("onboarding.graphs.next", { defaultValue: "Continue" })}</Text>
+            <Text style={styles.buttonText}>
+              {t("onboarding.step5.continue", { defaultValue: "Let's Go" })}
+            </Text>
           </Pressable>
         </View>
       </ScrollView>
@@ -299,43 +331,55 @@ export default function Step5Graphs() {
 }
 
 const styles = StyleSheet.create({
-  graphsContainer: {
-    flexDirection: "row",
-    gap: 16,
-    justifyContent: "center",
-  },
   graphContainer: {
-    flex: 1,
     alignItems: "center",
-    gap: 8,
+    gap: 12,
   },
   graph: {
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
     padding: 0,
     alignItems: "center",
     justifyContent: "center",
+    width: "100%",
   },
   svg: {
     width: "100%",
     height: "100%",
   },
-  label: {
-    fontSize: 13,
-    fontWeight: "600",
+  legend: {
+    flexDirection: "row",
+    gap: 24,
+    justifyContent: "center",
+    paddingHorizontal: 16,
   },
-  subtitle: {
+  legendItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  legendDot: {
+    width: 10,
+    height: 10,
+    borderRadius: 5,
+  },
+  legendText: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  description: {
     fontSize: 14,
     fontWeight: "500",
     textAlign: "center",
     marginVertical: 8,
+    lineHeight: 20,
   },
   button: {
     paddingVertical: 14,
     paddingHorizontal: 24,
     borderRadius: 12,
     alignItems: "center",
-    marginTop: 16,
+    marginTop: 8,
   },
   buttonText: {
     fontSize: 16,
