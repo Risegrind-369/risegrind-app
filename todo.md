@@ -445,3 +445,14 @@
 - [ ] Fix trial logic: ensure 100% access during 3-day free trial, only block after trial ends
 - [ ] Add web search capability to AI mutations for fact-checking and real-time info
 - [ ] Verify TypeScript: 0 errors
+
+
+## Sprint 21 - Premium Features (Ghost Streak, AI Coach, Apple Health)
+
+- [ ] Ghost Streak Protection: Add recovery_quests table and logic
+- [ ] Recovery Quest UI: Show 5-10 min challenge to save streak
+- [ ] "Why Did I Miss?" AI Coach: Empathetic prompt + pattern learning
+- [ ] Apple HealthKit integration: Request permission and sync data
+- [ ] Morning Energy Score: Calculate from sleep + activity data
+- [ ] Auto-adjust routine: Lighter routine if poor sleep
+- [ ] Test all three features end-to-end
