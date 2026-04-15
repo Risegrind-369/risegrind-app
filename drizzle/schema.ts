@@ -25,4 +25,30 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
+/**
+ * Weekly challenges table for tracking challenges that reset every week.
+ * Each user gets a fresh set of challenges every Monday.
+ */
+export const weeklyChallenges = mysqlTable("weeklyChallenges", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Challenge title (e.g., "Complete 5 workouts", "Meditate daily") */
+  title: varchar("title", { length: 255 }).notNull(),
+  /** Challenge description */
+  description: text("description"),
+  /** XP reward for completing this challenge */
+  xpReward: int("xpReward").default(50).notNull(),
+  /** Whether this challenge has been completed */
+  completed: int("completed").default(0).notNull(),
+  /** Week start date (Monday of the week) */
+  weekStartDate: timestamp("weekStartDate").notNull(),
+  /** Week end date (Sunday of the week) */
+  weekEndDate: timestamp("weekEndDate").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type WeeklyChallenge = typeof weeklyChallenges.$inferSelect;
+export type InsertWeeklyChallenge = typeof weeklyChallenges.$inferInsert;
+
 // TODO: Add your tables here

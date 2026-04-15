@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
+import { useThemeContext } from "@/lib/theme-provider";
 import * as Haptics from "expo-haptics";
 import { showSuperwallPaywall } from "@/lib/superwall-provider";
 
@@ -13,6 +14,7 @@ export default function SettingsScreen() {
   const router = useRouter();
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useApp();
+  const { colorScheme, setColorScheme } = useThemeContext();
 
   const handleLanguageChange = (lang: "en" | "fr" | "pt") => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -118,6 +120,44 @@ export default function SettingsScreen() {
                 💳 {t("settings.managePlan", { defaultValue: "Manage Subscription" })}
               </Text>
             </Pressable>
+          </View>
+        </View>
+
+        {/* Theme Section */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
+            {t("settings.theme", { defaultValue: "Theme" })}
+          </Text>
+          <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {["light", "dark"].map((theme, idx) => (
+              <React.Fragment key={theme}>
+                <Pressable
+                  onPress={() => {
+                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    setColorScheme(theme as "light" | "dark");
+                  }}
+                  style={({ pressed }) => [
+                    styles.languageRow,
+                    {
+                      backgroundColor:
+                        colorScheme === theme ? colors.accent + "15" : "transparent",
+                      opacity: pressed ? 0.7 : 1,
+                    },
+                  ]}
+                >
+                  <Text style={styles.languageEmoji}>
+                    {theme === "light" ? "☀️" : "🌙"}
+                  </Text>
+                  <Text style={[styles.languageName, { color: colors.foreground }]}>
+                    {theme === "light" ? t("settings.lightMode", { defaultValue: "Light" }) : t("settings.darkMode", { defaultValue: "Dark" })}
+                  </Text>
+                  {colorScheme === theme && (
+                    <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
+                  )}
+                </Pressable>
+                {idx < 1 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
+              </React.Fragment>
+            ))}
           </View>
         </View>
 

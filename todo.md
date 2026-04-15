@@ -351,6 +351,13 @@
 - [x] Polish colors: ensure consistent earth palette usage
 - [x] Verify TypeScript: 0 errors
 
+## Sprint 20 - UI Polish & Challenge System
+
+- [x] Add dark/light mode toggle to Settings screen
+- [x] Implement weekly challenge refresh with database schema
+- [x] Create clean onboarding graphs (Cal AI-style line charts) - already implemented
+- [x] Test all three features end-to-end
+
 ## Sprint 14 - 7 Specific Fixes
 
 - [ ] Fix 1: Align Connect button (bottom-left) at same height as AI FAB (bottom-right), no overlap
