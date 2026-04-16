@@ -138,6 +138,7 @@ export default function RoutineScreen() {
     });
 
     if (!wasCompleted) {
+      // Habit is being completed
       dispatch({ type: "ADD_XP", payload: 10 });
       const newCount = todayCompletions.length + 1;
       if (newCount === state.habits.length) {
@@ -146,6 +147,14 @@ export default function RoutineScreen() {
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
         setShowComplete(true);
         setTimeout(() => setShowComplete(false), 3000);
+      }
+    } else {
+      // Habit is being cancelled/unchecked - deduct XP
+      dispatch({ type: "ADD_XP", payload: -10 });
+      const newCount = todayCompletions.length - 1;
+      // If routine was complete before, deduct bonus XP too
+      if (todayCompletions.length === state.habits.length) {
+        dispatch({ type: "ADD_XP", payload: -50 });
       }
     }
   };

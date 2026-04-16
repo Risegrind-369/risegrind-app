@@ -485,3 +485,13 @@
 - [ ] Chain Reaction (fire animation when completing habits)
 - [ ] Mood Time Machine (1/3/6 month mood comparison graph)
 - [ ] Test all features and create checkpoint
+
+
+## Sprint 25 - Critical Bug Fixes
+
+- [x] Fix routine XP bug - deduct XP when routine is cancelled
+- [ ] Fix Home Screen quote language localization
+- [ ] Fix Home Screen top header language localization
+- [ ] Fix Morning Routine screen language and routine names (ai h1 → translated)
+- [ ] Fix AI Mentor language support and UI localization
+- [ ] Fix Ghost Mission full UI and mission titles localization
