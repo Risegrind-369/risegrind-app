@@ -10,17 +10,37 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
+import { getSideQuestTranslation } from "@/lib/translations-helper";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, type SideQuest } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
-const CATEGORY_LABELS: Record<SideQuest["category"], string> = {
+const CATEGORY_LABELS_EN: Record<SideQuest["category"], string> = {
   discipline: "Discipline",
   wellness: "Wellness",
   mindset: "Mindset",
   body: "Body",
 };
+
+const CATEGORY_LABELS_FR: Record<SideQuest["category"], string> = {
+  discipline: "Discipline",
+  wellness: "Bien-être",
+  mindset: "Mentalité",
+  body: "Corps",
+};
+
+const CATEGORY_LABELS_PT: Record<SideQuest["category"], string> = {
+  discipline: "Disciplina",
+  wellness: "Bem-estar",
+  mindset: "Mentalidade",
+  body: "Corpo",
+};
+
+function getCategoryLabel(category: SideQuest["category"], lang: "en" | "fr" | "pt"): string {
+  const labels = lang === "fr" ? CATEGORY_LABELS_FR : lang === "pt" ? CATEGORY_LABELS_PT : CATEGORY_LABELS_EN;
+  return labels[category];
+}
 
 const CATEGORY_COLORS: Record<SideQuest["category"], string> = {
   discipline: "#6366F1",
@@ -36,9 +56,11 @@ function getDaysElapsed(startedAt: number): number {
 function QuestCard({
   quest,
   onPress,
+  lang,
 }: {
   quest: SideQuest;
   onPress: () => void;
+  lang: "en" | "fr" | "pt";
 }) {
   const colors = useColors();
   const isActive = !!quest.startedAt && !quest.completedAt;
@@ -85,7 +107,7 @@ function QuestCard({
           <View style={styles.questMeta}>
             <View style={[styles.catBadge, { backgroundColor: catColor + "20" }]}>
               <Text style={[styles.catBadgeText, { color: catColor }]}>
-                {CATEGORY_LABELS[quest.category]}
+                {getCategoryLabel(quest.category, lang)}
               </Text>
             </View>
             <Text style={[styles.questDuration, { color: colors.muted }]}>
@@ -285,6 +307,7 @@ export default function QuestsScreen() {
               key={quest.id}
               quest={quest}
               onPress={() => setSelectedQuest(quest)}
+              lang={lang}
             />
           ))
         )}
@@ -309,7 +332,7 @@ export default function QuestsScreen() {
               <View style={styles.modalMeta}>
                 <View style={[styles.catBadge, { backgroundColor: CATEGORY_COLORS[selectedQuest.category] + "20" }]}>
                   <Text style={[styles.catBadgeText, { color: CATEGORY_COLORS[selectedQuest.category] }]}>
-                    {CATEGORY_LABELS[selectedQuest.category]}
+                    {getCategoryLabel(selectedQuest.category, lang)}
                   </Text>
                 </View>
                 <Text style={[styles.questDuration, { color: colors.muted }]}>

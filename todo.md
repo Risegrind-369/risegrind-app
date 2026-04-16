@@ -466,3 +466,12 @@
 - [x] Build weekly reminder system showing letter + summary + quotes
 - [x] Create UI screens for all features (FutureLetterScreen, HabitStackingCard, WeeklyReminderModal, QuitPreventionModal)
 - [x] Test and create checkpoint (63 tests passing)
+
+
+## Sprint 23 - Language Localization Fixes
+
+- [ ] Fix language in Morning Routine screen and habit names
+- [ ] Fix language in Home Screen quote display
+- [ ] Fix Ghost Mission language mix (French/English)
+- [ ] Fix AI Mentor to respond in selected language (not just French)
+- [ ] Test all language changes and create checkpoint

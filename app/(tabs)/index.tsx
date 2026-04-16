@@ -13,7 +13,8 @@ import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
-import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
+import { useApp, MOOD_EMOJIS, type MoodLevel } from "@/lib/app-context";
+import { getMoodLabel } from "@/lib/translations-helper";
 import { ProgressRing } from "@/components/ui/progress-ring";
 import { XPBar } from "@/components/ui/xp-bar";
 import * as Haptics from "expo-haptics";
@@ -289,7 +290,7 @@ export default function HomeScreen() {
                   {t("home.moodLogged")}
                 </Text>
                 <Text style={[styles.moodBannerSub, { color: colors.muted }]}>
-                  {MOOD_LABELS[state.todayMood?.level || 3]}
+                  {getMoodLabel(state.todayMood?.level || 3, lang)}
                 </Text>
               </View>
               <Text style={styles.moodBannerArrow}>→</Text>
@@ -421,7 +422,7 @@ export default function HomeScreen() {
               >
                 <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
                 <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
-                  {MOOD_LABELS[level]}
+                  {getMoodLabel(level, lang)}
                 </Text>
               </Pressable>
             ))}

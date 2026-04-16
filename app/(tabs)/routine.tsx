@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
+import { getMoodLabel, getHabitName } from "@/lib/translations-helper";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, type Habit } from "@/lib/app-context";
@@ -31,7 +32,7 @@ function HabitRow({
   isCompleted: boolean;
   onToggle: () => void;
   onDelete: () => void;
-  lang: string;
+  lang: "en" | "fr" | "pt";
 }) {
   const colors = useColors();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -93,7 +94,7 @@ function HabitRow({
               },
             ]}
           >
-            {habit.name}
+            {getHabitName(habit.id, lang as "en" | "fr" | "pt")}
           </Text>
           {habit.durationMin > 0 && (
             <Text style={[styles.habitDuration, { color: colors.muted }]}>
