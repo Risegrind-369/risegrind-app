@@ -1,4 +1,4 @@
-import { date, decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, date, decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -157,5 +157,100 @@ export const healthData = mysqlTable("healthData", {
 
 export type HealthData = typeof healthData.$inferSelect;
 export type InsertHealthData = typeof healthData.$inferInsert;
+
+/**
+ * Habit Stacking table for linking habits together.
+ * Enables "After X habit, do Y habit" suggestions.
+ */
+export const habitStacks = mysqlTable("habitStacks", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** The anchor habit (e.g., "Drink coffee") */
+  anchorHabitId: varchar("anchorHabitId", { length: 255 }).notNull(),
+  /** The new habit to stack (e.g., "Meditate") */
+  stackedHabitId: varchar("stackedHabitId", { length: 255 }).notNull(),
+  /** User's custom stacking instruction (e.g., "After coffee, meditate for 5 min") */
+  instruction: text("instruction"),
+  /** Whether this stack is active */
+  isActive: boolean("isActive").default(true).notNull(),
+  /** Completion count for this stack */
+  completionCount: int("completionCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type HabitStack = typeof habitStacks.$inferSelect;
+export type InsertHabitStack = typeof habitStacks.$inferInsert;
+
+/**
+ * Future Self Letter table for storing user's motivational letters.
+ * Shows weekly to remind user why they want to become better.
+ */
+export const futureLetters = mysqlTable("futureLetters", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  /** Letter content written by user */
+  content: text("content").notNull(),
+  /** User's reason for becoming better */
+  reason: text("reason").notNull(),
+  /** Quote or mantra user wants to remember */
+  mantra: text("mantra"),
+  /** Last time letter was shown to user */
+  lastShownAt: timestamp("lastShownAt"),
+  /** How many times letter has been shown */
+  viewCount: int("viewCount").default(0).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type FutureLetter = typeof futureLetters.$inferSelect;
+export type InsertFutureLetter = typeof futureLetters.$inferInsert;
+
+/**
+ * Motivational Quotes table for quit-prevention and daily inspiration.
+ * Shows when user is about to quit or during weekly reminders.
+ */
+export const motivationalQuotes = mysqlTable("motivationalQuotes", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Quote text */
+  quote: text("quote").notNull(),
+  /** Author or source */
+  author: varchar("author", { length: 255 }),
+  /** Category: "quit-prevention", "daily", "milestone", "custom" */
+  category: mysqlEnum("category", ["quit-prevention", "daily", "milestone", "custom"]).notNull(),
+  /** Whether this quote is active */
+  isActive: boolean("isActive").default(true).notNull(),
+  /** Times this quote has been shown */
+  showCount: int("showCount").default(0).notNull(),
+  /** Last time this quote was shown */
+  lastShownAt: timestamp("lastShownAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+export type MotivationalQuote = typeof motivationalQuotes.$inferSelect;
+export type InsertMotivationalQuote = typeof motivationalQuotes.$inferInsert;
+
+/**
+ * Weekly Reminder Log table for tracking when weekly reminders are sent.
+ * Stores letter content, summary, and quotes shown in each weekly reminder.
+ */
+export const weeklyReminders = mysqlTable("weeklyReminders", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Week start date */
+  weekStartDate: date("weekStartDate").notNull(),
+  /** Letter ID shown in this reminder */
+  letterIdShown: int("letterIdShown"),
+  /** Quote ID shown in this reminder */
+  quoteIdShown: int("quoteIdShown"),
+  /** Weekly summary (habits completed, XP earned, etc.) */
+  weeklySummary: text("weeklySummary"),
+  /** Whether reminder was viewed by user */
+  wasViewed: boolean("wasViewed").default(false).notNull(),
+  /** When reminder was viewed */
+  viewedAt: timestamp("viewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type WeeklyReminder = typeof weeklyReminders.$inferSelect;
+export type InsertWeeklyReminder = typeof weeklyReminders.$inferInsert;
 
 // TODO: Add your tables here

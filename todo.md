@@ -456,3 +456,13 @@
 - [ ] Morning Energy Score: Calculate from sleep + activity data
 - [ ] Auto-adjust routine: Lighter routine if poor sleep
 - [ ] Test all three features end-to-end
+
+
+## Sprint 22 - Accountability & Motivation System
+
+- [x] Add Habit Stacking database schema and suggestion logic
+- [x] Implement Future Self Letter feature with storage and retrieval
+- [x] Create motivational quotes system and quit-prevention prompts
+- [x] Build weekly reminder system showing letter + summary + quotes
+- [x] Create UI screens for all features (FutureLetterScreen, HabitStackingCard, WeeklyReminderModal, QuitPreventionModal)
+- [x] Test and create checkpoint (63 tests passing)
