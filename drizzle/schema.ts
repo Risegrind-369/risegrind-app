@@ -253,4 +253,83 @@ export const weeklyReminders = mysqlTable("weeklyReminders", {
 export type WeeklyReminder = typeof weeklyReminders.$inferSelect;
 export type InsertWeeklyReminder = typeof weeklyReminders.$inferInsert;
 
+/**
+ * Routine Cancellation Tracking
+ * Tracks when user cancels routine and re-achieves for double XP
+ */
+export const routineCancellations = mysqlTable("routineCancellations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  date: date("date").notNull(),
+  /** Whether routine was cancelled today */
+  wasCancelled: boolean("wasCancelled").default(false).notNull(),
+  /** Whether routine was re-achieved after cancellation (for double XP) */
+  wasReachieved: boolean("wasReachieved").default(false).notNull(),
+  /** XP multiplier (1 for normal, 2 for re-achieved) */
+  xpMultiplier: int("xpMultiplier").default(1).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type RoutineCancellation = typeof routineCancellations.$inferSelect;
+export type InsertRoutineCancellation = typeof routineCancellations.$inferInsert;
+
+/**
+ * Echo Journal - Past journal entries for growth reflection
+ * Shows entries from 7/30/90 days ago to highlight personal growth
+ */
+export const echoJournalViews = mysqlTable("echoJournalViews", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Original journal entry ID from 7/30/90 days ago */
+  originalEntryId: varchar("originalEntryId", { length: 255 }).notNull(),
+  /** Days back (7, 30, or 90) */
+  daysBack: int("daysBack").notNull(),
+  /** AI-generated growth highlights comparing then vs now */
+  growthHighlights: text("growthHighlights"),
+  /** When this echo was shown to user */
+  shownAt: timestamp("shownAt").defaultNow().notNull(),
+  /** Whether user marked this as meaningful */
+  wasMeaningful: boolean("wasMeaningful").default(false).notNull(),
+});
+export type EchoJournalView = typeof echoJournalViews.$inferSelect;
+export type InsertEchoJournalView = typeof echoJournalViews.$inferInsert;
+
+/**
+ * Ghost Mirror - Weekly future self visualization
+ * AI generates a short "future self" message based on current progress
+ */
+export const ghostMirrors = mysqlTable("ghostMirrors", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Week start date */
+  weekStartDate: date("weekStartDate").notNull(),
+  /** AI-generated future self visualization (short message) */
+  visualization: text("visualization").notNull(),
+  /** Streak at time of generation */
+  streakAtGeneration: int("streakAtGeneration").notNull(),
+  /** XP at time of generation */
+  xpAtGeneration: int("xpAtGeneration").notNull(),
+  /** When user viewed this mirror */
+  viewedAt: timestamp("viewedAt"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type GhostMirror = typeof ghostMirrors.$inferSelect;
+export type InsertGhostMirror = typeof ghostMirrors.$inferInsert;
+
+/**
+ * Mood Time Machine - Historical mood data for comparison
+ * Stores mood snapshots for 1/3/6 month lookback
+ */
+export const moodSnapshots = mysqlTable("moodSnapshots", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  date: date("date").notNull(),
+  /** Mood level (1-5) on this date */
+  moodLevel: int("moodLevel").notNull(),
+  /** Optional note about mood */
+  note: text("note"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
+export type InsertMoodSnapshot = typeof moodSnapshots.$inferInsert;
+
 // TODO: Add your tables here

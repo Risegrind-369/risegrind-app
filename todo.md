@@ -475,3 +475,13 @@
 - [ ] Fix Ghost Mission language mix (French/English)
 - [ ] Fix AI Mentor to respond in selected language (not just French)
 - [ ] Test all language changes and create checkpoint
+
+
+## Sprint 24 - Addictive Premium Features
+
+- [ ] Routine cancellation without XP deduction + double XP on re-achievement
+- [ ] Echo Journal (7/30/90 day past entries with growth highlights)
+- [ ] Ghost Mirror (weekly AI future self visualization)
+- [ ] Chain Reaction (fire animation when completing habits)
+- [ ] Mood Time Machine (1/3/6 month mood comparison graph)
+- [ ] Test all features and create checkpoint
