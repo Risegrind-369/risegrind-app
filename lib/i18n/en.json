@@ -450,6 +450,38 @@
     "managePlan": "Manage Subscription",
     "language": "Language",
     "logoutTitle": "Logout?",
-    "logoutMessage": "Are you sure you want to logout?"
+    "logoutMessage": "Are you sure you want to logout?",
+    "theme": "Theme",
+    "light": "Light",
+    "dark": "Dark"
+  },
+  "profile": {
+    "resetTitle": "Reset All Data",
+    "resetMessage": "This will permanently delete all your habits, journal entries, moods, and progress. This cannot be undone.",
+    "resetConfirm": "Reset",
+    "friend": "Friend",
+    "xpTo": "XP to",
+    "stats": "Your Stats",
+    "dayStreak": "Day Streak",
+    "totalXP": "Total XP",
+    "habitsDone": "Habits Done",
+    "journalEntries": "Journal Entries",
+    "achievements": "Achievements",
+    "subscriptionStatus": "Subscription",
+    "premiumActive": "Premium Active",
+    "freePlan": "Free Plan",
+    "restore": "Restore",
+    "manageSubscription": "Manage Subscription"
+  },
+  "quests": {
+    "title": "Ghost Missions",
+    "ghostMissions": "Ghost Mode missions",
+    "ghostMissionsDesc": "are optional bonus challenges that push you beyond your daily routine. Complete them to earn extra XP and unlock exclusive badges.",
+    "progressLost": "Your progress will be lost. Ghost Mode doesn't quit — but the choice is yours.",
+    "cancel": "Cancel",
+    "quit": "Quit Mission"
+  },
+  "journal": {
+    "today": "Today"
   }
 }

@@ -470,6 +470,38 @@
     "managePlan": "Gérer l'abonnement",
     "language": "Langue",
     "logoutTitle": "Déconnexion ?",
-    "logoutMessage": "Es-tu sûr de vouloir te déconnecter ?"
+    "logoutMessage": "Es-tu sûr de vouloir te déconnecter ?",
+    "theme": "Thème",
+    "light": "Clair",
+    "dark": "Sombre"
+  },
+  "profile": {
+    "resetTitle": "Réinitialiser",
+    "resetMessage": "Ceci supprimera définitivement tous vos progrès. Irréversible.",
+    "resetConfirm": "Réinitialiser",
+    "friend": "Ami",
+    "xpTo": "pour",
+    "stats": "Vos stats",
+    "dayStreak": "Série",
+    "totalXP": "XP Total",
+    "habitsDone": "Habitudes",
+    "journalEntries": "Entrées",
+    "achievements": "Succès",
+    "subscriptionStatus": "Abonnement",
+    "premiumActive": "Premium Actif",
+    "freePlan": "Plan Gratuit",
+    "restore": "Restaurer",
+    "manageSubscription": "Gérer l'abonnement"
+  },
+  "quests": {
+    "title": "Missions Ghost",
+    "ghostMissions": "Missions Ghost Mode",
+    "ghostMissionsDesc": "sont des défis bonus optionnels qui vous poussent au-delà de votre routine quotidienne. Terminez-les pour gagner des XP supplémentaires et débloquer des badges exclusifs.",
+    "progressLost": "Votre progression sera perdue. Ghost Mode ne renonce pas — mais le choix est vôtre.",
+    "cancel": "Annuler",
+    "quit": "Quitter la mission"
+  },
+  "journal": {
+    "today": "Aujourd'hui"
   }
 }

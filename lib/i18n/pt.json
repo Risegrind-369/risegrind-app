@@ -470,6 +470,38 @@
     "managePlan": "Gerenciar Assinatura",
     "language": "Idioma",
     "logoutTitle": "Sair?",
-    "logoutMessage": "Tem certeza que deseja sair?"
+    "logoutMessage": "Tem certeza que deseja sair?",
+    "theme": "Tema",
+    "light": "Claro",
+    "dark": "Escuro"
+  },
+  "profile": {
+    "resetTitle": "Redefinir",
+    "resetMessage": "Isso excluirá permanentemente todo o seu progresso. Irreversível.",
+    "resetConfirm": "Redefinir",
+    "friend": "Amigo",
+    "xpTo": "para",
+    "stats": "Suas estatísticas",
+    "dayStreak": "Sequência",
+    "totalXP": "XP Total",
+    "habitsDone": "Hábitos",
+    "journalEntries": "Entradas",
+    "achievements": "Conquistas",
+    "subscriptionStatus": "Assinatura",
+    "premiumActive": "Premium Ativo",
+    "freePlan": "Plano Gratuito",
+    "restore": "Restaurar",
+    "manageSubscription": "Gerenciar Assinatura"
+  },
+  "quests": {
+    "title": "Missões Ghost",
+    "ghostMissions": "Missões Ghost Mode",
+    "ghostMissionsDesc": "são desafios bônus opcionais que te empurram além da sua rotina diária. Conclua-os para ganhar XP extra e desbloquear badges exclusivos.",
+    "progressLost": "Seu progresso será perdido. Ghost Mode não desiste — mas a escolha é sua.",
+    "cancel": "Cancelar",
+    "quit": "Sair da Missão"
+  },
+  "journal": {
+    "today": "Hoje"
   }
 }
