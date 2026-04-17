@@ -57,10 +57,12 @@ function QuestCard({
   quest,
   onPress,
   lang,
+  t,
 }: {
   quest: SideQuest;
   onPress: () => void;
   lang: "en" | "fr" | "pt";
+  t: (key: string, values?: Record<string, any>) => string;
 }) {
   const colors = useColors();
   const isActive = !!quest.startedAt && !quest.completedAt;
@@ -72,11 +74,11 @@ function QuestCard({
   const catColor = CATEGORY_COLORS[quest.category];
 
   return (
-    <Pressable
-      onPress={() => {
-        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-        onPress();
-      }}
+            <Pressable
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                onPress();
+              }}
       style={({ pressed }) => [
         styles.questCard,
         {
@@ -110,8 +112,8 @@ function QuestCard({
                 {getCategoryLabel(quest.category, lang)}
               </Text>
             </View>
-            <Text style={[styles.questDuration, { color: colors.muted }]}>
-              {quest.durationDays}d · +{quest.xpReward} XP
+                <Text style={[styles.questDuration, { color: colors.muted }]}>
+              {t("quests.durationFormat", { days: quest.durationDays, xp: quest.xpReward })}
             </Text>
           </View>
         </View>
@@ -133,7 +135,7 @@ function QuestCard({
             />
           </View>
           <Text style={[styles.progressText, { color: colors.muted }]}>
-            {lang === "fr" ? "Jour" : lang === "pt" ? "Dia" : "Day"} {daysElapsed} {lang === "fr" ? "sur" : lang === "pt" ? "de" : "of"} {quest.durationDays}
+            {t("quests.progressFormat", { current: daysElapsed, total: quest.durationDays })}
           </Text>
         </View>
       )}
@@ -308,6 +310,7 @@ export default function QuestsScreen() {
               quest={quest}
               onPress={() => setSelectedQuest(quest)}
               lang={lang}
+              t={t}
             />
           ))
         )}
@@ -336,7 +339,7 @@ export default function QuestsScreen() {
                   </Text>
                 </View>
                 <Text style={[styles.questDuration, { color: colors.muted }]}>
-                  {selectedQuest.durationDays} days · +{selectedQuest.xpReward} XP
+                  {t("quests.durationFormat", { days: selectedQuest.durationDays, xp: selectedQuest.xpReward })}
                 </Text>
               </View>
 
@@ -346,7 +349,7 @@ export default function QuestsScreen() {
               {selectedQuest.startedAt && !selectedQuest.completedAt && (
                 <View style={[styles.activeInfo, { backgroundColor: colors.surface, borderColor: colors.border }]}>
                   <Text style={[styles.activeInfoText, { color: colors.foreground }]}>
-                    Day {getDaysElapsed(selectedQuest.startedAt)} of {selectedQuest.durationDays}
+                    {t("quests.progressFormat", { current: getDaysElapsed(selectedQuest.startedAt), total: selectedQuest.durationDays })}
                   </Text>
                   <View style={[styles.progressTrack, { backgroundColor: colors.border }]}>
                     <View

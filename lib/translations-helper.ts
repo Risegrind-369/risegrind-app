@@ -16,6 +16,12 @@ export const HABIT_TRANSLATIONS: Record<string, Record<Language, string>> = {
   h5: { en: "Read", fr: "Lire", pt: "Ler" },
   h6: { en: "Cold Shower", fr: "Douche froide", pt: "Banho frio" },
   h7: { en: "Gratitude", fr: "Gratitude", pt: "Gratidão" },
+  ai_h1: { en: "Drink Water", fr: "Boire de l'eau", pt: "Beber água" },
+  ai_h2: { en: "Meditate", fr: "Méditer", pt: "Meditar" },
+  ai_h3: { en: "Exercise", fr: "Faire de l'exercice", pt: "Exercitar" },
+  ai_h4: { en: "Read", fr: "Lire", pt: "Ler" },
+  ai_h5: { en: "Journalize", fr: "Journaliser", pt: "Escrever no diário" },
+  ai_h6: { en: "Strength Training", fr: "Entraînement de force", pt: "Treinamento de força" },
 };
 
 export function getHabitName(habitId: string, language: Language): string {

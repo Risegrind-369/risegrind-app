@@ -321,7 +321,9 @@
     "shareBtn": "Compartilhar nos Stories",
     "shareDismiss": "Talvez mais tarde",
     "questCompleted": "Missão concluída!",
-    "questCompletedMsg": "Você ganhou {{xp}} XP. Ghost Mode nível acima."
+    "questCompletedMsg": "Você ganhou {{xp}} XP. Ghost Mode nível acima.",
+    "durationFormat": "{{days}}d · +{{xp}} XP",
+    "progressFormat": "Dia {{current}} de {{total}}"
   },
   "community": {
     "title": "Comunidade Fantasma",

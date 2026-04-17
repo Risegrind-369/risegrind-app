@@ -301,7 +301,9 @@
     "shareBtn": "Share to Stories",
     "shareDismiss": "Maybe Later",
     "questCompleted": "Quest Complete!",
-    "questCompletedMsg": "You earned {{xp}} XP. Ghost Mode level up."
+    "questCompletedMsg": "You earned {{xp}} XP. Ghost Mode level up.",
+    "durationFormat": "{{days}}d · +{{xp}} XP",
+    "progressFormat": "Day {{current}} of {{total}}"
   },
   "community": {
     "title": "Ghost Community",
