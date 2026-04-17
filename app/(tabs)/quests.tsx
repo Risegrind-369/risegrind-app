@@ -91,12 +91,12 @@ function QuestCard({
       {/* Status badge */}
       {isCompleted && (
         <View style={[styles.statusBadge, { backgroundColor: colors.success + "20" }]}>
-          <Text style={[styles.statusBadgeText, { color: colors.success }]}>✓ COMPLETED</Text>
+          <Text style={[styles.statusBadgeText, { color: colors.success }]}>✓ {lang === "fr" ? "COMPLÉTÉE" : lang === "pt" ? "CONCLUÍDA" : "COMPLETED"}</Text>
         </View>
       )}
       {isActive && (
         <View style={[styles.statusBadge, { backgroundColor: catColor + "20" }]}>
-          <Text style={[styles.statusBadgeText, { color: catColor }]}>⚡ IN PROGRESS</Text>
+          <Text style={[styles.statusBadgeText, { color: catColor }]}>⚡ {lang === "fr" ? "EN COURS" : lang === "pt" ? "EM PROGRESSO" : "IN PROGRESS"}</Text>
         </View>
       )}
 
@@ -133,7 +133,7 @@ function QuestCard({
             />
           </View>
           <Text style={[styles.progressText, { color: colors.muted }]}>
-            Day {daysElapsed} of {quest.durationDays}
+            {lang === "fr" ? "Jour" : lang === "pt" ? "Dia" : "Day"} {daysElapsed} {lang === "fr" ? "sur" : lang === "pt" ? "de" : "of"} {quest.durationDays}
           </Text>
         </View>
       )}

@@ -47,7 +47,7 @@ function HabitRow({
   };
 
   const removeLabel = lang === "fr" ? "Supprimer l'habitude" : lang === "pt" ? "Remover hábito" : "Remove Habit";
-  const removeMsg = `${lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove"} "${habit.name}"?`;
+  const removeMsg = `${lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove"} "${getHabitName(habit.id, lang)}"?`;
   const cancelLabel = lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel";
   const confirmLabel = lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove";
 
@@ -124,6 +124,8 @@ export default function RoutineScreen() {
   const [newHabitIcon, setNewHabitIcon] = useState("⭐");
   const [newHabitDuration, setNewHabitDuration] = useState("10");
   const [showComplete, setShowComplete] = useState(false);
+  const [showRecoveryQuest, setShowRecoveryQuest] = useState(false);
+  const [missedHabitId, setMissedHabitId] = useState<string | null>(null);
 
   const todayStr = new Date().toISOString().split("T")[0];
 
@@ -156,6 +158,9 @@ export default function RoutineScreen() {
       if (todayCompletions.length === state.habits.length) {
         dispatch({ type: "ADD_XP", payload: -50 });
       }
+      // Show Recovery Quest modal to help user recover streak
+      setMissedHabitId(habit.id);
+      setShowRecoveryQuest(true);
     }
   };
 
