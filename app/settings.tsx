@@ -16,10 +16,7 @@ export default function SettingsScreen() {
   const { state, dispatch } = useApp();
   const { colorScheme, setColorScheme } = useThemeContext();
 
-  const handleLanguageChange = (lang: "en" | "fr" | "pt") => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    i18n.changeLanguage(lang);
-  };
+  // Language is now locked after onboarding - no changes allowed
 
   const handleLogout = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -161,38 +158,25 @@ export default function SettingsScreen() {
           </View>
         </View>
 
-        {/* Language Section */}
+        {/* Language Section - Locked after onboarding */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, { color: colors.foreground }]}>
             {t("settings.language", { defaultValue: "Language" })}
           </Text>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-            {["en", "fr", "pt"].map((lang, idx) => (
-              <React.Fragment key={lang}>
-                <Pressable
-                  onPress={() => handleLanguageChange(lang as "en" | "fr" | "pt")}
-                  style={({ pressed }) => [
-                    styles.languageRow,
-                    {
-                      backgroundColor:
-                        i18n.language === lang ? colors.accent + "15" : "transparent",
-                      opacity: pressed ? 0.7 : 1,
-                    },
-                  ]}
-                >
-                  <Text style={styles.languageEmoji}>
-                    {lang === "en" ? "🇺🇸" : lang === "fr" ? "🇫🇷" : "🇧🇷"}
-                  </Text>
-                  <Text style={[styles.languageName, { color: colors.foreground }]}>
-                    {t(`lang.${lang}`)}
-                  </Text>
-                  {i18n.language === lang && (
-                    <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
-                  )}
-                </Pressable>
-                {idx < 2 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
-              </React.Fragment>
-            ))}
+            <View style={styles.languageRow}>
+              <Text style={styles.languageEmoji}>
+                {i18n.language === "en" ? "🇺🇸" : i18n.language === "fr" ? "🇫🇷" : "🇧🇷"}
+              </Text>
+              <Text style={[styles.languageName, { color: colors.foreground }]}>
+                {t(`lang.${i18n.language}`)}
+              </Text>
+              <Text style={[styles.checkmark, { color: colors.accent }]}>🔒</Text>
+            </View>
+            <View style={[styles.divider, { backgroundColor: colors.border }]} />
+            <Text style={[styles.lockedNote, { color: colors.muted }]}>
+              {t("settings.languageLocked", { defaultValue: "Language is locked and cannot be changed." })}
+            </Text>
           </View>
         </View>
 
@@ -299,6 +283,13 @@ const styles = StyleSheet.create({
   checkmark: {
     fontSize: 18,
     fontWeight: "700",
+  },
+  lockedNote: {
+    fontSize: 13,
+    fontWeight: "500",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    fontStyle: "italic",
   },
   dangerButton: {
     paddingVertical: 14,

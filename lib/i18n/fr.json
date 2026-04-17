@@ -471,11 +471,14 @@
     "subscription": "Abonnement",
     "managePlan": "Gérer l'abonnement",
     "language": "Langue",
+    "languageLocked": "La langue est verrouillée et ne peut pas être changée.",
     "logoutTitle": "Déconnexion ?",
     "logoutMessage": "Es-tu sûr de vouloir te déconnecter ?",
     "theme": "Thème",
     "light": "Clair",
-    "dark": "Sombre"
+    "dark": "Sombre",
+    "lightMode": "Clair",
+    "darkMode": "Sombre"
   },
   "profile": {
     "resetTitle": "Réinitialiser",

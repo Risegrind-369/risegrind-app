@@ -101,6 +101,8 @@ export interface AppState {
   isPremium: boolean;
   userProfile: UserProfile | null;
   generatedRoutine: GeneratedRoutine | null;
+  language: "en" | "fr" | "pt";
+  languageLocked: boolean;
 
   // Mood
   moodEntries: MoodEntry[];
@@ -129,6 +131,7 @@ export interface AppState {
 
 export type AppAction =
   | { type: "SET_ONBOARDED"; payload: { userName: string } }
+  | { type: "SET_LANGUAGE"; payload: { language: "en" | "fr" | "pt"; lock: boolean } }
   | { type: "SET_PREMIUM"; payload: boolean }
   | { type: "SET_USER_PROFILE"; payload: UserProfile }
   | { type: "SET_GENERATED_ROUTINE"; payload: GeneratedRoutine }
@@ -311,6 +314,8 @@ const INITIAL_STATE: AppState = {
   isPremium: false,
   userProfile: null,
   generatedRoutine: null,
+  language: "en",
+  languageLocked: false,
   moodEntries: [],
   todayMood: null,
   habits: DEFAULT_HABITS,
@@ -334,6 +339,12 @@ function todayStr(): string {
 
 function appReducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
+    case "SET_LANGUAGE":
+      return {
+        ...state,
+        language: action.payload.language,
+        languageLocked: action.payload.lock,
+      };
     case "SET_ONBOARDED":
       return { ...state, isOnboarded: true, userName: action.payload.userName };
 

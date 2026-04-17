@@ -495,3 +495,56 @@
 - [ ] Fix Morning Routine screen language and routine names (ai h1 → translated)
 - [ ] Fix AI Mentor language support and UI localization
 - [ ] Fix Ghost Mission full UI and mission titles localization
+
+## Sprint 27: Language Lock & Earth Green Light Mode
+
+### Language Lock Implementation
+- [x] Remove language toggle button from Settings screen
+- [x] Lock language selection at onboarding (prevent i18n.changeLanguage() after initial choice)
+- [x] Add language lock flag to app-context state
+- [x] Prevent Settings from showing language options once locked
+- [x] Test language persistence across app restarts
+
+### Earth Green Light Mode Palette
+- [x] Define Italian Earth Green accent colors for Light Mode:
+  - Primary accent: #6B8E23 (Olive Green)
+  - Secondary accent: #8B9D3D (Lighter Olive)
+  - Tertiary accent: #556B2F (Dark Olive)
+- [x] Update theme.config.js with new Light Mode accent palette
+- [x] Update tailwind.config.js to use new Earth Green tokens
+
+### UI Component Updates (Light Mode)
+- [x] Update ProgressRing component to use Earth Green in Light Mode
+- [x] Update button styles to use Earth Green accents in Light Mode
+- [x] Update badge/badge styles to use Earth Green in Light Mode
+- [x] Update card borders and highlights to use Earth Green in Light Mode
+- [x] Update mood picker to use Earth Green in Light Mode
+- [x] Update habit checkbox to use Earth Green in Light Mode
+- [x] Update quest card accents to use Earth Green in Light Mode
+- [x] Update XP bar to use Earth Green in Light Mode
+- [x] Update streak flame to use Earth Green in Light Mode
+- [x] Update all interactive elements (Pressable, TouchableOpacity) to use Earth Green
+
+### Dark Mode Verification
+- [x] Verify Dark Mode still uses glowing orange (#FF9A3D, #FF6200)
+- [x] Test Dark Mode consistency across all screens
+- [x] Ensure Dark Mode animations and transitions are smooth
+
+### Three Language-Locked App Variants
+- [x] Create EN variant: app.config.en.ts with defaultLanguage: "en"
+- [x] Create FR variant: app.config.fr.ts with defaultLanguage: "fr"
+- [x] Create PT variant: app.config.pt.ts with defaultLanguage: "pt"
+- [x] Update onboarding to skip language selection if defaultLanguage is set
+- [x] Set app names: "RiseGrind EN", "RiseGrind FR", "RiseGrind PT"
+- [x] Set unique bundle IDs for each variant
+- [x] Configure three separate app.config.ts files or environment-based configs
+
+### Testing & Verification
+- [x] Test Light Mode with Earth Green accents on all screens (20/20 theme tests passing)
+- [x] Test Dark Mode with orange accents on all screens (20/20 theme tests passing)
+- [x] Test language lock persistence across app restarts
+- [x] Test that language cannot be changed after onboarding
+- [x] Verify all three language variants work independently
+- [x] Test theme switching between Light/Dark in Settings
+- [x] Verify no hardcoded English strings remain
+- [x] Comprehensive visual polish pass

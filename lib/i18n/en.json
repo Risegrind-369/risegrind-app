@@ -451,11 +451,14 @@
     "subscription": "Subscription",
     "managePlan": "Manage Subscription",
     "language": "Language",
+    "languageLocked": "Language is locked and cannot be changed.",
     "logoutTitle": "Logout?",
     "logoutMessage": "Are you sure you want to logout?",
     "theme": "Theme",
     "light": "Light",
-    "dark": "Dark"
+    "dark": "Dark",
+    "lightMode": "Light",
+    "darkMode": "Dark"
   },
   "profile": {
     "resetTitle": "Reset All Data",

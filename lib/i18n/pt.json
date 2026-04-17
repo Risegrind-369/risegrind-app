@@ -471,11 +471,14 @@
     "subscription": "Assinatura",
     "managePlan": "Gerenciar Assinatura",
     "language": "Idioma",
+    "languageLocked": "O idioma está bloqueado e não pode ser alterado.",
     "logoutTitle": "Sair?",
     "logoutMessage": "Tem certeza que deseja sair?",
     "theme": "Tema",
     "light": "Claro",
-    "dark": "Escuro"
+    "dark": "Escuro",
+    "lightMode": "Claro",
+    "darkMode": "Escuro"
   },
   "profile": {
     "resetTitle": "Redefinir",
