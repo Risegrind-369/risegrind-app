@@ -126,6 +126,21 @@
     "featuresTitle": "What You Get",
     "unlock": "Unlock Ghost Mode"
   },
+  "trial": {
+    "title": "Free Trial Unlocked",
+    "subtitle": "3 Days of Full Access",
+    "daysOfFullAccess": "Days of full access to all premium features",
+    "includes": "Your trial includes:",
+    "unlimitedHabits": "Unlimited habits & tracking",
+    "aiJournal": "AI-powered journal analysis",
+    "voiceEntry": "Voice-to-text entries",
+    "sideQuests": "Exclusive side quests",
+    "advancedAnalytics": "Advanced analytics & insights",
+    "ghostCrew": "Ghost Crew community access",
+    "startTrial": "Start Your 3-Day Trial",
+    "viewPlans": "View Plans",
+    "cancelAnytime": "Cancel anytime. No credit card required."
+  },
   "paywallTrigger": {
     "title": "Your Free Trial Awaits",
     "subtitle": "Start your 3-day free trial – Full access to AI coach, unlimited habits, deep insights, and Ghost Mode tools. Then $4.99/month or $39.99/year – cancel anytime.",
@@ -279,6 +294,43 @@
       "3": "OK",
       "4": "Good",
       "5": "Great"
+    },
+    "dayLabels": {
+      "0": "Sun",
+      "1": "Mon",
+      "2": "Tue",
+      "3": "Wed",
+      "4": "Thu",
+      "5": "Fri",
+      "6": "Sat"
+    },
+    "monthNames": {
+      "0": "Jan",
+      "1": "Feb",
+      "2": "Mar",
+      "3": "Apr",
+      "4": "May",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aug",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Dec"
+    },
+    "monthShort": {
+      "0": "J",
+      "1": "F",
+      "2": "M",
+      "3": "A",
+      "4": "M",
+      "5": "J",
+      "6": "J",
+      "7": "A",
+      "8": "S",
+      "9": "O",
+      "10": "N",
+      "11": "D"
     }
   },
   "quests": {

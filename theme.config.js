@@ -4,7 +4,7 @@ const themeColors = {
   // Dark: Deep navy/black (#0A0A0A), glowing orange (#FF6200, #FF9A3D)
   // Light: Warm off-white (#F8F5F0), Italian Earth Green accents (#6B8E23, #8B9D3D, #556B2F)
   
-  primary: { light: '#F8F5F0', dark: '#0A0A0A' }, // Warm off-white (light) / Deep black (dark)
+  primary: { light: '#FF6200', dark: '#FF6200' }, // Glowing orange for progress ring and accents (both modes)
   background: { light: '#F8F5F0', dark: '#0A0A0A' }, // Premium light/dark backgrounds
   surface: { light: '#FFFFFF', dark: '#1A1A2E' }, // White cards (light) / Dark navy (dark)
   foreground: { light: '#1A1A1A', dark: '#F5F5F5' }, // Deep navy text (light) / Bright white (dark)

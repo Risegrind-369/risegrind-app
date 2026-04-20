@@ -25,26 +25,12 @@ export default function TrialRevealScreen() {
     try {
       setIsLoading(true);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-      if (isNativeBuild && trialPackage) {
-        // Purchase the trial product via RevenueCat (native build only)
-        const success = await purchasePackage(trialPackage);
-        if (success) {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-          router.replace("/(tabs)" as never);
-        } else {
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-        }
-      } else {
-        // In Expo Go/web: just grant trial access locally
-        // Store trial start time in AsyncStorage
-        const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
-        await AsyncStorage.setItem('trialStartedAt', Date.now().toString());
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-        router.replace("/(tabs)" as never);
-      }
+      
+      // Navigate to paywall to show pricing options
+      // User can choose to start trial or purchase a plan
+      router.push("/onboarding/paywall" as never);
     } catch (error) {
-      console.error('[TrialReveal] Error starting trial:', error);
+      console.error('[TrialReveal] Error navigating to paywall:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setIsLoading(false);
     }
@@ -114,7 +100,7 @@ export default function TrialRevealScreen() {
             <ActivityIndicator color="#fff" />
           ) : (
             <Text style={styles.ctaButtonText}>
-              {t("trial.startTrial", { defaultValue: "Start Your 3-Day Trial" })}
+              {t("trial.viewPlans", { defaultValue: "View Plans" })}
             </Text>
           )}
         </Pressable>

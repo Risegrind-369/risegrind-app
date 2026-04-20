@@ -53,7 +53,7 @@ function FilterTabs({
           <Text
             style={[
               styles.filterTabText,
-              { color: active === p ? "#fff" : colors.muted },
+              { color: active === p ? "#fff" : colors.foreground },
             ]}
           >
             {t(`insights.filters.${p}`)}
@@ -90,10 +90,9 @@ function CorrelationChart({
         const dateStr = d.toISOString().split("T")[0];
         const dayCompletions = completions.filter((c) => c.date === dateStr).length;
         const moodEntry = moodEntries.find((m) => m.date === dateStr);
-        const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-        const dayIdx = d.getDay() === 0 ? 6 : d.getDay() - 1;
+        const dayIdx = d.getDay();
         return {
-          label: dayLabels[dayIdx],
+          label: t(`insights.dayLabels.${dayIdx}`),
           habitsCount: dayCompletions,
           maxHabits: totalHabits,
           mood: moodEntry?.level ?? null,
@@ -138,9 +137,8 @@ function CorrelationChart({
           ? Math.round(monthMoods.reduce((s, m) => s + m.level, 0) / monthMoods.length) as MoodLevel
           : null;
         const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
-        const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
         return {
-          label: monthNames[monthDate.getMonth()],
+          label: t(`insights.monthNames.${monthDate.getMonth()}`),
           habitsCount: monthCompletions,
           maxHabits: totalHabits * daysInMonth,
           mood: avgMood,
@@ -158,9 +156,8 @@ function CorrelationChart({
         ? Math.round(monthMoods.reduce((s, m) => s + m.level, 0) / monthMoods.length) as MoodLevel
         : null;
       const daysInMonth = new Date(monthDate.getFullYear(), monthDate.getMonth() + 1, 0).getDate();
-      const monthNames = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
       return {
-        label: monthNames[monthDate.getMonth()],
+        label: t(`insights.monthShort.${monthDate.getMonth()}`),
         habitsCount: monthCompletions,
         maxHabits: totalHabits * daysInMonth,
         mood: avgMood,

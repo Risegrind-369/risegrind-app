@@ -126,6 +126,21 @@
     "featuresTitle": "Fonctionnalités",
     "unlock": "Débloquer"
   },
+  "trial": {
+    "title": "Essai Gratuit Dverrouille",
+    "subtitle": "3 Jours d'Acces Complet",
+    "daysOfFullAccess": "Jours d'acces complet a toutes les fonctionnalites premium",
+    "includes": "Votre essai comprend:",
+    "unlimitedHabits": "Habitudes illimitees et suivi",
+    "aiJournal": "Analyse de journal alimentee par l'IA",
+    "voiceEntry": "Entrees vocales en texte",
+    "sideQuests": "Quetes secondaires exclusives",
+    "advancedAnalytics": "Analyses et informations avancees",
+    "ghostCrew": "Acces a la communaute Ghost Crew",
+    "startTrial": "Commencer Votre Essai de 3 Jours",
+    "viewPlans": "Voir les Plans",
+    "cancelAnytime": "Annulez a tout moment. Aucune carte de credit requise."
+  },
   "paywallTrigger": {
     "title": "Votre essai gratuit vous attend",
     "subtitle": "Commencez votre essai gratuit de 3 jours – Accès complet au coach IA, habitudes illimitées, analyses approfondies et outils Ghost Mode. Puis 4,99 $/mois ou 39,99 $/an – annulez à tout moment.",
@@ -299,6 +314,43 @@
       "3": "OK",
       "4": "Bien",
       "5": "Super"
+    },
+    "dayLabels": {
+      "0": "Dim",
+      "1": "Lun",
+      "2": "Mar",
+      "3": "Mer",
+      "4": "Jeu",
+      "5": "Ven",
+      "6": "Sam"
+    },
+    "monthNames": {
+      "0": "Jan",
+      "1": "Fév",
+      "2": "Mar",
+      "3": "Avr",
+      "4": "Mai",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Aoû",
+      "8": "Sep",
+      "9": "Oct",
+      "10": "Nov",
+      "11": "Déc"
+    },
+    "monthShort": {
+      "0": "J",
+      "1": "F",
+      "2": "M",
+      "3": "A",
+      "4": "M",
+      "5": "J",
+      "6": "J",
+      "7": "A",
+      "8": "S",
+      "9": "O",
+      "10": "N",
+      "11": "D"
     }
   },
   "quests": {

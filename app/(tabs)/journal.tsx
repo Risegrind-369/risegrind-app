@@ -357,7 +357,7 @@ export default function JournalScreen() {
                 onPress={handleCloseEditor}
                 style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
-                <Text style={[styles.editorCancel, { color: colors.muted }]}>
+                <Text style={[styles.editorCancel, { color: colors.foreground }]}>
                   {t("common.cancel", { defaultValue: "Cancel" })}
                 </Text>
               </Pressable>

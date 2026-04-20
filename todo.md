@@ -594,3 +594,52 @@
 - [ ] Test restore purchases functionality
 - [ ] Verify paywall appears for non-premium users
 - [ ] Test subscription status persistence
+
+
+## Sprint 31: Visual Contrast & Translation Polish
+
+### Light Mode Contrast Fixes
+- [x] Fix progress ring: Use strong orange glow (#FF6200) on light background
+- [x] Fix "Early Riser" text: Use dark navy (#1A1A1A) instead of white
+- [x] Fix XP bar: Use orange accent with dark text for visibility
+- [x] Fix Routine screen habit names: Ensure all text is visible (not white on white)
+- [x] Fix Intel/Analytics buttons: Dark text or orange on light background
+- [x] Fix Intel Activity Calendar: Proper contrast for light mode
+- [x] Fix Quests filter buttons: Visible text (not white on white), orange for active state
+- [x] Fix "Accepter la mission" button: Visible on light background
+
+### Dark Mode Contrast Fixes
+- [x] Fix progress ring: Glowing orange (#FF6200), not black
+- [x] Fix "Early Riser" text: Orange or light color, not black on black
+- [x] Fix XP bar: Orange or light color for visibility
+- [x] Fix modal close button (X): Light color on dark background
+- [x] Fix all dark mode text: Ensure light text on dark backgrounds
+
+### Journal Screen Translations
+- [x] Fix "No entries yet" message: Translate to French/Portuguese
+- [x] Fix "Start writing to unlock AI" message: Translate to French/Portuguese
+- [x] Fix all placeholder texts: Ensure full translation
+- [x] Fix AI system prompts: Localized for each language
+- [x] Fix all journal labels and buttons: 100% translated
+
+### Quests/Side Quests Translations
+- [x] Fix mission titles: "7-day no social media" → French/Portuguese
+- [x] Fix "Digital Blackout" mission: Fully translated
+- [x] Fix all mission descriptions: 100% translated
+- [x] Fix filter buttons: "Tout", "Actif", "Disponible", "Terminé" → Proper translations
+- [x] Fix "Accepter la mission" button: Translated to "Accept Quest"
+- [x] Fix all quest-related text: No hardcoded English
+
+### Home Screen Translations
+- [x] Fix quote text: Ensure translated when language is French/Portuguese
+- [x] Fix all greeting messages: Fully localized
+- [x] Fix all button labels: 100% translated
+- [x] Fix streak and rank descriptions: Translated
+
+### General Polish
+- [x] Verify 100% translation coverage in French
+- [x] Verify 100% translation coverage in Portuguese
+- [x] Test all screens in Light Mode
+- [x] Test all screens in Dark Mode
+- [x] Verify all text has proper contrast
+- [x] Ensure premium Ghost Mode style is maintained

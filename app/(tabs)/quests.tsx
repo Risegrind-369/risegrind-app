@@ -280,7 +280,7 @@ export default function QuestsScreen() {
                 <Text
                   style={[
                     styles.filterTabText,
-                    { color: filter === f.key ? "#fff" : colors.muted },
+                    { color: filter === f.key ? "#fff" : colors.foreground },
                   ]}
                 >
                   {f.label} {f.count > 0 ? `(${f.count})` : ""}

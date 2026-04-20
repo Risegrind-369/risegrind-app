@@ -126,6 +126,21 @@
     "featuresTitle": "Recursos",
     "unlock": "Desbloquear"
   },
+  "trial": {
+    "title": "Teste Gratuito Desbloqueado",
+    "subtitle": "3 Dias de Acesso Completo",
+    "daysOfFullAccess": "Dias de acesso completo a todos os recursos premium",
+    "includes": "Seu teste inclui:",
+    "unlimitedHabits": "Habitos ilimitados e rastreamento",
+    "aiJournal": "Analise de diario alimentada por IA",
+    "voiceEntry": "Entradas de voz para texto",
+    "sideQuests": "Missoes secundarias exclusivas",
+    "advancedAnalytics": "Analises e insights avancados",
+    "ghostCrew": "Acesso a comunidade Ghost Crew",
+    "startTrial": "Comece Seu Teste de 3 Dias",
+    "viewPlans": "Ver Planos",
+    "cancelAnytime": "Cancele a qualquer momento. Nenhum cartao de credito necessario."
+  },
   "paywallTrigger": {
     "title": "Seu teste gratuito espera por você",
     "subtitle": "Comece seu teste gratuito de 3 dias – Acesso completo ao coach de IA, hábitos ilimitados, insights profundos e ferramentas Ghost Mode. Depois R$ 24,90/mês ou R$ 199,90/ano – cancele a qualquer momento.",
@@ -299,6 +314,43 @@
       "3": "OK",
       "4": "Bem",
       "5": "Ótimo"
+    },
+    "dayLabels": {
+      "0": "Dom",
+      "1": "Seg",
+      "2": "Ter",
+      "3": "Qua",
+      "4": "Qui",
+      "5": "Sex",
+      "6": "Sab"
+    },
+    "monthNames": {
+      "0": "Jan",
+      "1": "Fev",
+      "2": "Mar",
+      "3": "Abr",
+      "4": "Mai",
+      "5": "Jun",
+      "6": "Jul",
+      "7": "Ago",
+      "8": "Set",
+      "9": "Out",
+      "10": "Nov",
+      "11": "Dez"
+    },
+    "monthShort": {
+      "0": "J",
+      "1": "F",
+      "2": "M",
+      "3": "A",
+      "4": "M",
+      "5": "J",
+      "6": "J",
+      "7": "A",
+      "8": "S",
+      "9": "O",
+      "10": "N",
+      "11": "D"
     }
   },
   "quests": {
