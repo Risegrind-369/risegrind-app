@@ -548,3 +548,49 @@
 - [x] Test theme switching between Light/Dark in Settings
 - [x] Verify no hardcoded English strings remain
 - [x] Comprehensive visual polish pass
+
+## Sprint 28: RevenueCat In-App Purchases & Subscriptions
+
+### Setup & Dependencies
+- [ ] Install react-native-purchases (RevenueCat SDK)
+- [ ] Set up EXPO_PUBLIC_RC_API_KEY_IOS environment variable
+- [ ] Set up EXPO_PUBLIC_RC_API_KEY_ANDROID environment variable
+- [ ] Add iOS deployment target 15.1 to app.config.ts
+- [ ] Create RevenueCatProvider component with initialization
+
+### RevenueCat Provider Implementation
+- [ ] Initialize RevenueCat with API keys on app launch
+- [ ] Set up real-time customer info listener
+- [ ] Handle entitlement changes and subscription updates
+- [ ] Implement error handling and logging
+- [ ] Create useRevenueCat hook for accessing subscription state
+
+### Paywall Integration
+- [ ] Update paywall screen to use RevenueCat offerings
+- [ ] Display monthly and yearly pricing from RevenueCat
+- [ ] Implement purchase flow with error handling
+- [ ] Add "Try 3 Days Free" trial copy
+- [ ] Show loading states during purchase
+- [ ] Handle purchase success and errors
+
+### Subscription Management
+- [ ] Add subscription status to profile screen
+- [ ] Create "Manage Subscription" button linking to app store
+- [ ] Display current subscription tier and renewal date
+- [ ] Add restore purchases functionality
+- [ ] Show subscription benefits list
+
+### Premium Feature Gating
+- [ ] Gate habits creation behind premium entitlement
+- [ ] Gate AI insights behind premium entitlement
+- [ ] Gate voice journal behind premium entitlement
+- [ ] Gate side quests behind premium entitlement
+- [ ] Show paywall when accessing premium features without subscription
+
+### Testing & Verification
+- [ ] Test with RevenueCat sandbox credentials
+- [ ] Verify entitlement checking works correctly
+- [ ] Test purchase flow on iOS and Android
+- [ ] Test restore purchases functionality
+- [ ] Verify paywall appears for non-premium users
+- [ ] Test subscription status persistence
