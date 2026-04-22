@@ -522,6 +522,7 @@
     "ghost": "Fantasma",
     "subscription": "Assinatura",
     "managePlan": "Gerenciar Assinatura",
+    "trialExpires": "Teste expira em",
     "language": "Idioma",
     "languageLocked": "O idioma está bloqueado e não pode ser alterado.",
     "logoutTitle": "Sair?",

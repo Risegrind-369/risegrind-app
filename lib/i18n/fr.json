@@ -522,6 +522,7 @@
     "ghost": "Fantôme",
     "subscription": "Abonnement",
     "managePlan": "Gérer l'abonnement",
+    "trialExpires": "Essai expire dans",
     "language": "Langue",
     "languageLocked": "La langue est verrouillée et ne peut pas être changée.",
     "logoutTitle": "Déconnexion ?",

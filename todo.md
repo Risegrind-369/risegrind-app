@@ -655,3 +655,12 @@
 - [x] Verify purchase/trial flow works
 - [x] Verify Profile shows premium status with trial countdown
 - [x] Verify RevenueCat integration end-to-end
+
+
+## Sprint 33: Trial Countdown Timer in Settings
+
+- [ ] Check RevenueCat provider for trial expiration date
+- [ ] Create trial countdown calculation logic
+- [ ] Add trial timer section to Settings screen
+- [ ] Style trial timer with visual countdown and warning
+- [ ] Test trial timer display and accuracy

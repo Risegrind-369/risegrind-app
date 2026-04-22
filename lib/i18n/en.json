@@ -502,6 +502,7 @@
     "ghost": "Ghost",
     "subscription": "Subscription",
     "managePlan": "Manage Subscription",
+    "trialExpires": "Trial expires in",
     "language": "Language",
     "languageLocked": "Language is locked and cannot be changed.",
     "logoutTitle": "Logout?",

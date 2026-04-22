@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,7 @@ import { useApp } from "@/lib/app-context";
 import { useThemeContext } from "@/lib/theme-provider";
 import * as Haptics from "expo-haptics";
 import { showSuperwallPaywall } from "@/lib/superwall-provider";
+import { useRevenueCat } from "@/lib/revenuecat-provider";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -15,6 +16,63 @@ export default function SettingsScreen() {
   const { t, i18n } = useTranslation();
   const { state, dispatch } = useApp();
   const { colorScheme, setColorScheme } = useThemeContext();
+  const { isTrialActive, getTrialExpirationDate } = useRevenueCat();
+  const [trialTimeRemaining, setTrialTimeRemaining] = useState<string | null>(null);
+  const [trialExpirationDate, setTrialExpirationDate] = useState<Date | null>(null);
+
+  // Fetch trial expiration date and calculate remaining time
+  useEffect(() => {
+    const fetchTrialInfo = async () => {
+      if (!isTrialActive) {
+        setTrialTimeRemaining(null);
+        setTrialExpirationDate(null);
+        return;
+      }
+
+      const expirationDate = await getTrialExpirationDate();
+      if (!expirationDate) {
+        setTrialTimeRemaining(null);
+        setTrialExpirationDate(null);
+        return;
+      }
+
+      setTrialExpirationDate(expirationDate);
+      calculateTimeRemaining(expirationDate);
+    };
+
+    fetchTrialInfo();
+
+    // Update countdown every minute
+    const interval = setInterval(() => {
+      if (trialExpirationDate) {
+        calculateTimeRemaining(trialExpirationDate);
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [isTrialActive, getTrialExpirationDate]);
+
+  const calculateTimeRemaining = (expirationDate: Date) => {
+    const now = new Date();
+    const diffMs = expirationDate.getTime() - now.getTime();
+
+    if (diffMs <= 0) {
+      setTrialTimeRemaining(null);
+      return;
+    }
+
+    const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    const hours = Math.floor((diffMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+    const minutes = Math.floor((diffMs % (60 * 60 * 1000)) / (60 * 1000));
+
+    if (days > 0) {
+      setTrialTimeRemaining(`${days}d ${hours}h`);
+    } else if (hours > 0) {
+      setTrialTimeRemaining(`${hours}h ${minutes}m`);
+    } else {
+      setTrialTimeRemaining(`${minutes}m`);
+    }
+  };
 
   // Language is now locked after onboarding - no changes allowed
 
@@ -93,6 +151,20 @@ export default function SettingsScreen() {
             {t("settings.subscription", { defaultValue: "Subscription" })}
           </Text>
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+            {/* Trial Countdown Timer — only show if trial is active */}
+            {isTrialActive && trialTimeRemaining && (
+              <View style={[styles.trialTimerCard, { backgroundColor: colors.accent + "15", borderColor: colors.accent }]}>
+                <View style={styles.trialTimerContent}>
+                  <Text style={[styles.trialTimerLabel, { color: colors.muted }]}>
+                    {t("settings.trialExpires", { defaultValue: "Trial expires in" })}
+                  </Text>
+                  <Text style={[styles.trialTimerValue, { color: colors.accent }]}>
+                    {trialTimeRemaining}
+                  </Text>
+                </View>
+                <Text style={[styles.trialTimerEmoji]}>⏳</Text>
+              </View>
+            )}
             {/* Manage Subscription — shows Superwall paywall immediately, even during trial */}
             <Pressable
               onPress={async () => {
@@ -301,5 +373,33 @@ const styles = StyleSheet.create({
   dangerButtonText: {
     fontSize: 16,
     fontWeight: "700",
+  },
+  trialTimerCard: {
+    borderRadius: 14,
+    borderWidth: 1.5,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    marginHorizontal: 12,
+    marginBottom: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+  },
+  trialTimerContent: {
+    flex: 1,
+    gap: 4,
+  },
+  trialTimerLabel: {
+    fontSize: 13,
+    fontWeight: "500",
+  },
+  trialTimerValue: {
+    fontSize: 18,
+    fontWeight: "800",
+    letterSpacing: -0.5,
+  },
+  trialTimerEmoji: {
+    fontSize: 24,
+    marginLeft: 12,
   },
 });

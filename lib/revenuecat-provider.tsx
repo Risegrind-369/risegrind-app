@@ -47,6 +47,7 @@ export interface RevenueCatContextType {
   checkEntitlement: () => Promise<boolean>;
   getMonthlyPackage: () => any | null;
   getAnnualPackage: () => any | null;
+  getTrialExpirationDate: () => Promise<Date | null>;
 }
 
 // ─── Context ──────────────────────────────────────────────────────────────────
@@ -55,7 +56,7 @@ const RevenueCatContext = createContext<RevenueCatContextType | null>(null);
 // ─── Provider ─────────────────────────────────────────────────────────────────
 export function RevenueCatProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<
-    Omit<RevenueCatContextType, 'restorePurchases' | 'purchasePackage' | 'checkEntitlement' | 'isNativeBuild' | 'getMonthlyPackage' | 'getAnnualPackage'>
+    Omit<RevenueCatContextType, 'restorePurchases' | 'purchasePackage' | 'checkEntitlement' | 'isNativeBuild' | 'getMonthlyPackage' | 'getAnnualPackage' | 'getTrialExpirationDate'>
   >({
     isLoading: IS_NATIVE_BUILD, // if native, start loading; otherwise skip
     isPremium: false,
@@ -297,9 +298,26 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     return state.packages.find((p: any) => p.packageType === 'MONTHLY') ?? state.packages[0] ?? null;
   };
 
-  const getAnnualPackage = (): any | null => {
+    const getAnnualPackage = () => {
     if (!state.packages) return null;
     return state.packages.find((p: any) => p.packageType === 'ANNUAL') ?? null;
+  };
+
+  // ─── Get Trial Expiration Date ─────────────────────────────────────────
+  const getTrialExpirationDate = async (): Promise<Date | null> => {
+    try {
+      const AsyncStorage = await import('@react-native-async-storage/async-storage').then(m => m.default);
+      const trialStartedAt = await AsyncStorage.getItem('trialStartedAt');
+      if (!trialStartedAt) return null;
+      
+      const startTime = parseInt(trialStartedAt, 10);
+      const trialDurationMs = 3 * 24 * 60 * 60 * 1000; // 72 hours
+      const expirationTime = startTime + trialDurationMs;
+      return new Date(expirationTime);
+    } catch (err) {
+      console.warn('[RevenueCat] Error getting trial expiration date:', err);
+      return null;
+    }
   };
 
   return (
@@ -312,6 +330,7 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
         checkEntitlement,
         getMonthlyPackage,
         getAnnualPackage,
+        getTrialExpirationDate,
       }}
     >
       {children}
