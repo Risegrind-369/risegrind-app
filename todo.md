@@ -643,3 +643,15 @@
 - [x] Test all screens in Dark Mode
 - [x] Verify all text has proper contrast
 - [x] Ensure premium Ghost Mode style is maintained
+
+
+## Sprint 32: Verify Complete Onboarding & Paywall Flow
+
+- [x] Verify Language Selection screen exists and is locked
+- [x] Verify Onboarding screens (name, habits, mood) are complete
+- [x] Verify Trial Reveal screen shows 6 features
+- [x] Verify Trial Reveal navigates to Paywall
+- [x] Verify Paywall shows monthly/yearly pricing
+- [x] Verify purchase/trial flow works
+- [x] Verify Profile shows premium status with trial countdown
+- [x] Verify RevenueCat integration end-to-end
