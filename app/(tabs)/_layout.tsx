@@ -7,6 +7,9 @@ import * as Haptics from "expo-haptics";
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
+import { GlassOrb } from "@/components/glass-orb";
+import { usePathname } from "expo-router";
+import { useMemo } from "react";
 
 /**
  * Floating Connect Button — positioned at bottom-left, same height as AI FAB.
@@ -77,11 +80,31 @@ export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
+  const pathname = usePathname();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 60 + bottomPadding;
 
+  // Determine active tab index based on current route
+  const activeTabIndex = useMemo(() => {
+    if (pathname === "/" || pathname.startsWith("/(tabs)/index")) return 0;
+    if (pathname.startsWith("/(tabs)/journal")) return 1;
+    if (pathname.startsWith("/(tabs)/insights")) return 2;
+    if (pathname.startsWith("/(tabs)/quests")) return 3;
+    return 0;
+  }, [pathname]);
+
   return (
     <View style={{ flex: 1 }}>
+      {/* Glass Orb Indicator */}
+      {Platform.OS !== "web" && (
+        <GlassOrb
+          activeTabIndex={activeTabIndex}
+          tabCount={4}
+          tabBarHeight={tabBarHeight}
+          bottomInset={bottomPadding}
+        />
+      )}
+
       <Tabs
         screenOptions={{
           tabBarActiveTintColor: colors.accent,
