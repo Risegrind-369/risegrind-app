@@ -1,34 +1,22 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, Dimensions } from 'react-native';
+import { View, Dimensions, Platform } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
-  Easing,
-  withTiming,
 } from 'react-native-reanimated';
-import { BlurView } from 'expo-blur';
-import { useColors } from '@/hooks/use-colors';
 
 interface GlassOrbIndicatorProps {
-  /** Current active tab index (0 = Home, 1 = Quests, 2 = Journal, 3 = Profile, 4 = Settings) */
   activeTabIndex: number;
-  /** Number of tabs */
   tabCount: number;
-  /** Tab bar height (typically 56 + bottom inset) */
   tabBarHeight: number;
-  /** Bottom inset for safe area */
   bottomInset: number;
 }
 
 /**
- * iOS 17-style frosted glass orb that hovers above the active tab.
- * 
- * Features:
- * - Smooth animation when switching tabs
- * - Frosted glass morphism effect with subtle blur
- * - Positioned above active tab
- * - Neutral white/gray appearance
+ * iOS 17-style glass orb indicator that hovers above the active tab.
+ * Uses pure React Native styling (no native blur module required).
+ * Smooth spring animation when switching tabs.
  */
 export function GlassOrbIndicator({
   activeTabIndex,
@@ -36,24 +24,18 @@ export function GlassOrbIndicator({
   tabBarHeight,
   bottomInset,
 }: GlassOrbIndicatorProps) {
-  const colors = useColors();
   const screenWidth = Dimensions.get('window').width;
-  
-  // Each tab takes up equal width
   const tabWidth = screenWidth / tabCount;
-  
-  // Glass orb dimensions
-  const orbSize = 60; // Slightly larger than typical tab icon
-  const orbOffset = (tabWidth - orbSize) / 2; // Center within tab
-  
-  // Animated values
+  const orbSize = 60;
+  const orbOffset = (tabWidth - orbSize) / 2;
+
+  // Shared animated value for smooth X position
   const translateX = useSharedValue(activeTabIndex * tabWidth + orbOffset);
-  const opacity = useSharedValue(1);
 
   // Update position when active tab changes
   useEffect(() => {
     const targetX = activeTabIndex * tabWidth + orbOffset;
-    
+
     // Smooth spring animation for tab switching
     translateX.value = withSpring(targetX, {
       damping: 12,
@@ -65,69 +47,67 @@ export function GlassOrbIndicator({
   // Animated style for the glass orb
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
-    opacity: opacity.value,
   }));
+
+  // Position above tab bar
+  const bottom = tabBarHeight - orbSize / 2 - 8;
 
   return (
     <Animated.View
       style={[
-        styles.container,
         {
-          bottom: tabBarHeight - orbSize / 2 - 8, // Position above tab bar
+          position: 'absolute',
+          bottom,
+          left: 0,
           width: orbSize,
           height: orbSize,
+          zIndex: 10,
         },
         animatedStyle,
       ]}
+      pointerEvents="none"
     >
-      {/* Outer frosted glass layer */}
-      <BlurView intensity={40} style={styles.blurContainer}>
-        <View
-          style={[
-            styles.glassOrb,
-            {
-              backgroundColor: 'rgba(255, 255, 255, 0.15)',
-              borderColor: 'rgba(255, 255, 255, 0.3)',
-            },
-          ]}
-        />
-      </BlurView>
-
-      {/* Inner subtle glow layer */}
+      {/* Outer glass layer with border */}
       <View
-        style={[
-          styles.glassOrb,
-          {
-            backgroundColor: 'rgba(255, 255, 255, 0.08)',
-            borderColor: 'rgba(255, 255, 255, 0.15)',
+        style={{
+          width: orbSize,
+          height: orbSize,
+          borderRadius: orbSize / 2,
+          backgroundColor: 'rgba(255, 255, 255, 0.12)',
+          borderWidth: 1.5,
+          borderColor: 'rgba(255, 255, 255, 0.25)',
+          overflow: 'hidden',
+        }}
+      >
+        {/* Inner glow layer */}
+        <View
+          style={{
             position: 'absolute',
-            top: 2,
-            left: 2,
-            right: 2,
-            bottom: 2,
-          },
-        ]}
-      />
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            borderRadius: orbSize / 2,
+            backgroundColor: 'rgba(255, 255, 255, 0.08)',
+            borderWidth: 1,
+            borderColor: 'rgba(255, 255, 255, 0.15)',
+          }}
+        />
+
+        {/* Subtle highlight gradient effect (top-left) */}
+        <View
+          style={{
+            position: 'absolute',
+            top: 4,
+            left: 4,
+            width: orbSize / 3,
+            height: orbSize / 3,
+            borderRadius: orbSize / 6,
+            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            opacity: 0.6,
+          }}
+        />
+      </View>
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    left: 0,
-    zIndex: 10,
-  },
-  blurContainer: {
-    flex: 1,
-    borderRadius: 999,
-    overflow: 'hidden',
-  },
-  glassOrb: {
-    flex: 1,
-    borderRadius: 999,
-    borderWidth: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderColor: 'rgba(255, 255, 255, 0.3)',
-  },
-});
