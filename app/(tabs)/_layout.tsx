@@ -1,14 +1,12 @@
-import { Tabs, useRouter, usePathname } from "expo-router";
+import { Tabs, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
-import { useMemo } from "react";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { useColors } from "@/hooks/use-colors";
-import { GlassOrbIndicator } from "@/components/glass-orb-indicator";
 
 /**
  * Floating Connect Button — positioned at bottom-left, same height as AI FAB.
@@ -79,18 +77,8 @@ export default function TabLayout() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { t } = useTranslation();
-  const pathname = usePathname();
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 60 + bottomPadding;
-
-  // Determine active tab index based on current route
-  const activeTabIndex = useMemo(() => {
-    if (pathname === "/" || pathname.startsWith("/(tabs)/index")) return 0;
-    if (pathname.startsWith("/(tabs)/journal")) return 1;
-    if (pathname.startsWith("/(tabs)/insights")) return 2;
-    if (pathname.startsWith("/(tabs)/quests")) return 3;
-    return 0; // Default to home
-  }, [pathname]);
 
   return (
     <View style={{ flex: 1 }}>
@@ -170,16 +158,6 @@ export default function TabLayout() {
           }}
         />
       </Tabs>
-
-      {/* Glass Orb Indicator — hovers above active tab */}
-      {Platform.OS !== "web" && (
-        <GlassOrbIndicator
-          activeTabIndex={activeTabIndex}
-          tabCount={4}
-          tabBarHeight={tabBarHeight}
-          bottomInset={bottomPadding}
-        />
-      )}
 
       {/* Floating AI Button — above Intel tab, bottom-right */}
       <View
