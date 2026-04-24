@@ -17,20 +17,28 @@ interface TabBadgeProps {
    * "top-right" | "top-left" | "bottom-right" | "bottom-left"
    */
   position?: "top-right" | "top-left" | "bottom-right" | "bottom-left";
+  /**
+   * Whether this badge's tab is currently active.
+   * Triggers pulse animation when true.
+   */
+  isActive?: boolean;
 }
 
 /**
  * iOS-style notification badge for tab bar tabs.
- * Shows unread count with smooth animations.
+ * Shows unread count with smooth animations and pulse effect when tab is active.
  */
 export function TabBadge({
   count = 0,
   position = "top-right",
+  isActive = false,
 }: TabBadgeProps) {
   const colors = useColors();
 
   // Shared value for badge scale animation
   const scale = useSharedValue(count > 0 ? 1 : 0);
+  // Shared value for pulse animation when tab is active
+  const pulseScale = useSharedValue(1);
 
   React.useEffect(() => {
     scale.value = withSpring(count > 0 ? 1 : 0, {
@@ -40,9 +48,27 @@ export function TabBadge({
     });
   }, [count, scale]);
 
-  // Animated style for badge
+  // Trigger pulse animation when tab becomes active
+  React.useEffect(() => {
+    if (isActive && count > 0) {
+      pulseScale.value = withSpring(1.2, {
+        damping: 6,
+        mass: 0.8,
+        overshootClamping: false,
+      });
+      // Reset back to normal size
+      setTimeout(() => {
+        pulseScale.value = withSpring(1, {
+          damping: 10,
+          mass: 1,
+        });
+      }, 300);
+    }
+  }, [isActive, count, pulseScale]);
+
+  // Animated style for badge with pulse effect
   const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
+    transform: [{ scale: scale.value * pulseScale.value }],
     opacity: scale.value,
   }));
 
@@ -58,6 +84,9 @@ export function TabBadge({
   const displayCount = count > 99 ? "99+" : count.toString();
   const isBigNumber = displayCount.length > 1;
 
+  // Add subtle glow effect when active
+  const glowOpacity = isActive && count > 0 ? 0.6 : 0;
+
   return (
     <Animated.View
       style={[
@@ -70,6 +99,18 @@ export function TabBadge({
         },
       ]}
     >
+      {/* Glow effect when badge is active */}
+      {isActive && count > 0 && (
+        <View
+          style={[
+            styles.badgeGlow,
+            {
+              borderColor: colors.error || "#EF4444",
+              opacity: glowOpacity,
+            },
+          ]}
+        />
+      )}
       <View
         style={[
           styles.badge,
@@ -133,6 +174,19 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 4,
+  },
+
+  badgeGlow: {
+    position: "absolute",
+    width: "140%",
+    height: "140%",
+    borderRadius: 999,
+    borderWidth: 2,
+    shadowColor: "#EF4444",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 8,
   },
 
   badgeText: {
