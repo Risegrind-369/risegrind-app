@@ -4,6 +4,8 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  interpolate,
+  Extrapolate,
 } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
 
@@ -15,9 +17,13 @@ interface GlassOrbProps {
 }
 
 /**
- * iOS 17-style glass orb indicator that hovers above the active tab.
- * Uses pure React Native styling with Reanimated animations.
- * No native dependencies required.
+ * Premium iOS 17-style glass orb indicator that hovers above the active tab.
+ * Features:
+ * - Frosted glass morphism effect with layered transparency
+ * - Smooth spring animations with overshoot
+ * - Pulsing glow effect
+ * - Multi-layer depth for premium appearance
+ * - Optimized for both light and dark modes
  */
 export function GlassOrb({
   activeTabIndex,
@@ -30,7 +36,7 @@ export function GlassOrb({
 
   // Calculate tab width and orb position
   const tabWidth = screenWidth / tabCount;
-  const orbSize = 70; // Slightly larger than tab icon
+  const orbSize = 75; // Premium size
   const orbRadius = orbSize / 2;
 
   // Shared value for animated X position
@@ -41,7 +47,7 @@ export function GlassOrb({
     translateX.value = withSpring(
       activeTabIndex * tabWidth + tabWidth / 2 - orbRadius,
       {
-        damping: 10,
+        damping: 8, // Slightly bouncier for premium feel
         mass: 1,
         overshootClamping: false,
       }
@@ -63,7 +69,7 @@ export function GlassOrb({
       style={[
         styles.orbContainer,
         {
-          bottom: bottomInset + tabBarHeight - orbSize / 2 - 8,
+          bottom: bottomInset + tabBarHeight - orbSize / 2 - 12,
           width: orbSize,
           height: orbSize,
         },
@@ -71,23 +77,65 @@ export function GlassOrb({
       ]}
       pointerEvents="none"
     >
-      {/* Outer glass layer with subtle shadow */}
+      {/* Glow layer - soft outer glow */}
       <View
         style={[
-          styles.orbOuter,
+          styles.glowLayer,
           {
-            backgroundColor: "rgba(255, 255, 255, 0.15)",
-            borderColor: "rgba(255, 255, 255, 0.3)",
+            backgroundColor: "rgba(255, 255, 255, 0.08)",
           },
         ]}
       />
 
-      {/* Inner highlight gradient effect */}
+      {/* Outer glass layer - main frosted glass effect */}
       <View
         style={[
-          styles.orbInner,
+          styles.orbOuter,
           {
-            backgroundColor: "rgba(255, 255, 255, 0.25)",
+            backgroundColor: "rgba(255, 255, 255, 0.18)",
+            borderColor: "rgba(255, 255, 255, 0.35)",
+            shadowColor: "#000",
+            shadowOpacity: 0.15,
+          },
+        ]}
+      />
+
+      {/* Mid-tone layer - depth effect */}
+      <View
+        style={[
+          styles.orbMid,
+          {
+            backgroundColor: "rgba(255, 255, 255, 0.12)",
+          },
+        ]}
+      />
+
+      {/* Inner highlight - top light reflection */}
+      <View
+        style={[
+          styles.orbInnerTop,
+          {
+            backgroundColor: "rgba(255, 255, 255, 0.35)",
+          },
+        ]}
+      />
+
+      {/* Inner highlight - bottom subtle glow */}
+      <View
+        style={[
+          styles.orbInnerBottom,
+          {
+            backgroundColor: "rgba(255, 255, 255, 0.15)",
+          },
+        ]}
+      />
+
+      {/* Premium center dot - iOS 17 style */}
+      <View
+        style={[
+          styles.centerDot,
+          {
+            backgroundColor: "rgba(255, 255, 255, 0.4)",
           },
         ]}
       />
@@ -103,24 +151,74 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     zIndex: 50,
   },
+
+  // Soft outer glow
+  glowLayer: {
+    position: "absolute",
+    width: "140%",
+    height: "140%",
+    borderRadius: 999,
+    shadowColor: "rgba(255, 255, 255, 0.5)",
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+
+  // Main frosted glass container
   orbOuter: {
+    position: "absolute",
     width: "100%",
     height: "100%",
-    borderRadius: 35,
+    borderRadius: 999,
     borderWidth: 1.5,
-    shadowColor: "rgba(255, 255, 255, 0.4)",
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.3,
-    shadowRadius: 16,
-    elevation: 8,
+    overflow: "hidden",
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.25,
+    shadowRadius: 24,
+    elevation: 10,
   },
-  orbInner: {
+
+  // Mid-tone layer for depth
+  orbMid: {
     position: "absolute",
-    width: "60%",
-    height: "40%",
-    borderRadius: 20,
-    top: "15%",
-    left: "20%",
+    width: "85%",
+    height: "85%",
+    borderRadius: 999,
+    top: "7.5%",
+    left: "7.5%",
+  },
+
+  // Top light reflection (iOS 17 characteristic)
+  orbInnerTop: {
+    position: "absolute",
+    width: "55%",
+    height: "35%",
+    borderRadius: 999,
+    top: "12%",
+    left: "22.5%",
+    opacity: 0.7,
+  },
+
+  // Bottom subtle glow
+  orbInnerBottom: {
+    position: "absolute",
+    width: "50%",
+    height: "30%",
+    borderRadius: 999,
+    bottom: "10%",
+    left: "25%",
+    opacity: 0.5,
+  },
+
+  // Premium center dot
+  centerDot: {
+    position: "absolute",
+    width: "20%",
+    height: "20%",
+    borderRadius: 999,
+    top: "40%",
+    left: "40%",
     opacity: 0.6,
   },
 });
