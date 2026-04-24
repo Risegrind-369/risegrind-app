@@ -6,7 +6,9 @@ import Animated, {
   withSpring,
   interpolate,
   Extrapolate,
+  runOnJS,
 } from "react-native-reanimated";
+import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/use-colors";
 
 interface GlassOrbProps {
@@ -42,6 +44,13 @@ export function GlassOrb({
   // Shared value for animated X position
   const translateX = useSharedValue(activeTabIndex * tabWidth + tabWidth / 2 - orbRadius);
 
+  // Trigger haptic feedback when animation completes
+  const triggerHaptic = React.useCallback(() => {
+    if (Platform.OS !== "web") {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    }
+  }, []);
+
   // Update animation when active tab changes
   React.useEffect(() => {
     translateX.value = withSpring(
@@ -50,9 +59,13 @@ export function GlassOrb({
         damping: 8, // Slightly bouncier for premium feel
         mass: 1,
         overshootClamping: false,
+      },
+      () => {
+        // Trigger haptic feedback when animation completes
+        runOnJS(triggerHaptic)();
       }
     );
-  }, [activeTabIndex, tabWidth, translateX]);
+  }, [activeTabIndex, tabWidth, translateX, triggerHaptic]);
 
   // Animated style for the orb container
   const animatedStyle = useAnimatedStyle(() => ({
@@ -63,6 +76,11 @@ export function GlassOrb({
   if (Platform.OS === "web") {
     return null;
   }
+
+  // Haptic feedback on mount (initial tab)
+  React.useEffect(() => {
+    triggerHaptic();
+  }, []);
 
   return (
     <Animated.View

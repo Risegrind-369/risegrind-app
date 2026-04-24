@@ -6,10 +6,11 @@ import * as Haptics from "expo-haptics";
 
 import { HapticTab } from "@/components/haptic-tab";
 import { IconSymbol } from "@/components/ui/icon-symbol";
+import { TabBadge } from "@/components/tab-badge";
 import { useColors } from "@/hooks/use-colors";
 import { GlassOrb } from "@/components/glass-orb";
 import { usePathname } from "expo-router";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 /**
  * Floating Connect Button — positioned at bottom-left, same height as AI FAB.
@@ -84,6 +85,14 @@ export default function TabLayout() {
   const bottomPadding = Platform.OS === "web" ? 12 : Math.max(insets.bottom, 8);
   const tabBarHeight = 60 + bottomPadding;
 
+  // Unread counts for each tab (can be replaced with real data from state/API)
+  const [unreadCounts] = useState({
+    home: 0,
+    journal: 2,
+    insights: 0,
+    quests: 5,
+  });
+
   // Determine active tab index based on current route
   const activeTabIndex = useMemo(() => {
     if (pathname === "/" || pathname.startsWith("/(tabs)/index")) return 0;
@@ -131,7 +140,12 @@ export default function TabLayout() {
           name="index"
           options={{
             title: t("tabs.home", { defaultValue: "Home" }),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="house.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <View style={{ position: "relative" }}>
+                <IconSymbol size={24} name="house.fill" color={color} />
+                <TabBadge count={unreadCounts.home} position="top-right" />
+              </View>
+            ),
           }}
         />
 
@@ -159,7 +173,12 @@ export default function TabLayout() {
           name="journal"
           options={{
             title: t("tabs.journal", { defaultValue: "Journal" }),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="book.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <View style={{ position: "relative" }}>
+                <IconSymbol size={24} name="book.fill" color={color} />
+                <TabBadge count={unreadCounts.journal} position="top-right" />
+              </View>
+            ),
           }}
         />
 
@@ -168,7 +187,12 @@ export default function TabLayout() {
           name="insights"
           options={{
             title: t("tabs.intel", { defaultValue: "Intel" }),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="chart.bar.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <View style={{ position: "relative" }}>
+                <IconSymbol size={24} name="chart.bar.fill" color={color} />
+                <TabBadge count={unreadCounts.insights} position="top-right" />
+              </View>
+            ),
           }}
         />
 
@@ -177,7 +201,12 @@ export default function TabLayout() {
           name="quests"
           options={{
             title: t("tabs.quests", { defaultValue: "Quests" }),
-            tabBarIcon: ({ color }) => <IconSymbol size={24} name="star.fill" color={color} />,
+            tabBarIcon: ({ color }) => (
+              <View style={{ position: "relative" }}>
+                <IconSymbol size={24} name="star.fill" color={color} />
+                <TabBadge count={unreadCounts.quests} position="top-right" />
+              </View>
+            ),
           }}
         />
       </Tabs>
