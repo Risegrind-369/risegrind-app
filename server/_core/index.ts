@@ -8,6 +8,9 @@ import { appRouter } from "../routers";
 import { createContext } from "./context";
 import healthRoutes from "../routes/health";
 import socialRoutes from "../routes/social";
+import wearablesRoutes from "../routes/wearables";
+import insightsRoutes from "../routes/insights";
+import analyticsRoutes from "../routes/analytics";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -67,6 +70,15 @@ async function startServer() {
 
   // Register social routes
   app.use("/api/social", socialRoutes);
+
+  // Register wearables routes
+  app.use("/api/wearables", wearablesRoutes);
+
+  // Register insights routes
+  app.use("/api/insights", insightsRoutes);
+
+  // Register analytics routes
+  app.use("/api/analytics", analyticsRoutes);
 
   app.use(
     "/api/trpc",
