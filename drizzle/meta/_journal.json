@@ -43,6 +43,13 @@
       "when": 1776333232718,
       "tag": "0005_curious_hardball",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1777105569789,
+      "tag": "0006_curious_hercules",
+      "breakpoints": true
     }
   ]
 }

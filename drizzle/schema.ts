@@ -230,6 +230,71 @@ export type MotivationalQuote = typeof motivationalQuotes.$inferSelect;
 export type InsertMotivationalQuote = typeof motivationalQuotes.$inferInsert;
 
 /**
+ * Mentor Chat table for storing AI mentor conversations.
+ * Tracks all messages between user and AI mentor for context and history.
+ */
+export const mentorChats = mysqlTable("mentorChats", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Chat message content */
+  message: text("message").notNull(),
+  /** Role: 'user' or 'assistant' */
+  role: mysqlEnum("role", ["user", "assistant"]).notNull(),
+  /** Mentor personality used for this message */
+  mentorPersonality: varchar("mentorPersonality", { length: 50 }).default("supportive").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MentorChat = typeof mentorChats.$inferSelect;
+export type InsertMentorChat = typeof mentorChats.$inferInsert;
+
+/**
+ * Emotional Check-in table for tracking user's emotional state before habit tracking.
+ * Used for AI mentor to understand context and provide better coaching.
+ */
+export const emotionalCheckIns = mysqlTable("emotionalCheckIns", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Date of check-in */
+  date: date("date").notNull(),
+  /** Mood (1-5 scale: 1=Very Bad, 5=Very Good) */
+  mood: int("mood").notNull(),
+  /** Energy level (1-10 scale) */
+  energy: int("energy").notNull(),
+  /** Stress level (1-10 scale) */
+  stress: int("stress"),
+  /** User's notes about their emotional state */
+  notes: text("notes"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type EmotionalCheckIn = typeof emotionalCheckIns.$inferSelect;
+export type InsertEmotionalCheckIn = typeof emotionalCheckIns.$inferInsert;
+
+/**
+ * Habit Recommendations table for storing personalized daily recommendations.
+ * AI mentor generates these based on user's habits, success rates, and emotional state.
+ */
+export const habitRecommendations = mysqlTable("habitRecommendations", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  /** Date of recommendation */
+  date: date("date").notNull(),
+  /** Habit ID being recommended */
+  habitId: varchar("habitId", { length: 255 }).notNull(),
+  /** Reason for recommendation (e.g., "High success rate", "Complements other habits") */
+  reason: text("reason").notNull(),
+  /** Priority rank (1=highest) */
+  rank: int("rank").notNull(),
+  /** Whether user accepted this recommendation */
+  accepted: boolean("accepted").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type HabitRecommendation = typeof habitRecommendations.$inferSelect;
+export type InsertHabitRecommendation = typeof habitRecommendations.$inferInsert;
+
+/**
  * Weekly Reminder Log table for tracking when weekly reminders are sent.
  * Stores letter content, summary, and quotes shown in each weekly reminder.
  */

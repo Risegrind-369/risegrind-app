@@ -664,3 +664,288 @@
 - [ ] Add trial timer section to Settings screen
 - [ ] Style trial timer with visual countdown and warning
 - [ ] Test trial timer display and accuracy
+
+
+---
+
+## Phase 2: Core Mentor Features (Next)
+
+### AI Mentor Chat System
+- [ ] Create `/api/mentor/chat` endpoint
+- [ ] Set up Claude API integration
+- [ ] Build chat message storage (database)
+- [ ] Implement chat UI component
+- [ ] Add message history persistence
+- [ ] Create chat bubble styling (user vs. mentor)
+- [ ] Add typing indicator
+- [ ] Implement message loading states
+- [ ] Add error handling & retry logic
+- [ ] Create mentor welcome message
+
+### Emotional Check-in Before Tracking
+- [ ] Design emotional state schema (mood, energy)
+- [ ] Create `EmotionalCheckIn` component
+- [ ] Add mood selector (5 options with emojis)
+- [ ] Add energy level slider (1-10)
+- [ ] Store emotional state in database
+- [ ] Show check-in before habit logging
+- [ ] Create emotional history tracking
+- [ ] Add emotional trends visualization
+
+### Personalized Daily Recommendations
+- [ ] Create `/api/mentor/daily-recommendations` endpoint
+- [ ] Build recommendation ranking algorithm
+- [ ] Calculate habit success rates (30-day window)
+- [ ] Implement AI-powered habit ranking
+- [ ] Create `DailyRecommendations` component
+- [ ] Display top 3-5 recommended habits
+- [ ] Add "Why this habit?" explanations
+- [ ] Implement recommendation refresh (daily)
+- [ ] Track recommendation acceptance rate
+
+### Habit Difficulty Auto-adjustment
+- [ ] Create difficulty adjustment algorithm
+- [ ] Implement success rate calculation
+- [ ] Build auto-increase logic (>90% success)
+- [ ] Build auto-decrease logic (<50% success)
+- [ ] Create difficulty level schema (Easy, Medium, Hard, Expert)
+- [ ] Add difficulty adjustment notifications
+- [ ] Store difficulty history
+- [ ] Create difficulty trend chart
+
+### Mentor Personality Selection
+- [ ] Define 4 mentor personalities (Supportive, Challenging, Scientific, Friendly)
+- [ ] Create personality selector UI
+- [ ] Create system prompts for each personality
+- [ ] Store user's selected personality
+- [ ] Implement personality in AI responses
+- [ ] Add personality change option in Settings
+- [ ] Create personality preview (sample responses)
+
+---
+
+## Phase 3: Social + Accountability
+
+### Accountability Partner Matching
+- [ ] Create partner matching algorithm
+- [ ] Build match score calculation (habits, goals, mentor style)
+- [ ] Create `/api/partners/find-match` endpoint
+- [ ] Design partner request flow
+- [ ] Create partner profile view
+- [ ] Implement partner acceptance/rejection
+- [ ] Add partner activity feed
+- [ ] Create partner streak comparison
+- [ ] Build partner communication system
+- [ ] Add partner removal/unfriend option
+
+### Mentor Groups
+- [ ] Design group schema (name, goal, mentor style, members)
+- [ ] Create group creation flow
+- [ ] Build group discovery/search
+- [ ] Implement group join/leave
+- [ ] Create group activity feed
+- [ ] Add group chat (separate from mentor chat)
+- [ ] Build group leaderboard
+- [ ] Create group settings (public/private, rules)
+- [ ] Add group notifications
+
+### Leaderboards (Consistency-Based)
+- [ ] Design consistency score algorithm
+- [ ] Create `/api/leaderboards/consistency` endpoint
+- [ ] Build weekly consistency leaderboard
+- [ ] Build monthly consistency leaderboard
+- [ ] Build all-time consistency leaderboard
+- [ ] Create leaderboard UI component
+- [ ] Add user ranking display
+- [ ] Implement leaderboard filtering (by goal, mentor style)
+- [ ] Add leaderboard notifications (rank changes)
+
+### Shared Mentor Insights
+- [ ] Design insight sharing schema
+- [ ] Create insight generation algorithm
+- [ ] Build insight sharing UI
+- [ ] Implement insight comments/reactions
+- [ ] Create insight privacy controls
+- [ ] Add insight notifications
+
+### Community Challenges
+- [ ] Design challenge schema (name, goal, duration, reward)
+- [ ] Create challenge creation flow (admin only)
+- [ ] Build challenge discovery
+- [ ] Implement challenge join/leave
+- [ ] Create challenge progress tracking
+- [ ] Build challenge leaderboard
+- [ ] Add challenge rewards/badges
+- [ ] Create challenge notifications
+
+---
+
+## Phase 4: Health Integration
+
+### Apple Health Sync
+- [ ] Set up Apple HealthKit permissions
+- [ ] Create health data sync endpoint
+- [ ] Implement step count sync
+- [ ] Implement sleep data sync
+- [ ] Implement exercise data sync
+- [ ] Implement heart rate sync
+- [ ] Create health data storage schema
+- [ ] Build health data dashboard
+- [ ] Add health data visualization
+- [ ] Implement automatic daily sync
+
+### HRV + Stress Tracking
+- [ ] Design HRV schema
+- [ ] Create HRV data collection
+- [ ] Build stress score calculation
+- [ ] Create stress level categories (Low, Medium, High)
+- [ ] Add stress tracking UI
+- [ ] Implement stress trend chart
+- [ ] Create stress-habit correlation analysis
+- [ ] Add stress notifications (high stress alerts)
+
+### Wearable Device Integration
+- [ ] Implement Apple Watch integration
+- [ ] Implement Oura Ring integration
+- [ ] Implement Whoop integration
+- [ ] Create wearable data sync
+- [ ] Build wearable data dashboard
+- [ ] Add wearable notifications
+
+### Sleep Quality Impact Analysis
+- [ ] Create sleep-habit correlation algorithm
+- [ ] Build sleep quality score
+- [ ] Analyze sleep impact on habit success
+- [ ] Create sleep impact report
+- [ ] Add sleep recommendations based on habits
+- [ ] Build sleep trend visualization
+
+---
+
+## Phase 5: Advanced Analytics
+
+### Predictive Streak Break Alerts
+- [ ] Build streak break prediction model
+- [ ] Create prediction algorithm (ML-based)
+- [ ] Implement alert trigger logic
+- [ ] Create intervention suggestions
+- [ ] Add recovery plan generation
+- [ ] Build alert notification system
+- [ ] Create alert customization settings
+
+### Habit Correlation Analysis
+- [ ] Build habit correlation algorithm
+- [ ] Identify positive correlations (habits that help each other)
+- [ ] Identify negative correlations (habits that conflict)
+- [ ] Create correlation visualization
+- [ ] Add correlation insights
+- [ ] Build habit stacking recommendations
+
+### Success Pattern Identification
+- [ ] Analyze optimal time of day for each habit
+- [ ] Identify optimal environment/location
+- [ ] Find optimal habit sequence
+- [ ] Build pattern visualization
+- [ ] Create pattern-based recommendations
+- [ ] Add pattern insights to daily recommendations
+
+### AI-Written Weekly Reports
+- [ ] Create weekly report generation algorithm
+- [ ] Build report template
+- [ ] Implement AI report writing (Claude)
+- [ ] Add report personalization
+- [ ] Create report delivery (email, in-app, push)
+- [ ] Build report archive
+- [ ] Add report sharing option
+
+### Custom Dashboards
+- [ ] Design dashboard customization UI
+- [ ] Implement widget system
+- [ ] Create draggable widget layout
+- [ ] Add widget library (charts, stats, goals)
+- [ ] Build dashboard persistence
+- [ ] Create multiple dashboard support
+- [ ] Add dashboard templates
+
+---
+
+## Phase 6: Gamification
+
+### Mentor Level System
+- [ ] Design mentor level progression (1-50)
+- [ ] Create XP/points system
+- [ ] Build level unlock logic
+- [ ] Create new mentor style unlock at each level
+- [ ] Add level-up notifications
+- [ ] Build level progression visualization
+- [ ] Create level rewards
+
+### Habit Mastery Tiers
+- [ ] Design mastery tiers (Beginner, Consistent, Automatic, Master)
+- [ ] Create tier progression logic (based on streak + consistency)
+- [ ] Build tier unlock notifications
+- [ ] Add tier-specific rewards
+- [ ] Create tier progression chart
+- [ ] Add tier badges
+
+### Achievement Badges
+- [ ] Design badge system (50+ badges)
+- [ ] Create badge unlock logic
+- [ ] Build badge gallery
+- [ ] Add badge notifications
+- [ ] Create badge sharing
+- [ ] Build badge rarity levels (Common, Rare, Epic, Legendary)
+
+### Mentor Rewards
+- [ ] Design reward system
+- [ ] Create reward suggestions based on personality
+- [ ] Build reward marketplace
+- [ ] Implement reward redemption
+- [ ] Create reward notifications
+- [ ] Add reward customization
+
+### Seasonal Challenges
+- [ ] Design challenge templates
+- [ ] Create seasonal challenge calendar
+- [ ] Build challenge leaderboards
+- [ ] Implement challenge rewards
+- [ ] Create challenge notifications
+- [ ] Add challenge history
+
+---
+
+## Final: Build & Deploy
+
+### App Store Preparation
+- [ ] Create app store listing (title, description, keywords)
+- [ ] Design app store screenshots (5-8 images)
+- [ ] Create app preview video
+- [ ] Write app store description
+- [ ] Set up app pricing/freemium model
+- [ ] Create privacy policy
+- [ ] Create terms of service
+
+### Build & Testing
+- [ ] Build production APK
+- [ ] Build production iOS IPA
+- [ ] Test on real devices (iOS + Android)
+- [ ] Perform security audit
+- [ ] Load testing (simulate 1000+ concurrent users)
+- [ ] Beta testing with 100+ users
+
+### Deployment
+- [ ] Submit to Google Play Store
+- [ ] Submit to Apple App Store
+- [ ] Set up app store optimization (ASO)
+- [ ] Create launch marketing plan
+- [ ] Set up analytics (Firebase, Mixpanel)
+- [ ] Create support/help center
+- [ ] Set up customer support email
+
+### Post-Launch
+- [ ] Monitor app store reviews
+- [ ] Track user retention metrics
+- [ ] Monitor crash reports
+- [ ] Implement user feedback loop
+- [ ] Plan Phase 2 improvements based on feedback
+- [ ] Create roadmap for future updates
