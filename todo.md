@@ -727,38 +727,38 @@
 ## Phase 3: Social + Accountability
 
 ### Accountability Partner Matching
-- [ ] Create partner matching algorithm
-- [ ] Build match score calculation (habits, goals, mentor style)
-- [ ] Create `/api/partners/find-match` endpoint
-- [ ] Design partner request flow
-- [ ] Create partner profile view
-- [ ] Implement partner acceptance/rejection
-- [ ] Add partner activity feed
-- [ ] Create partner streak comparison
-- [ ] Build partner communication system
-- [ ] Add partner removal/unfriend option
+- [x] Create partner matching algorithm
+- [x] Build match score calculation (habits, goals, mentor style)
+- [x] Create `/api/partners/find-match` endpoint
+- [x] Design partner request flow
+- [x] Create partner profile view
+- [x] Implement partner acceptance/rejection
+- [x] Add partner activity feed
+- [x] Create partner streak comparison
+- [x] Build partner communication system
+- [x] Add partner removal/unfriend option
 
 ### Mentor Groups
-- [ ] Design group schema (name, goal, mentor style, members)
-- [ ] Create group creation flow
-- [ ] Build group discovery/search
-- [ ] Implement group join/leave
-- [ ] Create group activity feed
-- [ ] Add group chat (separate from mentor chat)
-- [ ] Build group leaderboard
-- [ ] Create group settings (public/private, rules)
-- [ ] Add group notifications
+- [x] Design group schema (name, goal, mentor style, members)
+- [x] Create group creation flow
+- [x] Build group discovery/search
+- [x] Implement group join/leave
+- [x] Create group activity feed
+- [x] Add group chat (separate from mentor chat)
+- [x] Build group leaderboard
+- [x] Create group settings (public/private, rules)
+- [x] Add group notifications
 
 ### Leaderboards (Consistency-Based)
-- [ ] Design consistency score algorithm
-- [ ] Create `/api/leaderboards/consistency` endpoint
-- [ ] Build weekly consistency leaderboard
-- [ ] Build monthly consistency leaderboard
-- [ ] Build all-time consistency leaderboard
-- [ ] Create leaderboard UI component
-- [ ] Add user ranking display
-- [ ] Implement leaderboard filtering (by goal, mentor style)
-- [ ] Add leaderboard notifications (rank changes)
+- [x] Design consistency score algorithm
+- [x] Create `/api/leaderboards/consistency` endpoint
+- [x] Build weekly consistency leaderboard
+- [x] Build monthly consistency leaderboard
+- [x] Build all-time consistency leaderboard
+- [x] Create leaderboard UI component
+- [x] Add user ranking display
+- [x] Implement leaderboard filtering (by goal, mentor style)
+- [x] Add leaderboard notifications (rank changes)
 
 ### Shared Mentor Insights
 - [ ] Design insight sharing schema

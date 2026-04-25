@@ -26,6 +26,128 @@ export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
 /**
+ * Accountability partners table for Phase 3 social features
+ */
+export const accountabilityPartners = mysqlTable("accountabilityPartners", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  partnerId: int("partnerId").notNull(),
+  status: mysqlEnum("status", ["pending", "accepted", "rejected", "ended"]).default("pending").notNull(),
+  matchScore: int("matchScore"), // 0-100 compatibility score
+  commonGoals: text("commonGoals"), // JSON array of shared goals
+  startDate: date("startDate"),
+  endDate: date("endDate"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AccountabilityPartner = typeof accountabilityPartners.$inferSelect;
+export type InsertAccountabilityPartner = typeof accountabilityPartners.$inferInsert;
+
+/**
+ * Mentor groups for community habit tracking
+ */
+export const mentorGroups = mysqlTable("mentorGroups", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  creatorId: int("creatorId").notNull(),
+  habitFocus: varchar("habitFocus", { length: 100 }), // e.g., "meditation", "fitness"
+  memberCount: int("memberCount").default(1),
+  visibility: mysqlEnum("visibility", ["public", "private"]).default("public"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type MentorGroup = typeof mentorGroups.$inferSelect;
+export type InsertMentorGroup = typeof mentorGroups.$inferInsert;
+
+/**
+ * Group membership table
+ */
+export const groupMembers = mysqlTable("groupMembers", {
+  id: int("id").autoincrement().primaryKey(),
+  groupId: int("groupId").notNull(),
+  userId: int("userId").notNull(),
+  role: mysqlEnum("role", ["member", "moderator", "admin"]).default("member"),
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+});
+
+export type GroupMember = typeof groupMembers.$inferSelect;
+export type InsertGroupMember = typeof groupMembers.$inferInsert;
+
+/**
+ * Leaderboard entries for consistency-based ranking
+ */
+export const leaderboardEntries = mysqlTable("leaderboardEntries", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  groupId: int("groupId"),
+  consistencyScore: int("consistencyScore").default(0), // 0-100 based on completion rate
+  currentStreak: int("currentStreak").default(0),
+  longestStreak: int("longestStreak").default(0),
+  completedHabits: int("completedHabits").default(0),
+  totalHabits: int("totalHabits").default(0),
+  rank: int("rank"),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type LeaderboardEntry = typeof leaderboardEntries.$inferSelect;
+export type InsertLeaderboardEntry = typeof leaderboardEntries.$inferInsert;
+
+/**
+ * Shared mentor insights for community learning
+ */
+export const sharedInsights = mysqlTable("sharedInsights", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  groupId: int("groupId"),
+  insight: text("insight").notNull(), // AI-generated or user-written insight
+  habitId: varchar("habitId", { length: 255 }),
+  likes: int("likes").default(0),
+  shares: int("shares").default(0),
+  visibility: mysqlEnum("visibility", ["public", "group", "private"]).default("group"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type SharedInsight = typeof sharedInsights.$inferSelect;
+export type InsertSharedInsight = typeof sharedInsights.$inferInsert;
+
+/**
+ * Community challenges for group engagement
+ */
+export const communityChallenges = mysqlTable("communityChallenges", {
+  id: int("id").autoincrement().primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  description: text("description"),
+  groupId: int("groupId"),
+  habitId: varchar("habitId", { length: 255 }).notNull(),
+  duration: int("duration").notNull(), // in days
+  startDate: date("startDate").notNull(),
+  endDate: date("endDate").notNull(),
+  participantCount: int("participantCount").default(0),
+  reward: varchar("reward", { length: 255 }), // e.g., "badge", "points"
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type CommunityChallenge = typeof communityChallenges.$inferSelect;
+export type InsertCommunityChallenge = typeof communityChallenges.$inferInsert;
+
+/**
+ * Challenge participation tracking
+ */
+export const challengeParticipants = mysqlTable("challengeParticipants", {
+  id: int("id").autoincrement().primaryKey(),
+  challengeId: int("challengeId").notNull(),
+  userId: int("userId").notNull(),
+  completionRate: int("completionRate").default(0), // 0-100%
+  status: mysqlEnum("status", ["active", "completed", "failed", "abandoned"]).default("active"),
+  joinedAt: timestamp("joinedAt").defaultNow().notNull(),
+  completedAt: timestamp("completedAt"),
+});
+
+export type ChallengeParticipant = typeof challengeParticipants.$inferSelect;
+export type InsertChallengeParticipant = typeof challengeParticipants.$inferInsert;
+
+/**
  * User profile table for storing personalized onboarding answers.
  * Used to personalize AI mentor, routine generation, and insights.
  */
