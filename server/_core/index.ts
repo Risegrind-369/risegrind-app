@@ -11,6 +11,7 @@ import socialRoutes from "../routes/social";
 import wearablesRoutes from "../routes/wearables";
 import insightsRoutes from "../routes/insights";
 import analyticsRoutes from "../routes/analytics";
+import gamificationRoutes from "../routes/gamification";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -79,6 +80,9 @@ async function startServer() {
 
   // Register analytics routes
   app.use("/api/analytics", analyticsRoutes);
+
+  // Register gamification routes
+  app.use("/api/gamification", gamificationRoutes);
 
   app.use(
     "/api/trpc",
