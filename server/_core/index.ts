@@ -6,6 +6,8 @@ import { createExpressMiddleware } from "@trpc/server/adapters/express";
 import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
+import healthRoutes from "../routes/health";
+import socialRoutes from "../routes/social";
 
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -59,6 +61,12 @@ async function startServer() {
   app.get("/api/health", (_req, res) => {
     res.json({ ok: true, timestamp: Date.now() });
   });
+
+  // Register health routes
+  app.use("/api/health", healthRoutes);
+
+  // Register social routes
+  app.use("/api/social", socialRoutes);
 
   app.use(
     "/api/trpc",
