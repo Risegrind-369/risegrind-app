@@ -113,7 +113,7 @@ function QuestCard({
               </Text>
             </View>
                 <Text style={[styles.questDuration, { color: colors.muted }]}>
-              {t("quests.durationFormat", { days: quest.durationDays, xp: quest.xpReward })}
+              {t("quests.durationFormat", { defaultValue: `${quest.durationDays} days • ${quest.xpReward} XP`, days: quest.durationDays, xp: quest.xpReward })}
             </Text>
           </View>
         </View>
@@ -339,7 +339,7 @@ export default function QuestsScreen() {
                   </Text>
                 </View>
                 <Text style={[styles.questDuration, { color: colors.muted }]}>
-                  {t("quests.durationFormat", { days: selectedQuest.durationDays, xp: selectedQuest.xpReward })}
+                  {t("quests.durationFormat", { defaultValue: `${selectedQuest.durationDays} days • ${selectedQuest.xpReward} XP`, days: selectedQuest.durationDays, xp: selectedQuest.xpReward })}
                 </Text>
               </View>
 
