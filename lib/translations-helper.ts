@@ -24,8 +24,19 @@ export const HABIT_TRANSLATIONS: Record<string, Record<Language, string>> = {
   ai_h6: { en: "Strength Training", fr: "Entraînement de force", pt: "Treinamento de força" },
 };
 
+/**
+ * Get habit name from ID (for default habits) or return the name directly (for custom habits).
+ * For custom habits, pass the habit name as habitId parameter.
+ * For default habits (h1, h2, etc.), it will look up the translation.
+ */
 export function getHabitName(habitId: string, language: Language): string {
-  return HABIT_TRANSLATIONS[habitId]?.[language] || habitId;
+  // Check if it's a default habit (h1, h2, etc.)
+  if (HABIT_TRANSLATIONS[habitId]) {
+    return HABIT_TRANSLATIONS[habitId][language];
+  }
+  // For custom habits, habitId is actually the habit name (passed from habit.name)
+  // Return it as-is since it's already the user-provided name
+  return habitId;
 }
 
 // ─── Mood Labels ──────────────────────────────────────────────────────────────

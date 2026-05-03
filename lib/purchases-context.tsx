@@ -12,6 +12,9 @@ export interface PurchasesState {
   isLoading: boolean;
   customerInfo: unknown | null;
   offerings: unknown | null;
+  trialDaysRemaining: number | null; // null if not on trial, 0-7 if on trial
+  trialStartDate: number | null; // timestamp when trial started
+  trialEndDate: number | null; // timestamp when trial ends
 }
 
 interface PurchasesContextValue extends PurchasesState {
@@ -31,6 +34,9 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
     isLoading: true,
     customerInfo: null,
     offerings: null,
+    trialDaysRemaining: null,
+    trialStartDate: null,
+    trialEndDate: null,
   });
 
   useEffect(() => {
@@ -40,7 +46,7 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
   async function initRevenueCat() {
     if (Platform.OS === "web") {
       // Web: skip native SDK, grant premium for demo
-      setState({ isPremium: true, isLoading: false, customerInfo: null, offerings: null });
+      setState({ isPremium: true, isLoading: false, customerInfo: null, offerings: null, trialDaysRemaining: null, trialStartDate: null, trialEndDate: null });
       return;
     }
 
@@ -54,12 +60,32 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
       const info = await Purchases.getCustomerInfo();
       const premium = info.entitlements.active["premium"] !== undefined;
       const offerings = await Purchases.getOfferings();
+      
+      // Calculate trial status
+      let trialDaysRemaining = null;
+      let trialStartDate = null;
+      let trialEndDate = null;
+      
+      if (info.entitlements.active["trial"]) {
+        const trial = info.entitlements.active["trial"];
+        if (trial.expirationDate) {
+          const now = Date.now();
+          const expiration = new Date(trial.expirationDate).getTime();
+          const daysLeft = Math.ceil((expiration - now) / (1000 * 60 * 60 * 24));
+          trialDaysRemaining = Math.max(0, daysLeft);
+          trialEndDate = expiration;
+          trialStartDate = expiration - (7 * 24 * 60 * 60 * 1000); // Assume 7-day trial
+        }
+      }
 
       setState({
         isPremium: premium,
         isLoading: false,
         customerInfo: info,
         offerings,
+        trialDaysRemaining,
+        trialStartDate,
+        trialEndDate,
       });
     } catch (e) {
       console.warn("RevenueCat init failed:", e);
@@ -73,7 +99,25 @@ export function PurchasesProvider({ children }: { children: React.ReactNode }) {
       const Purchases = (await import("react-native-purchases")).default;
       const info = await Purchases.getCustomerInfo();
       const premium = info.entitlements.active["premium"] !== undefined;
-      setState((prev) => ({ ...prev, isPremium: premium, customerInfo: info }));
+      
+      // Calculate trial status
+      let trialDaysRemaining = null;
+      let trialStartDate = null;
+      let trialEndDate = null;
+      
+      if (info.entitlements.active["trial"]) {
+        const trial = info.entitlements.active["trial"];
+        if (trial.expirationDate) {
+          const now = Date.now();
+          const expiration = new Date(trial.expirationDate).getTime();
+          const daysLeft = Math.ceil((expiration - now) / (1000 * 60 * 60 * 24));
+          trialDaysRemaining = Math.max(0, daysLeft);
+          trialEndDate = expiration;
+          trialStartDate = expiration - (7 * 24 * 60 * 60 * 1000);
+        }
+      }
+      
+      setState((prev) => ({ ...prev, isPremium: premium, customerInfo: info, trialDaysRemaining, trialStartDate, trialEndDate }));
       return premium;
     } catch {
       return state.isPremium;

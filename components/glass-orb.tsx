@@ -38,11 +38,15 @@ export function GlassOrb({
 
   // Calculate tab width and orb position
   const tabWidth = screenWidth / tabCount;
-  const orbSize = 75; // Premium size
-  const orbRadius = orbSize / 2;
+  const orbWidth = 60; // Oval width
+  const orbHeight = 32; // Smaller height, fits within tab bar
+  const orbRadius = orbWidth / 2;
 
   // Shared value for animated X position
   const translateX = useSharedValue(activeTabIndex * tabWidth + tabWidth / 2 - orbRadius);
+  
+  // Shared value for animated Y position (slight bounce effect)
+  const translateY = useSharedValue(0);
 
   // Trigger haptic feedback when animation completes
   const triggerHaptic = React.useCallback(() => {
@@ -65,7 +69,7 @@ export function GlassOrb({
         runOnJS(triggerHaptic)();
       }
     );
-  }, [activeTabIndex, tabWidth, translateX, triggerHaptic]);
+  }, [activeTabIndex, tabWidth, orbRadius, translateX, triggerHaptic]);
 
   // Animated style for the orb container
   const animatedStyle = useAnimatedStyle(() => ({
@@ -87,9 +91,9 @@ export function GlassOrb({
       style={[
         styles.orbContainer,
         {
-          bottom: bottomInset + tabBarHeight - orbSize / 2 - 12,
-          width: orbSize,
-          height: orbSize,
+          bottom: bottomInset + 14, // Position in middle of tab bar
+          width: orbWidth,
+          height: orbHeight,
         },
         animatedStyle,
       ]}
@@ -173,70 +177,70 @@ const styles = StyleSheet.create({
   // Soft outer glow
   glowLayer: {
     position: "absolute",
-    width: "140%",
-    height: "140%",
+    width: "120%",
+    height: "150%",
     borderRadius: 999,
     shadowColor: "rgba(255, 255, 255, 0.5)",
     shadowOffset: { width: 0, height: 0 },
-    shadowOpacity: 0.4,
-    shadowRadius: 20,
-    elevation: 12,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 8,
   },
 
-  // Main frosted glass container
+  // Main frosted glass container (oval)
   orbOuter: {
     position: "absolute",
     width: "100%",
     height: "100%",
-    borderRadius: 999,
-    borderWidth: 1.5,
+    borderRadius: 16, // Oval shape with rounded corners
+    borderWidth: 1,
     overflow: "hidden",
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.25,
-    shadowRadius: 24,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.2,
+    shadowRadius: 12,
+    elevation: 8,
   },
 
   // Mid-tone layer for depth
   orbMid: {
     position: "absolute",
-    width: "85%",
-    height: "85%",
-    borderRadius: 999,
-    top: "7.5%",
-    left: "7.5%",
+    width: "90%",
+    height: "80%",
+    borderRadius: 14,
+    top: "10%",
+    left: "5%",
   },
 
   // Top light reflection (iOS 17 characteristic)
   orbInnerTop: {
     position: "absolute",
-    width: "55%",
-    height: "35%",
-    borderRadius: 999,
-    top: "12%",
-    left: "22.5%",
-    opacity: 0.7,
+    width: "60%",
+    height: "40%",
+    borderRadius: 12,
+    top: "8%",
+    left: "20%",
+    opacity: 0.6,
   },
 
   // Bottom subtle glow
   orbInnerBottom: {
     position: "absolute",
-    width: "50%",
-    height: "30%",
-    borderRadius: 999,
-    bottom: "10%",
-    left: "25%",
-    opacity: 0.5,
+    width: "55%",
+    height: "35%",
+    borderRadius: 12,
+    bottom: "8%",
+    left: "22.5%",
+    opacity: 0.4,
   },
 
   // Premium center dot
   centerDot: {
     position: "absolute",
-    width: "20%",
-    height: "20%",
-    borderRadius: 999,
-    top: "40%",
-    left: "40%",
-    opacity: 0.6,
+    width: "15%",
+    height: "25%",
+    borderRadius: 8,
+    top: "37.5%",
+    left: "42.5%",
+    opacity: 0.5,
   },
 });

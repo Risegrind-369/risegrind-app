@@ -47,7 +47,7 @@ function HabitRow({
   };
 
   const removeLabel = lang === "fr" ? "Supprimer l'habitude" : lang === "pt" ? "Remover hábito" : "Remove Habit";
-  const removeMsg = `${lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove"} "${getHabitName(habit.id, lang)}"?`;
+  const removeMsg = `${lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove"} "${getHabitName(habit.name || habit.id, lang)}"?`;
   const cancelLabel = lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel";
   const confirmLabel = lang === "fr" ? "Supprimer" : lang === "pt" ? "Remover" : "Remove";
 
@@ -94,7 +94,7 @@ function HabitRow({
               },
             ]}
           >
-            {getHabitName(habit.id, lang as "en" | "fr" | "pt")}
+            {getHabitName(habit.name || habit.id, lang as "en" | "fr" | "pt")}
           </Text>
           {habit.durationMin > 0 && (
             <Text style={[styles.habitDuration, { color: colors.muted }]}>

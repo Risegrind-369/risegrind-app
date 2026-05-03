@@ -226,6 +226,7 @@ export default function PaywallScreen() {
 
         {/* CTA */}
         <Animated.View entering={FadeInDown.delay(500).duration(600)} style={styles.ctaSection}>
+          {/* Trial Button — Primary CTA */}
           <Pressable
             onPress={handlePurchase}
             disabled={isLoading}
@@ -241,18 +242,25 @@ export default function PaywallScreen() {
             {isLoading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.ctaText}>
-                {t("paywall.unlock", { defaultValue: "Unlock Ghost Mode" })}
-              </Text>
+              <View style={{ alignItems: "center", gap: 2 }}>
+                <Text style={styles.ctaText}>
+                  {t("paywall.startTrial", { defaultValue: "Start 7-Day Free Trial" })}
+                </Text>
+                <Text style={[styles.ctaSubtext, { color: "rgba(255,255,255,0.85)" }]}>
+                  {t("paywall.thenPay", { defaultValue: `Then ${selectedPlan === "yearly" ? "$59.99/year" : "$9.99/month"}` })}
+                </Text>
+              </View>
             )}
           </Pressable>
 
+          {/* Trial Info */}
           <Text style={[styles.legalText, { color: colors.muted }]}>
-            {t("paywall.terms", {
-              defaultValue: "Cancel anytime. No questions asked.",
+            {t("paywall.trialTerms", {
+              defaultValue: "7 days free, then your plan begins. Cancel anytime before trial ends.",
             })}
           </Text>
 
+          {/* Restore Button */}
           <Pressable
             onPress={handleRestore}
             style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
@@ -394,6 +402,11 @@ const styles = StyleSheet.create({
     fontSize: 17,
     fontWeight: "700",
     letterSpacing: 0.2,
+  },
+  ctaSubtext: {
+    fontSize: 13,
+    fontWeight: "500",
+    letterSpacing: 0.1,
   },
   legalText: {
     fontSize: 12,
