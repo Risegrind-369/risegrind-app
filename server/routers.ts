@@ -7,9 +7,13 @@ import { invokeLLM } from "./_core/llm";
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import { getSearchContextForEntry } from "./web-search";
+import { accountRouter } from "./routes/account";
+import { webhooksRouter } from "./routes/webhooks";
 
 export const appRouter = router({
   system: systemRouter,
+  account: accountRouter,
+  webhooks: webhooksRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
