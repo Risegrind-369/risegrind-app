@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { seedAppState } from "./seed-data";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -504,23 +503,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       .then((raw) => {
         if (raw) {
           const saved = JSON.parse(raw) as Partial<AppState>;
+          // Restore today's mood
           const today = todayStr();
-          const todayMood = saved.moodEntries?.find((m) => m.date === today) ?? null;
+          const todayMood = saved.moodEntries?.find((m: MoodEntry) => m.date === today) ?? null;
           dispatch({ type: "LOAD_STATE", payload: { ...saved, todayMood } });
         } else {
-          // First load: seed with 14 days of fake data for demo/screenshots
-          const seeded = seedAppState(["h1", "h2", "h3", "h4", "h5"]);
-          const today = todayStr();
-          const todayMood = seeded.moodEntries.find((m) => m.date === today) ?? null;
-          dispatch({
-            type: "LOAD_STATE",
-            payload: {
-              ...INITIAL_STATE,
-              moodEntries: seeded.moodEntries,
-              completions: seeded.completions,
-              todayMood,
-            },
-          });
+          dispatch({ type: "SET_LOADING", payload: false });
         }
       })
       .catch(() => dispatch({ type: "SET_LOADING", payload: false }));
