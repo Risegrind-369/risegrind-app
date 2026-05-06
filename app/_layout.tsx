@@ -38,6 +38,7 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
+import { useSessionRestoration } from "@/lib/use-session-restoration";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -98,6 +99,9 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  // Restore session on app launch (check stored tokens, refresh if needed)
+  useSessionRestoration();
+
   // On web we override the SafeArea contexts with values from the parent iframe.
   // Start from the stable module-level metrics so SafeAreaProvider never gets
   // a new initialMetrics reference.

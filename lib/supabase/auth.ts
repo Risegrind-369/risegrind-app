@@ -178,3 +178,45 @@ export async function restoreSessionFromStorage() {
     return null;
   }
 }
+
+/**
+ * Complete logout: sign out from Supabase + clear tokens + clear session
+ * This is the authoritative logout function
+ */
+export async function completeLogout() {
+  try {
+    console.log("[Auth] Starting complete logout...");
+
+    // 1. Sign out from Supabase
+    if (supabase) {
+      const { error } = await supabase.auth.signOut();
+      if (error) {
+        console.warn("[Auth] Supabase signOut error (non-fatal):", error);
+      } else {
+        console.log("[Auth] Supabase signOut successful");
+      }
+    }
+
+    // 2. Clear stored tokens
+    await clearAuthTokens();
+    console.log("[Auth] Tokens cleared from secure storage");
+
+    // 3. Clear Supabase session
+    if (supabase) {
+      await supabase.auth.setSession(null);
+      console.log("[Auth] Supabase session cleared");
+    }
+
+    console.log("[Auth] Complete logout successful");
+    return { success: true };
+  } catch (error) {
+    console.error("[Auth] Error during complete logout:", error);
+    // Even if there's an error, try to clear tokens
+    try {
+      await clearAuthTokens();
+    } catch (clearError) {
+      console.error("[Auth] Failed to clear tokens during error recovery:", clearError);
+    }
+    throw error;
+  }
+}
