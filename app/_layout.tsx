@@ -73,7 +73,8 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const segmentsKey = segments.join("/");
 
   useEffect(() => {
-    console.log("[OnboardingGuard] Effect running. State:", {
+    console.log("\n========== [ONBOARDING GUARD] EFFECT RUNNING ==========");
+    console.log("[GUARD] Current state:", {
       isLoading: state.isLoading,
       isLanguageLoaded,
       isMigrating,
@@ -83,24 +84,28 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     });
 
     if (state.isLoading || !isLanguageLoaded || isMigrating) {
-      console.log("[OnboardingGuard] Skipping - waiting for state/language/migration to load");
+      console.log("[GUARD] Waiting for state/language/migration to load");
+      console.log("========== [ONBOARDING GUARD] EFFECT END (waiting) ==========\n");
       return;
     }
     if (isNavigating.current) {
-      console.log("[OnboardingGuard] Skipping - navigation already in progress");
+      console.log("[GUARD] Navigation already in progress");
+      console.log("========== [ONBOARDING GUARD] EFFECT END (navigating) ==========\n");
       return;
     }
 
     const inOnboarding = (segments[0] as string) === "onboarding";
     const inAuth = (segments[0] as string) === "auth";
-    console.log("[OnboardingGuard] Route check:", { inOnboarding, inAuth, needsMigration });
+    console.log("[GUARD] Route analysis:", { inOnboarding, inAuth, needsMigration });
 
     // Check for migration first (highest priority)
     if (needsMigration && !inAuth) {
-      console.log("[OnboardingGuard] Redirecting to claim-account screen");
+      console.log("[GUARD] MIGRATION DETECTED - Redirecting to /auth/claim-account");
       isNavigating.current = true;
       router.replace("/auth/claim-account" as never);
+      console.log("[GUARD] Navigation call made to router.replace()");
       setTimeout(() => { isNavigating.current = false; }, 500);
+      console.log("========== [ONBOARDING GUARD] EFFECT END (migration redirect) ==========\n");
       return;
     }
 
@@ -203,6 +208,7 @@ export default function RootLayout() {
                     <Stack screenOptions={{ headerShown: false }}>
                       <Stack.Screen name="(tabs)" />
                       <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+                      <Stack.Screen name="auth" options={{ animation: "slide_from_right" }} />
                       <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
                       <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
                       <Stack.Screen name="oauth/callback" />
