@@ -33,9 +33,9 @@ export default function Step1NameAgeScreen() {
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Store in route params for the next step
+    // Navigate to account creation step
     router.push({
-      pathname: "/onboarding/step2-empathy",
+      pathname: "/onboarding/create-account",
       params: { name: name.trim(), age: age.trim() },
     } as never);
   };

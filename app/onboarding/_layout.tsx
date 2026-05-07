@@ -18,6 +18,8 @@ export default function OnboardingLayout() {
       <Stack.Screen name="index" />
       {/* Step 1: Name + Age */}
       <Stack.Screen name="step1-name-age" />
+      {/* Account Creation */}
+      <Stack.Screen name="create-account" />
       {/* Step 2: Empathy question */}
       <Stack.Screen name="step2-empathy" />
       {/* Step 3: Future goal question */}

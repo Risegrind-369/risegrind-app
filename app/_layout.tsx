@@ -39,7 +39,6 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { useSessionRestoration } from "@/lib/use-session-restoration";
-import { useMigrationDetector } from "@/lib/use-migration-detector";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -61,7 +60,6 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { language, isLanguageLoaded } = useLanguage();
   const segments = useSegments();
   const router = useRouter();
-  const { needsMigration, isMigrating } = useMigrationDetector();
 
   // Guard against repeated navigation: only allow one redirect per "decision cycle".
   // router.replace() causes Expo Router to update segments, which re-runs the effect;
@@ -77,14 +75,12 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     console.log("[GUARD] Current state:", {
       isLoading: state.isLoading,
       isLanguageLoaded,
-      isMigrating,
-      isNavigating: isNavigating.current,
-      needsMigration,
+      isOnboarded: state.isOnboarded,
       segments: segments.join("/"),
     });
 
-    if (state.isLoading || !isLanguageLoaded || isMigrating) {
-      console.log("[GUARD] Waiting for state/language/migration to load");
+    if (state.isLoading || !isLanguageLoaded) {
+      console.log("[GUARD] Waiting for state/language to load");
       console.log("========== [ONBOARDING GUARD] EFFECT END (waiting) ==========\n");
       return;
     }
@@ -95,38 +91,38 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     }
 
     const inOnboarding = (segments[0] as string) === "onboarding";
-    const inAuth = (segments[0] as string) === "auth";
-    console.log("[GUARD] Route analysis:", { inOnboarding, inAuth, needsMigration });
+    console.log("[GUARD] Route analysis:", { inOnboarding, isOnboarded: state.isOnboarded });
 
-    // Check for migration first (highest priority)
-    if (needsMigration && !inAuth) {
-      console.log("[GUARD] MIGRATION DETECTED - Redirecting to /auth/claim-account");
-      isNavigating.current = true;
-      router.replace("/auth/claim-account" as never);
-      console.log("[GUARD] Navigation call made to router.replace()");
-      setTimeout(() => { isNavigating.current = false; }, 500);
-      console.log("========== [ONBOARDING GUARD] EFFECT END (migration redirect) ==========\n");
-      return;
-    }
+    // Simple routing logic:
+    // 1. If no language selected and not in onboarding → show language selection
+    // 2. If not onboarded and not in onboarding → show onboarding
+    // 3. If onboarded and in onboarding → go to home
+    // 4. Otherwise stay where you are
 
     if (!language && !inOnboarding) {
+      console.log("[GUARD] No language selected - redirecting to language selection");
       isNavigating.current = true;
       router.replace("/onboarding/language" as never);
-      // Release the lock after the navigation settles (next tick is enough).
       setTimeout(() => { isNavigating.current = false; }, 500);
+      console.log("========== [ONBOARDING GUARD] EFFECT END (language redirect) ==========\n");
       return;
     }
+
     if (!state.isOnboarded && !inOnboarding) {
+      console.log("[GUARD] Not onboarded and not in onboarding - starting onboarding flow");
       isNavigating.current = true;
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
+      console.log("========== [ONBOARDING GUARD] EFFECT END (onboarding redirect) ==========\n");
     } else if (state.isOnboarded && inOnboarding) {
+      console.log("[GUARD] Onboarded but in onboarding - going to home");
       isNavigating.current = true;
       router.replace("/(tabs)" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
+      console.log("========== [ONBOARDING GUARD] EFFECT END (home redirect) ==========\n");
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded, needsMigration, isMigrating]);
+  }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);
 
   return <>{children}</>;
 }
