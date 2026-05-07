@@ -57,6 +57,13 @@
       "when": 1777106258799,
       "tag": "0007_regular_gorgon",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1778132947741,
+      "tag": "0008_concerned_vin_gonzales",
+      "breakpoints": true
     }
   ]
 }

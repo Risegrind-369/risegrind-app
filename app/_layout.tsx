@@ -39,6 +39,7 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { useSessionRestoration } from "@/lib/use-session-restoration";
+import { useMigrationDetector } from "@/lib/use-migration-detector";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -60,6 +61,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const { language, isLanguageLoaded } = useLanguage();
   const segments = useSegments();
   const router = useRouter();
+  const { needsMigration, isMigrating } = useMigrationDetector();
 
   // Guard against repeated navigation: only allow one redirect per "decision cycle".
   // router.replace() causes Expo Router to update segments, which re-runs the effect;
@@ -71,10 +73,19 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const segmentsKey = segments.join("/");
 
   useEffect(() => {
-    if (state.isLoading || !isLanguageLoaded) return;
+    if (state.isLoading || !isLanguageLoaded || isMigrating) return;
     if (isNavigating.current) return;
 
     const inOnboarding = (segments[0] as string) === "onboarding";
+    const inAuth = (segments[0] as string) === "auth";
+
+    // Check for migration first (highest priority)
+    if (needsMigration && !inAuth) {
+      isNavigating.current = true;
+      router.replace("/auth/claim-account" as never);
+      setTimeout(() => { isNavigating.current = false; }, 500);
+      return;
+    }
 
     if (!language && !inOnboarding) {
       isNavigating.current = true;
@@ -93,7 +104,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       setTimeout(() => { isNavigating.current = false; }, 500);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);
+  }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded, needsMigration, isMigrating]);
 
   return <>{children}</>;
 }

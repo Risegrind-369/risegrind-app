@@ -20,6 +20,7 @@ export const users = mysqlTable("users", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
+  supabase_user_id: varchar("supabase_user_id", { length: 255 }).unique(),
 });
 
 export type User = typeof users.$inferSelect;

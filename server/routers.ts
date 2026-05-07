@@ -9,11 +9,13 @@ import { storagePut } from "./storage";
 import { getSearchContextForEntry } from "./web-search";
 import { accountRouter } from "./routes/account";
 import { webhooksRouter } from "./routes/webhooks";
+import { authMigrationRouter } from "./routes/auth-migration";
 
 export const appRouter = router({
   system: systemRouter,
   account: accountRouter,
   webhooks: webhooksRouter,
+  authMigration: authMigrationRouter,
   auth: router({
     me: publicProcedure.query((opts) => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {

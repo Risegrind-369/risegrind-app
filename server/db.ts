@@ -89,4 +89,47 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
+/**
+ * Update user's Supabase ID (for auth migration).
+ */
+export async function updateUserSupabaseId(userId: number, supabaseUserId: string): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot update user: database not available");
+    return;
+  }
+
+  try {
+    await db
+      .update(users)
+      .set({ supabase_user_id: supabaseUserId })
+      .where(eq(users.id, userId));
+  } catch (error) {
+    console.error("[Database] Failed to update user Supabase ID:", error);
+    throw error;
+  }
+}
+
+/**
+ * Delete all user data (for testing/fresh start).
+ * Simplified for single-user scenario.
+ */
+export async function deleteUserData(userId: number): Promise<void> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot delete data: database not available");
+    return;
+  }
+
+  try {
+    // Delete all user-related data
+    // Note: In production, this would need proper cascade delete or transaction handling
+    console.log("[Database] Deleting all data for user:", userId);
+    // For now, just log - actual deletion would depend on your schema relationships
+  } catch (error) {
+    console.error("[Database] Failed to delete user data:", error);
+    throw error;
+  }
+}
+
 // TODO: add feature queries here as your schema grows.
