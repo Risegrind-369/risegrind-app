@@ -1,6 +1,6 @@
 import { router, publicProcedure } from "../_core/trpc";
 import { z } from "zod";
-import { db } from "../db";
+import { updateUserSupabaseId, deleteUserData } from "../db";
 
 /**
  * Auth migration procedures for Supabase integration.
@@ -28,7 +28,7 @@ export const authMigrationRouter = router({
       try {
         // Update user with Supabase ID
         // Note: In a single-user migration, we just update the one user
-        await db.updateUserSupabaseId(ctx.user.id, supabaseUserId);
+        await updateUserSupabaseId(ctx.user.id, supabaseUserId);
 
         return {
           success: true,
@@ -62,10 +62,10 @@ export const authMigrationRouter = router({
 
       try {
         // Delete all user data (simplified for single user)
-        await db.deleteUserData(ctx.user.id);
+        await deleteUserData(ctx.user.id);
 
         // Update user with Supabase ID
-        await db.updateUserSupabaseId(ctx.user.id, supabaseUserId);
+        await updateUserSupabaseId(ctx.user.id, supabaseUserId);
 
         return {
           success: true,
