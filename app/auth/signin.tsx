@@ -1,4 +1,13 @@
-import React, { useState, useEffect } from "react";
+/**
+ * Sign In Screen
+ *
+ * Allows existing users to sign in with email and password.
+ * Integrates with Supabase Auth.
+ * Links to:
+ * - Forgot password flow
+ * - Sign up (onboarding account creation)
+ */
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -31,7 +40,7 @@ export default function SignInScreen() {
         const { accessToken } = await retrieveAuthTokens();
         if (accessToken) {
           // User already has a session, redirect to home
-          router.back();
+          router.replace("/(tabs)" as never);
         }
       } catch (error) {
         console.error("[SignIn] Error checking session:", error);
@@ -72,8 +81,8 @@ export default function SignInScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      // Navigate to home screen
-      router.back();
+      // Navigate to home screen (skip rest of onboarding since they're returning)
+      router.replace("/(tabs)" as never);
     } catch (error: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
@@ -93,11 +102,15 @@ export default function SignInScreen() {
   };
 
   const handleForgotPassword = () => {
-    router.back();
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Navigate to forgot password screen
+    router.push("/auth/forgot-password" as never);
   };
 
   const handleSignUpLink = () => {
-    router.push("/auth/signup");
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Navigate to onboarding account creation (not auth/signup)
+    router.push("/onboarding/create-account" as never);
   };
 
   if (isCheckingSession) {
@@ -174,10 +187,10 @@ export default function SignInScreen() {
               >
                 Password
               </Text>
-              <Pressable onPress={handleForgotPassword}>
+              <Pressable onPress={handleForgotPassword} disabled={isLoading}>
                 <Text
                   className="text-sm font-semibold"
-                  style={{ color: colors.primary }}
+                  style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
                 >
                   Forgot?
                 </Text>
@@ -213,8 +226,8 @@ export default function SignInScreen() {
             style={({ pressed }) => [
               {
                 backgroundColor: colors.primary,
-                opacity: pressed ? 0.8 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
+                opacity: pressed && !isLoading ? 0.8 : 1,
+                transform: [{ scale: pressed && !isLoading ? 0.98 : 1 }],
               },
             ]}
             className="py-4 rounded-lg items-center mt-4"
@@ -236,10 +249,10 @@ export default function SignInScreen() {
             >
               Don't have an account?
             </Text>
-            <Pressable onPress={handleSignUpLink}>
+            <Pressable onPress={handleSignUpLink} disabled={isLoading}>
               <Text
                 className="text-base font-semibold"
-                style={{ color: colors.primary }}
+                style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
               >
                 Sign Up
               </Text>

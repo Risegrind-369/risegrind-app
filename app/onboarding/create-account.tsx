@@ -94,9 +94,8 @@ export default function CreateAccountScreen() {
 
   const handleSignIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Navigate to sign-in screen (not yet implemented in onboarding)
-    // For now, we'll just show a message
-    // TODO: Implement sign-in screen or redirect to auth/signin
+    // Navigate to sign-in screen
+    router.push("/auth/signin" as never);
   };
 
   return (
