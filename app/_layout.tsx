@@ -73,14 +73,31 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const segmentsKey = segments.join("/");
 
   useEffect(() => {
-    if (state.isLoading || !isLanguageLoaded || isMigrating) return;
-    if (isNavigating.current) return;
+    console.log("[OnboardingGuard] Effect running. State:", {
+      isLoading: state.isLoading,
+      isLanguageLoaded,
+      isMigrating,
+      isNavigating: isNavigating.current,
+      needsMigration,
+      segments: segments.join("/"),
+    });
+
+    if (state.isLoading || !isLanguageLoaded || isMigrating) {
+      console.log("[OnboardingGuard] Skipping - waiting for state/language/migration to load");
+      return;
+    }
+    if (isNavigating.current) {
+      console.log("[OnboardingGuard] Skipping - navigation already in progress");
+      return;
+    }
 
     const inOnboarding = (segments[0] as string) === "onboarding";
     const inAuth = (segments[0] as string) === "auth";
+    console.log("[OnboardingGuard] Route check:", { inOnboarding, inAuth, needsMigration });
 
     // Check for migration first (highest priority)
     if (needsMigration && !inAuth) {
+      console.log("[OnboardingGuard] Redirecting to claim-account screen");
       isNavigating.current = true;
       router.replace("/auth/claim-account" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
