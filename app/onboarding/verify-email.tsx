@@ -41,6 +41,11 @@ export default function VerifyEmailScreen() {
 
   const userEmail = (params.email as string) || "your email";
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   // Auto-check for email verification every 3 seconds
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
@@ -184,6 +189,11 @@ export default function VerifyEmailScreen() {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.container}>
+          {/* Back Button */}
+          <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
+            <Text style={{ fontSize: 24 }}>← Back</Text>
+          </Pressable>
+
           {/* Header */}
           <Animated.View
             entering={FadeInDown.delay(100).duration(600)}

@@ -100,6 +100,11 @@ export default function CreateAccountScreen() {
     router.push("/auth/signin" as never);
   };
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   return (
     <ScreenContainer containerClassName="bg-background">
       <KeyboardAvoidingView
@@ -111,6 +116,11 @@ export default function CreateAccountScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.container}>
+            {/* Back Button */}
+            <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
+              <Text style={{ fontSize: 24 }}>← Back</Text>
+            </Pressable>
+
             {/* Header */}
             <Animated.View
               entering={FadeInDown.delay(100).duration(600)}
