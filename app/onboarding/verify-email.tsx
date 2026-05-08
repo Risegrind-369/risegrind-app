@@ -43,7 +43,7 @@ export default function VerifyEmailScreen() {
 
   // Auto-check for email verification every 3 seconds
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
 
     const checkEmailVerification = async () => {
       try {
@@ -74,7 +74,7 @@ export default function VerifyEmailScreen() {
     checkEmailVerification();
 
     // Then check every 3 seconds
-    interval = setInterval(checkEmailVerification, 3000);
+    interval = setInterval(() => checkEmailVerification(), 3000);
 
     return () => clearInterval(interval);
   }, []);

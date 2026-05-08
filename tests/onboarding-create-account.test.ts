@@ -43,8 +43,8 @@ describe("Onboarding: Create Account Step", () => {
 
   it("should validate password and confirm password match", () => {
     const email = "test@example.com";
-    const password = "password123";
-    const confirmPassword = "password456";
+    const password: string = "password123";
+    const confirmPassword: string = "password456";
 
     const isValid = email.trim().length > 0 && password.length >= 8 && password === confirmPassword;
     expect(isValid).toBe(false);

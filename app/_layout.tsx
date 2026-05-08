@@ -39,6 +39,8 @@ import type { EdgeInsets, Metrics, Rect } from "react-native-safe-area-context";
 import { trpc, createTRPCClient } from "@/lib/trpc";
 import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-runtime";
 import { useSessionRestoration } from "@/lib/use-session-restoration";
+import * as Linking from "expo-linking";
+import { supabase } from "@/lib/supabase/client";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -130,6 +132,54 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 export default function RootLayout() {
   // Restore session on app launch (check stored tokens, refresh if needed)
   useSessionRestoration();
+
+  // Handle deep links for email verification
+  useEffect(() => {
+    const handleDeepLink = async ({ url }: { url: string }) => {
+      console.log("[DeepLink] Received URL:", url);
+
+      const parsed = Linking.parse(url);
+      const { path, queryParams } = parsed;
+
+      console.log("[DeepLink] Parsed path:", path, "queryParams:", queryParams);
+
+      // Handle email confirmation: manus20260410080735://auth/confirm?token_hash=...
+      if (path === "auth/confirm" && queryParams?.token_hash && queryParams?.type === "email") {
+        try {
+          console.log("[DeepLink] Email confirmation detected");
+
+          const { error } = await supabase.auth.verifyOtp({
+            token_hash: queryParams.token_hash as string,
+            type: "email",
+          });
+
+          if (error) {
+            console.error("[DeepLink] Email verification failed:", error);
+          } else {
+            console.log("[DeepLink] Email verified successfully");
+          }
+        } catch (err) {
+          console.error("[DeepLink] Error handling email confirmation:", err);
+        }
+      }
+    };
+
+    const subscription = Linking.addEventListener("url", handleDeepLink);
+
+    const getInitialURL = async () => {
+      const url = await Linking.getInitialURL();
+      if (url != null) {
+        console.log("[DeepLink] Initial URL on app launch:", url);
+        handleDeepLink({ url });
+      }
+    };
+
+    getInitialURL();
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   // On web we override the SafeArea contexts with values from the parent iframe.
   // Start from the stable module-level metrics so SafeAreaProvider never gets
