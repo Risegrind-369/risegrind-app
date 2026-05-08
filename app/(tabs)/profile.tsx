@@ -29,6 +29,7 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import { useLanguage } from "@/lib/language-context";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 import * as Haptics from "expo-haptics";
+import { completeLogout } from "@/lib/supabase/auth";
 
 const RANK_ICONS: Record<Rank, string> = {
   "Early Riser": "🌅",
@@ -299,6 +300,39 @@ export default function ProfileScreen() {
           >
             <Text style={styles.settingEmoji}>🗑️</Text>
             <Text style={[styles.settingLabel, { color: colors.error }]}>{lang === "fr" ? "Réinitialiser les données" : lang === "pt" ? "Redefinir dados" : "Reset All Data"}</Text>
+          </Pressable>
+        </View>
+
+        {/* Logout Button */}
+        <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+          <Pressable
+            onPress={async () => {
+              Alert.alert(
+                lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out",
+                lang === "fr" ? "Êtes-vous sûr de vouloir vous déconnecter?" : lang === "pt" ? "Tem certeza de que deseja sair?" : "Are you sure you want to sign out?",
+                [
+                  { text: lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel", style: "cancel" },
+                  {
+                    text: lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out",
+                    style: "destructive",
+                    onPress: async () => {
+                      try {
+                        await completeLogout();
+                        router.replace("/onboarding/language" as never);
+                      } catch (error) {
+                        console.error("[Profile] Logout error:", error);
+                        Alert.alert(lang === "fr" ? "Erreur" : lang === "pt" ? "Erro" : "Error", lang === "fr" ? "Impossible de se déconnecter. Veuillez réessayer." : lang === "pt" ? "Não foi possível sair. Tente novamente." : "Failed to sign out. Please try again.");
+                      }
+                    },
+                  },
+                ]
+              );
+            }}
+            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={styles.settingEmoji}>🚪</Text>
+            <Text style={[styles.settingLabel, { color: colors.error }]}>{lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out"}</Text>
+            <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
           </Pressable>
         </View>
 
