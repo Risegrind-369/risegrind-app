@@ -36,6 +36,8 @@ export default function CreateAccountScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -181,24 +183,30 @@ export default function CreateAccountScreen() {
                   defaultValue: "Password",
                 })}
               </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor: password.length > 0 ? "#E8A87C" : colors.border,
-                    color: colors.foreground,
-                  },
-                ]}
-                placeholder={t("onboarding.createAccount.passwordPlaceholder", {
-                  defaultValue: "At least 8 characters",
-                })}
-                placeholderTextColor={colors.muted}
-                value={password}
-                onChangeText={setPassword}
-                editable={!loading}
-                secureTextEntry
-              />
+              <View style={[styles.inputWithToggle, { borderColor: password.length > 0 ? "#E8A87C" : colors.border, backgroundColor: colors.surface }]}>
+                <TextInput
+                  style={[
+                    styles.inputField,
+                    {
+                      color: colors.foreground,
+                    },
+                  ]}
+                  placeholder={t("onboarding.createAccount.passwordPlaceholder", {
+                    defaultValue: "At least 8 characters",
+                  })}
+                  placeholderTextColor={colors.muted}
+                  value={password}
+                  onChangeText={setPassword}
+                  editable={!loading}
+                  secureTextEntry={!showPassword}
+                />
+                <Pressable
+                  onPress={() => setShowPassword(!showPassword)}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+                >
+                  <Text style={{ fontSize: 20 }}>{showPassword ? "👁️" : "👁️‍🗨️"}</Text>
+                </Pressable>
+              </View>
             </Animated.View>
 
             {/* Confirm Password Input */}
@@ -211,25 +219,30 @@ export default function CreateAccountScreen() {
                   defaultValue: "Confirm Password",
                 })}
               </Text>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    backgroundColor: colors.surface,
-                    borderColor:
-                      confirmPassword.length > 0 ? "#E8A87C" : colors.border,
-                    color: colors.foreground,
-                  },
-                ]}
-                placeholder={t("onboarding.createAccount.confirmPasswordPlaceholder", {
-                  defaultValue: "Confirm your password",
-                })}
-                placeholderTextColor={colors.muted}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                editable={!loading}
-                secureTextEntry
-              />
+              <View style={[styles.inputWithToggle, { borderColor: confirmPassword.length > 0 ? "#E8A87C" : colors.border, backgroundColor: colors.surface }]}>
+                <TextInput
+                  style={[
+                    styles.inputField,
+                    {
+                      color: colors.foreground,
+                    },
+                  ]}
+                  placeholder={t("onboarding.createAccount.confirmPasswordPlaceholder", {
+                    defaultValue: "Confirm your password",
+                  })}
+                  placeholderTextColor={colors.muted}
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                  editable={!loading}
+                  secureTextEntry={!showConfirmPassword}
+                />
+                <Pressable
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+                >
+                  <Text style={{ fontSize: 20 }}>{showConfirmPassword ? "👁️" : "👁️‍🗨️"}</Text>
+                </Pressable>
+              </View>
             </Animated.View>
 
             {/* Create Account Button */}
@@ -360,6 +373,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingHorizontal: 16,
     paddingVertical: 12,
+    fontSize: 16,
+  },
+  inputWithToggle: {
+    borderRadius: 12,
+    borderWidth: 1,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  inputField: {
+    flex: 1,
     fontSize: 16,
   },
   buttonGroup: {

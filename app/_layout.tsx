@@ -130,6 +130,8 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 }
 
 export default function RootLayout() {
+  const router = useRouter();
+  
   // Restore session on app launch (check stored tokens, refresh if needed)
   useSessionRestoration();
 
@@ -143,20 +145,59 @@ export default function RootLayout() {
 
       console.log("[DeepLink] Parsed path:", path, "queryParams:", queryParams);
 
+      // Extract token_hash from URL string directly (fallback for truncated URLs)
+      let tokenHash: string | undefined = queryParams ? (queryParams.token_hash as string) : undefined;
+      let emailType: string | undefined = queryParams ? (queryParams.type as string) : undefined;
+
+      // If token not in queryParams, try to extract from full URL string
+      if (!tokenHash && url.includes("token_hash=")) {
+        const match = url.match(/token_hash=([^&]+)/);
+        if (match) {
+          tokenHash = match[1];
+          console.log("[DeepLink] Extracted token_hash from URL string:", tokenHash);
+        }
+      }
+
+      if (!emailType && url.includes("type=")) {
+        const match = url.match(/type=([^&]+)/);
+        if (match) {
+          emailType = match[1];
+          console.log("[DeepLink] Extracted type from URL string:", emailType);
+        }
+      }
+
       // Handle email confirmation: manus20260410080735://auth/confirm?token_hash=...
-      if (path === "auth/confirm" && queryParams?.token_hash && queryParams?.type === "email") {
+      // Also handle truncated version: manus20260410080735://auth?token_hash=...
+      const isEmailConfirmation =
+        (path === "auth/confirm" || path === "auth") &&
+        tokenHash &&
+        emailType === "email";
+
+      if (isEmailConfirmation) {
         try {
           console.log("[DeepLink] Email confirmation detected");
 
           const { error } = await supabase.auth.verifyOtp({
-            token_hash: queryParams.token_hash as string,
+            token_hash: tokenHash,
             type: "email",
           });
 
           if (error) {
             console.error("[DeepLink] Email verification failed:", error);
+            // Route back to verify-email with error
+            router.replace({
+              pathname: "/onboarding/verify-email",
+              params: { email: "" },
+            } as never);
           } else {
             console.log("[DeepLink] Email verified successfully");
+            // Route to next onboarding step
+            setTimeout(() => {
+              router.replace({
+                pathname: "/onboarding/step2-empathy",
+                params: { name: "", age: "" },
+              } as never);
+            }, 500);
           }
         } catch (err) {
           console.error("[DeepLink] Error handling email confirmation:", err);

@@ -207,6 +207,16 @@ export async function completeLogout() {
       console.log("[Auth] Supabase session cleared");
     }
 
+    // 4. Clear AsyncStorage (app state, user info, etc.)
+    try {
+      const AsyncStorage = (await import("@react-native-async-storage/async-storage")).default;
+      await AsyncStorage.removeItem("manus-runtime-user-info");
+      await AsyncStorage.removeItem("@risegrind_state");
+      console.log("[Auth] AsyncStorage cleared");
+    } catch (storageError) {
+      console.warn("[Auth] Error clearing AsyncStorage (non-fatal):", storageError);
+    }
+
     console.log("[Auth] Complete logout successful");
     return { success: true };
   } catch (error) {

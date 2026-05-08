@@ -29,6 +29,7 @@ export default function SignInScreen() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCheckingSession, setIsCheckingSession] = useState(true);
@@ -196,22 +197,37 @@ export default function SignInScreen() {
                 </Text>
               </Pressable>
             </View>
-            <TextInput
-              placeholder="Enter your password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              editable={!isLoading}
-              placeholderTextColor={colors.muted}
-              style={{
-                borderWidth: 1,
-                borderColor: errors.password ? colors.error : colors.border,
-                borderRadius: 8,
-                padding: 12,
-                color: colors.foreground,
-                backgroundColor: colors.surface,
-              }}
-            />
+            <View style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: errors.password ? colors.error : colors.border,
+              borderRadius: 8,
+              paddingHorizontal: 12,
+              paddingVertical: 12,
+              backgroundColor: colors.surface,
+              gap: 8,
+            }}>
+              <TextInput
+                placeholder="Enter your password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                editable={!isLoading}
+                placeholderTextColor={colors.muted}
+                style={{
+                  flex: 1,
+                  color: colors.foreground,
+                  fontSize: 16,
+                }}
+              />
+              <Pressable
+                onPress={() => setShowPassword(!showPassword)}
+                style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              >
+                <Text style={{ fontSize: 20 }}>{showPassword ? "👁️" : "👁️‍🗨️"}</Text>
+              </Pressable>
+            </View>
             {errors.password && (
               <Text className="text-sm" style={{ color: colors.error }}>
                 {errors.password}
