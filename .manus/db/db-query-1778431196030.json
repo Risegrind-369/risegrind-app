@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `ghostCrewFriends` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` varchar(255) NOT NULL,\n\t`friendId` varchar(255) NOT NULL,\n\t`addedAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `ghostCrewFriends_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `users` ADD `friendCode` varchar(6);\nALTER TABLE `users` ADD `displayName` varchar(255);\nALTER TABLE `users` ADD `avatar` varchar(255);\nALTER TABLE `users` ADD CONSTRAINT `users_friendCode_unique` UNIQUE(`friendCode`);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute CREATE TABLE `ghostCrewFriends` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` varchar(255) NOT NULL,\n\t`friendId` varchar(255) NOT NULL,\n\t`addedAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `ghostCrewFriends_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `users` ADD `friendCode` varchar(6);\nALTER TABLE `users` ADD `displayName` varchar(255);\nALTER TABLE `users` ADD `avatar` varchar(255);\nALTER TABLE `users` ADD CONSTRAINT `users_friendCode_unique` UNIQUE(`friendCode`);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 2340
+}

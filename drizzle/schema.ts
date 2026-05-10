@@ -21,6 +21,10 @@ export const users = mysqlTable("users", {
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   lastSignedIn: timestamp("lastSignedIn").defaultNow().notNull(),
   supabase_user_id: varchar("supabase_user_id", { length: 255 }).unique(),
+  // Ghost Crew v1.0 fields
+  friendCode: varchar("friendCode", { length: 6 }).unique(), // 6-char code for adding friends (e.g., K3NZ9X)
+  displayName: varchar("displayName", { length: 255 }), // Name shown to friends in Ghost Crew
+  avatar: varchar("avatar", { length: 255 }), // Emoji or URL for friend display
 });
 
 export type User = typeof users.$inferSelect;
@@ -43,6 +47,20 @@ export const accountabilityPartners = mysqlTable("accountabilityPartners", {
 
 export type AccountabilityPartner = typeof accountabilityPartners.$inferSelect;
 export type InsertAccountabilityPartner = typeof accountabilityPartners.$inferInsert;
+
+/**
+ * Ghost Crew friends table for v1.0 social features
+ * Uses Supabase user IDs for proper auth integration
+ */
+export const ghostCrewFriends = mysqlTable("ghostCrewFriends", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: varchar("userId", { length: 255 }).notNull(), // Supabase user ID
+  friendId: varchar("friendId", { length: 255 }).notNull(), // Supabase user ID
+  addedAt: timestamp("addedAt").defaultNow().notNull(),
+});
+
+export type GhostCrewFriend = typeof ghostCrewFriends.$inferSelect;
+export type InsertGhostCrewFriend = typeof ghostCrewFriends.$inferInsert;
 
 /**
  * Mentor groups for community habit tracking

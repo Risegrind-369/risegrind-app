@@ -24,6 +24,9 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
     updatedAt: new Date(),
     lastSignedIn: new Date(),
     supabase_user_id: null,
+    friendCode: null,
+    displayName: null,
+    avatar: null,
   };
   
   const ctx: TrpcContext = {
