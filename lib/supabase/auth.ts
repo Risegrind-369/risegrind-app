@@ -12,16 +12,13 @@ export async function signUpWithEmail(email: string, password: string) {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
   });
-
   if (error) {
     throw error;
   }
-
   return data;
 }
 
@@ -32,21 +29,17 @@ export async function signInWithEmail(email: string, password: string) {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
-
   if (error) {
     throw error;
   }
-
   // Store tokens securely
   if (data.session) {
     await storeAuthTokens(data.session.access_token, data.session.refresh_token);
   }
-
   return data;
 }
 
@@ -57,9 +50,7 @@ export async function sendPasswordResetEmail(email: string) {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { error } = await supabase.auth.resetPasswordForEmail(email);
-
   if (error) {
     throw error;
   }
@@ -72,15 +63,12 @@ export async function updatePasswordWithToken(password: string) {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { data, error } = await supabase.auth.updateUser({
     password,
   });
-
   if (error) {
     throw error;
   }
-
   return data;
 }
 
@@ -92,18 +80,15 @@ export async function signInWithApple() {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "apple",
     options: {
       redirectTo: "risegrind://auth/callback", // Custom scheme redirect
     },
   });
-
   if (error) {
     throw error;
   }
-
   return data;
 }
 
@@ -152,25 +137,20 @@ export async function restoreSessionFromStorage() {
   if (!supabase) {
     throw new Error("Supabase not initialized");
   }
-
   const { accessToken, refreshToken } = await retrieveAuthTokens();
-
   if (!accessToken || !refreshToken) {
     return null;
   }
-
   try {
     const { data, error } = await supabase.auth.setSession({
       access_token: accessToken,
       refresh_token: refreshToken,
     });
-
     if (error) {
       console.warn("[Auth] Failed to restore session:", error);
       await clearAuthTokens();
       return null;
     }
-
     return data.session;
   } catch (error) {
     console.error("[Auth] Error restoring session:", error);
@@ -180,12 +160,21 @@ export async function restoreSessionFromStorage() {
 }
 
 /**
- * Complete logout: sign out from Supabase + clear tokens + clear session
- * This is the authoritative logout function
+ * Complete logout sequence:
+ * 1. Sign out from Supabase
+ * 2. Clear auth tokens from secure storage
+ * 3. Clear Supabase session
+ * 4. Clear AsyncStorage cache
+ * 5. Dispatch LOGOUT action to reset in-memory state
+ *
+ * Note: User data (habits, XP, journal, etc.) is cleared from AsyncStorage here.
+ * TODO Milestone 2: When server sync is implemented, data will be preserved on server
+ * and restored on next login. For now, data is lost on logout (single-user per device).
  */
-export async function completeLogout() {
+export async function completeLogout(dispatch?: React.Dispatch<any>) {
   try {
-    console.log("[Auth] Starting complete logout...");
+    console.log("[LOGOUT] STEP 1: Starting logout");
+    console.log("[LOGOUT] dispatch parameter provided:", !!dispatch);
 
     // 1. Sign out from Supabase
     if (supabase) {
@@ -193,13 +182,13 @@ export async function completeLogout() {
       if (error) {
         console.warn("[Auth] Supabase signOut error (non-fatal):", error);
       } else {
-        console.log("[Auth] Supabase signOut successful");
+        console.log("[LOGOUT] STEP 2: Supabase signed out successfully");
       }
     }
 
     // 2. Clear stored tokens
     await clearAuthTokens();
-    console.log("[Auth] Tokens cleared from secure storage");
+    console.log("[LOGOUT] STEP 3: AsyncStorage cleared");
 
     // 3. Clear Supabase session
     if (supabase) {
@@ -217,7 +206,16 @@ export async function completeLogout() {
       console.warn("[Auth] Error clearing AsyncStorage (non-fatal):", storageError);
     }
 
-    console.log("[Auth] Complete logout successful");
+    // 5. Dispatch LOGOUT action to reset in-memory state
+    if (dispatch) {
+      console.log("[LOGOUT] STEP 4: About to dispatch LOGOUT action");
+      dispatch({ type: "LOGOUT" });
+      console.log("[LOGOUT] STEP 5: Dispatched LOGOUT, isOnboarded should be false now");
+    } else {
+      console.warn("[LOGOUT] WARNING: dispatch parameter is undefined!");
+    }
+
+    console.log("[LOGOUT] Complete logout successful");
     return { success: true };
   } catch (error) {
     console.error("[Auth] Error during complete logout:", error);

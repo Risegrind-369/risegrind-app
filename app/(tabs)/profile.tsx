@@ -317,7 +317,7 @@ export default function ProfileScreen() {
                     style: "destructive",
                     onPress: async () => {
                       try {
-                        await completeLogout();
+                        await completeLogout(dispatch);
                         router.replace("/onboarding/language" as never);
                       } catch (error) {
                         console.error("[Profile] Logout error:", error);

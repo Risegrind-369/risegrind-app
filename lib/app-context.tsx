@@ -151,7 +151,8 @@ export type AppAction =
   | { type: "ADD_FRIEND"; payload: GhostFriend }
   | { type: "REMOVE_FRIEND"; payload: string }
   | { type: "LOAD_STATE"; payload: Partial<AppState> }
-  | { type: "SET_LOADING"; payload: boolean };
+  | { type: "SET_LOADING"; payload: boolean }
+  | { type: "LOGOUT" };
 
 // ─── Default Habits ───────────────────────────────────────────────────────────
 
@@ -473,6 +474,20 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
 
+    case "LOGOUT":
+      console.log("[LOGOUT] REDUCER: LOGOUT case hit, returning new state with isOnboarded: false");
+      // Reset auth/onboarding state, preserve user data
+      // TODO Milestone 2: Server will be source of truth; this will just clear cache
+      return {
+        ...state,
+        isOnboarded: false,
+        userName: "",
+        userProfile: null,
+        generatedRoutine: null,
+        ghostCode: generateGhostCode(),
+        // Preserve all user data: moodEntries, habits, completions, journalEntries, xp, streak, achievements, sideQuests, friends
+      };
+
     default:
       return state;
   }
@@ -499,6 +514,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
   // Load persisted state
   useEffect(() => {
+    console.log("[LOGOUT] APPPROVIDER: Loading from AsyncStorage on mount");
     AsyncStorage.getItem(STORAGE_KEY)
       .then((raw) => {
         if (raw) {

@@ -28,6 +28,7 @@ import { RevenueCatProvider } from "@/lib/revenuecat-provider";
 import { SuperwallProvider } from "@/lib/superwall-provider";
 import { PaywallTriggerProvider } from "@/lib/paywall-trigger";
 import { HealthProvider } from "@/lib/health-provider";
+import { DebugOverlay } from "@/components/debug-overlay";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -93,7 +94,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     }
 
     const inOnboarding = (segments[0] as string) === "onboarding";
-    console.log("[GUARD] Route analysis:", { inOnboarding, isOnboarded: state.isOnboarded });
+    console.log("[LOGOUT] GUARD CHECK: isOnboarded =", state.isOnboarded, "inOnboarding =", inOnboarding);
 
     // Simple routing logic:
     // 1. If no language selected and not in onboarding → show language selection
@@ -102,7 +103,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     // 4. Otherwise stay where you are
 
     if (!language && !inOnboarding) {
-      console.log("[GUARD] No language selected - redirecting to language selection");
+      console.log("[LOGOUT] GUARD DECISION: No language → redirecting to language selection");
       isNavigating.current = true;
       router.replace("/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
@@ -111,13 +112,13 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     }
 
     if (!state.isOnboarded && !inOnboarding) {
-      console.log("[GUARD] Not onboarded and not in onboarding - starting onboarding flow");
+      console.log("[LOGOUT] GUARD DECISION: Not onboarded → starting onboarding flow");
       isNavigating.current = true;
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
       console.log("========== [ONBOARDING GUARD] EFFECT END (onboarding redirect) ==========\n");
     } else if (state.isOnboarded && inOnboarding) {
-      console.log("[GUARD] Onboarded but in onboarding - going to home");
+      console.log("[LOGOUT] GUARD DECISION: isOnboarded=true AND inOnboarding=true → redirecting to home (THIS IS THE BUG!)");
       isNavigating.current = true;
       router.replace("/(tabs)" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
@@ -292,6 +293,7 @@ export default function RootLayout() {
                 {/* Shows time-based paywall after 1-2 days of usage */}
                 <PaywallTriggerProvider>
                   <OnboardingGuard>
+                    <DebugOverlay />
                     <Stack screenOptions={{ headerShown: false }}>
                       <Stack.Screen name="(tabs)" />
                       <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
