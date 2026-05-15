@@ -5,6 +5,7 @@ import {
   Text,
   ScrollView,
   Pressable,
+  TouchableOpacity,
   StyleSheet,
   Switch,
   Alert,
@@ -273,63 +274,67 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          {/* Settings screen link — tapping the header row opens the full Settings screen */}
-          <Pressable
+          {/* Settings screen link — TouchableOpacity avoids Android Pressable array-style touch issues */}
+          <TouchableOpacity
+            activeOpacity={0.6}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
               router.push("/settings" as never);
             }}
-            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+            style={styles.settingRow}
           >
             <Text style={styles.settingEmoji}>⚙️</Text>
             <Text style={[styles.settingLabel, { color: colors.foreground, fontWeight: "700", fontSize: 17 }]}>
               {lang === "fr" ? "Paramètres" : lang === "pt" ? "Configurações" : "Settings"}
             </Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
-          </Pressable>
+          </TouchableOpacity>
 
           <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.6}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
               setColorScheme(colorScheme === "dark" ? "light" : "dark");
             }}
-            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+            style={styles.settingRow}
           >
             <Text style={styles.settingEmoji}>{colorScheme === "dark" ? "🌙" : "☀️"}</Text>
             <Text style={[styles.settingLabel, { color: colors.foreground }]}>{lang === "fr" ? "Apparence" : lang === "pt" ? "Aparência" : "Appearance"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>
               {colorScheme === "dark" ? (lang === "fr" ? "Sombre" : lang === "pt" ? "Escuro" : "Dark") : (lang === "fr" ? "Clair" : lang === "pt" ? "Claro" : "Light")}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
 
           <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.6}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
               Alert.alert(
                 lang === "fr" ? "Notifications" : lang === "pt" ? "Notificações" : "Notifications",
                 lang === "fr" ? "Bientôt disponible." : lang === "pt" ? "Em breve." : "Coming soon."
               );
             }}
-            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+            style={styles.settingRow}
           >
             <Text style={styles.settingEmoji}>🔔</Text>
             <Text style={[styles.settingLabel, { color: colors.foreground }]}>{lang === "fr" ? "Notifications" : lang === "pt" ? "Notificações" : "Notifications"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
-          </Pressable>
+          </TouchableOpacity>
 
           <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 
-          <Pressable
+          <TouchableOpacity
+            activeOpacity={0.6}
             onPress={handleResetData}
-            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+            style={styles.settingRow}
           >
             <Text style={styles.settingEmoji}>🗑️</Text>
             <Text style={[styles.settingLabel, { color: colors.error }]}>{lang === "fr" ? "Réinitialiser les données" : lang === "pt" ? "Redefinir dados" : "Reset All Data"}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         {/* Logout Button */}
@@ -552,6 +557,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 12,
+    paddingVertical: 10,  // Ensures minimum 44px touch target on Android
+    minHeight: 44,
   },
   settingEmoji: {
     fontSize: 20,
