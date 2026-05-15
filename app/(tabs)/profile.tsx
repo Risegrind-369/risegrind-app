@@ -273,7 +273,22 @@ export default function ProfileScreen() {
 
         {/* Settings */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Paramètres" : lang === "pt" ? "Configurações" : "Settings"}</Text>
+          {/* Settings screen link — tapping the header row opens the full Settings screen */}
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push("/settings" as never);
+            }}
+            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={styles.settingEmoji}>⚙️</Text>
+            <Text style={[styles.settingLabel, { color: colors.foreground, fontWeight: "700", fontSize: 17 }]}>
+              {lang === "fr" ? "Paramètres" : lang === "pt" ? "Configurações" : "Settings"}
+            </Text>
+            <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
+          </Pressable>
+
+          <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 
           <Pressable
             onPress={() => {
