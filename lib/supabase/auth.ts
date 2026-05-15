@@ -173,8 +173,16 @@ export async function restoreSessionFromStorage() {
  */
 export async function completeLogout(dispatch?: React.Dispatch<any>) {
   try {
-    console.log("[LOGOUT] STEP 1: Starting logout");
+    console.log("[LOGOUT] STEP 1: Starting logout — dispatching SET_LOGGING_OUT flag FIRST");
     console.log("[LOGOUT] dispatch parameter provided:", !!dispatch);
+
+    // BUG 4 FIX (Part 1): Set isLoggingOut = true SYNCHRONOUSLY before any async work.
+    // This immediately blocks the AppProvider AsyncStorage useEffect guard (Part 2)
+    // so it cannot re-read cached state and overwrite isOnboarded back to true.
+    if (dispatch) {
+      dispatch({ type: "SET_LOGGING_OUT" });
+      console.log("[LOGOUT] STEP 1b: SET_LOGGING_OUT dispatched — AsyncStorage reload is now blocked");
+    }
 
     // 1. Sign out from Supabase
     if (supabase) {

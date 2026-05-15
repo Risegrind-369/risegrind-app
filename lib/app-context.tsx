@@ -97,6 +97,10 @@ export interface GhostFriend {
 export interface AppState {
   // Onboarding
   isOnboarded: boolean;
+  // BUG 4 FIX (Part 1): isLoggingOut flag prevents AsyncStorage reload during logout.
+  // Set to true at the very start of completeLogout(), before any async operations.
+  // Reset to false in the LOGOUT reducer case (via clean INITIAL_STATE return).
+  isLoggingOut: boolean;
   userName: string;
   isPremium: boolean;
   userProfile: UserProfile | null;
@@ -152,6 +156,9 @@ export type AppAction =
   | { type: "REMOVE_FRIEND"; payload: string }
   | { type: "LOAD_STATE"; payload: Partial<AppState> }
   | { type: "SET_LOADING"; payload: boolean }
+  // BUG 4 FIX (Part 1): SET_LOGGING_OUT is dispatched at the very start of completeLogout()
+  // BEFORE any async operations. This immediately blocks the AsyncStorage useEffect guard.
+  | { type: "SET_LOGGING_OUT" }
   | { type: "LOGOUT" };
 
 // ─── Default Habits ───────────────────────────────────────────────────────────
@@ -311,6 +318,7 @@ function generateGhostCode(): string {
 
 const INITIAL_STATE: AppState = {
   isOnboarded: false,
+  isLoggingOut: false, // BUG 4 FIX (Part 1): default false
   userName: "",
   isPremium: false,
   userProfile: null,
@@ -474,18 +482,25 @@ function appReducer(state: AppState, action: AppAction): AppState {
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
 
+    // BUG 4 FIX (Part 1): SET_LOGGING_OUT is dispatched at the very start of completeLogout(),
+    // BEFORE any async operations. This immediately raises the flag so the AsyncStorage
+    // useEffect guard (Part 2) can block any re-read that would overwrite isOnboarded.
+    case "SET_LOGGING_OUT":
+      console.log("[LOGOUT] REDUCER: SET_LOGGING_OUT — isLoggingOut = true, blocking AsyncStorage reload");
+      return { ...state, isLoggingOut: true };
+
+    // BUG 4 FIX (Part 3): Return a completely clean initial state — do NOT spread existing state.
+    // Spreading state was the original bug: stale data (including isOnboarded: true from a
+    // parallel AsyncStorage read) could survive the LOGOUT action.
+    // We return INITIAL_STATE spread as the base, then override the fields that must be fresh.
     case "LOGOUT":
-      console.log("[LOGOUT] REDUCER: LOGOUT case hit, returning new state with isOnboarded: false");
-      // Reset auth/onboarding state, preserve user data
-      // TODO Milestone 2: Server will be source of truth; this will just clear cache
+      console.log("[LOGOUT] REDUCER: LOGOUT case hit — returning CLEAN initial state, isOnboarded: false");
       return {
-        ...state,
-        isOnboarded: false,
-        userName: "",
-        userProfile: null,
-        generatedRoutine: null,
-        ghostCode: generateGhostCode(),
-        // Preserve all user data: moodEntries, habits, completions, journalEntries, xp, streak, achievements, sideQuests, friends
+        ...INITIAL_STATE,
+        isLoggingOut: false,    // explicitly reset — logout is complete
+        isOnboarded: false,     // explicitly false — user must re-onboard
+        isLoading: false,       // don't re-trigger the loading spinner
+        ghostCode: generateGhostCode(), // fresh ghost code for next user
       };
 
     default:
@@ -512,8 +527,32 @@ const STORAGE_KEY = "@risegrind_state";
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
 
-  // Load persisted state
+  // BUG 4 FIX (Part 2): Guard the AsyncStorage load with isLoggingOut.
+  //
+  // ROOT CAUSE OF THE BUG:
+  //   completeLogout() clears AsyncStorage and dispatches LOGOUT (isOnboarded → false).
+  //   But this useEffect runs on mount with an empty dependency array [].
+  //   React schedules the effect callback asynchronously. If the component re-mounts
+  //   (or the effect fires) while logout is in progress, AsyncStorage.getItem() may
+  //   still find the cached state (written just before logout cleared it), and
+  //   dispatch({ type: "LOAD_STATE", payload: { isOnboarded: true } }) overwrites
+  //   the LOGOUT action's result.
+  //
+  // THE FIX:
+  //   SET_LOGGING_OUT is dispatched synchronously at the very start of completeLogout().
+  //   This sets state.isLoggingOut = true before any async work begins.
+  //   This useEffect checks that flag and returns early, preventing the overwrite.
+  //   The LOGOUT reducer then resets isLoggingOut to false in the clean initial state.
+  //
+  // IMPORTANT: The dependency array stays [] (empty).
+  //   Do NOT add state.isLoggingOut to the deps array — that would cause this effect
+  //   to re-run every time isLoggingOut changes, which is exactly the race we're fixing.
+  //   The guard only needs to work on the initial mount and any re-mount during logout.
   useEffect(() => {
+    if (state.isLoggingOut) {
+      console.log("[LOGOUT] APPPROVIDER: Skipping AsyncStorage load — isLoggingOut = true");
+      return;
+    }
     console.log("[LOGOUT] APPPROVIDER: Loading from AsyncStorage on mount");
     AsyncStorage.getItem(STORAGE_KEY)
       .then((raw) => {
@@ -528,7 +567,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => dispatch({ type: "SET_LOADING", payload: false }));
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps — intentionally empty, see comment above
 
   // Persist state changes
   useEffect(() => {
