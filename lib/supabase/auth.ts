@@ -171,17 +171,20 @@ export async function restoreSessionFromStorage() {
  * TODO Milestone 2: When server sync is implemented, data will be preserved on server
  * and restored on next login. For now, data is lost on logout (single-user per device).
  */
-export async function completeLogout(dispatch?: React.Dispatch<any>) {
+export async function completeLogout(
+  dispatch?: React.Dispatch<any>,
+  isLoggingOutRef?: React.MutableRefObject<boolean>
+) {
   try {
-    console.log("[LOGOUT] STEP 1: Starting logout — dispatching SET_LOGGING_OUT flag FIRST");
-    console.log("[LOGOUT] dispatch parameter provided:", !!dispatch);
+    console.log("[LOGOUT] STEP 1: Starting logout — setting isLoggingOutRef.current = true FIRST");
+    console.log("[LOGOUT] dispatch provided:", !!dispatch, "| isLoggingOutRef provided:", !!isLoggingOutRef);
 
-    // BUG 4 FIX (Part 1): Set isLoggingOut = true SYNCHRONOUSLY before any async work.
-    // This immediately blocks the AppProvider AsyncStorage useEffect guard (Part 2)
-    // so it cannot re-read cached state and overwrite isOnboarded back to true.
-    if (dispatch) {
-      dispatch({ type: "SET_LOGGING_OUT" });
-      console.log("[LOGOUT] STEP 1b: SET_LOGGING_OUT dispatched — AsyncStorage reload is now blocked");
+    // BUG 4 FIX (Part 1 — revised): Set the mutable ref synchronously as the very first action.
+    // This bypasses the closure problem: state.isLoggingOut captured at mount is always false,
+    // but isLoggingOutRef.current is always the live value regardless of when the effect runs.
+    if (isLoggingOutRef) {
+      isLoggingOutRef.current = true;
+      console.log("[LOGOUT] STEP 1b: isLoggingOutRef.current = true — AsyncStorage reload is now blocked");
     }
 
     // 1. Sign out from Supabase

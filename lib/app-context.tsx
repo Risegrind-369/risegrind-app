@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useEffect, useCallback } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -513,6 +513,9 @@ function appReducer(state: AppState, action: AppAction): AppState {
 interface AppContextValue {
   state: AppState;
   dispatch: React.Dispatch<AppAction>;
+  // BUG 4 FIX: Mutable ref exposed so completeLogout() can set it synchronously
+  // before any async work, bypassing the closure problem of state.isLoggingOut.
+  isLoggingOutRef: React.MutableRefObject<boolean>;
   // Helpers
   todayCompletions: HabitCompletion[];
   todayProgress: number;
@@ -527,30 +530,29 @@ const STORAGE_KEY = "@risegrind_state";
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
 
-  // BUG 4 FIX (Part 2): Guard the AsyncStorage load with isLoggingOut.
+  // BUG 4 FIX (Part 2 — revised): Use a mutable ref instead of state.isLoggingOut.
   //
-  // ROOT CAUSE OF THE BUG:
-  //   completeLogout() clears AsyncStorage and dispatches LOGOUT (isOnboarded → false).
-  //   But this useEffect runs on mount with an empty dependency array [].
-  //   React schedules the effect callback asynchronously. If the component re-mounts
-  //   (or the effect fires) while logout is in progress, AsyncStorage.getItem() may
-  //   still find the cached state (written just before logout cleared it), and
-  //   dispatch({ type: "LOAD_STATE", payload: { isOnboarded: true } }) overwrites
-  //   the LOGOUT action's result.
+  // WHY state.isLoggingOut DOESN'T WORK:
+  //   The useEffect with [] captures state at mount time via closure.
+  //   state.isLoggingOut is always false at that snapshot, so the guard never fires
+  //   even after SET_LOGGING_OUT is dispatched — the closure sees the stale value.
   //
-  // THE FIX:
-  //   SET_LOGGING_OUT is dispatched synchronously at the very start of completeLogout().
-  //   This sets state.isLoggingOut = true before any async work begins.
-  //   This useEffect checks that flag and returns early, preventing the overwrite.
-  //   The LOGOUT reducer then resets isLoggingOut to false in the clean initial state.
+  // WHY useRef WORKS:
+  //   A ref is a plain mutable object ({ current: false }) that lives outside the
+  //   render cycle. Reading isLoggingOutRef.current always gives the live value,
+  //   not a closure-captured snapshot. Setting .current = true in completeLogout()
+  //   is immediately visible to any code that reads it, including the effect callback.
   //
-  // IMPORTANT: The dependency array stays [] (empty).
-  //   Do NOT add state.isLoggingOut to the deps array — that would cause this effect
-  //   to re-run every time isLoggingOut changes, which is exactly the race we're fixing.
-  //   The guard only needs to work on the initial mount and any re-mount during logout.
+  // HOW IT'S WIRED:
+  //   isLoggingOutRef is exposed in context so completeLogout() (called from profile.tsx)
+  //   can set isLoggingOutRef.current = true synchronously as its very first action,
+  //   before any async work. The LOGOUT reducer resets it to false via the
+  //   SET_LOGGING_OUT reducer case (which now sets the ref, not state).
+  const isLoggingOutRef = useRef(false);
+
   useEffect(() => {
-    if (state.isLoggingOut) {
-      console.log("[LOGOUT] APPPROVIDER: Skipping AsyncStorage load — isLoggingOut = true");
+    if (isLoggingOutRef.current) {
+      console.log("[LOGOUT] APPPROVIDER: Skipping AsyncStorage load — isLoggingOutRef = true");
       return;
     }
     console.log("[LOGOUT] APPPROVIDER: Loading from AsyncStorage on mount");
@@ -567,7 +569,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         }
       })
       .catch(() => dispatch({ type: "SET_LOADING", payload: false }));
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps — intentionally empty, see comment above
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps — intentionally empty; ref is mutable, no closure issue
 
   // Persist state changes
   useEffect(() => {
@@ -583,7 +585,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const nextRankXP = getNextRankXP(state.xp);
 
   return (
-    <AppContext.Provider value={{ state, dispatch, todayCompletions, todayProgress, rank, nextRankXP }}>
+    <AppContext.Provider value={{ state, dispatch, isLoggingOutRef, todayCompletions, todayProgress, rank, nextRankXP }}>
       {children}
     </AppContext.Provider>
   );

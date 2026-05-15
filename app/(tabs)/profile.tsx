@@ -47,7 +47,7 @@ const RANK_COLORS: Record<Rank, string> = {
 
 export default function ProfileScreen() {
   const colors = useColors();
-  const { state, dispatch } = useApp();
+  const { state, dispatch, isLoggingOutRef } = useApp();
   const { isPremium, restorePurchases } = useRevenueCat();
   const colorScheme = useColorScheme();
   const { language, setLanguage } = useLanguage();
@@ -317,7 +317,7 @@ export default function ProfileScreen() {
                     style: "destructive",
                     onPress: async () => {
                       try {
-                        await completeLogout(dispatch);
+                        await completeLogout(dispatch, isLoggingOutRef);
                         router.replace("/onboarding/language" as never);
                       } catch (error) {
                         console.error("[Profile] Logout error:", error);
