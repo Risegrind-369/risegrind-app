@@ -26,6 +26,7 @@ import {
 import { XPBar } from "@/components/ui/xp-bar";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
 import { useColorScheme } from "@/hooks/use-color-scheme";
+import { useThemeContext } from "@/lib/theme-provider";
 import { useLanguage } from "@/lib/language-context";
 import { SUPPORTED_LANGUAGES } from "@/lib/i18n";
 import * as Haptics from "expo-haptics";
@@ -50,6 +51,7 @@ export default function ProfileScreen() {
   const { state, dispatch, isLoggingOutRef } = useApp();
   const { isPremium, restorePurchases } = useRevenueCat();
   const colorScheme = useColorScheme();
+  const { setColorScheme } = useThemeContext();
   const { language, setLanguage } = useLanguage();
   const { t, i18n } = useTranslation();
   const { language: userLanguage } = useLanguage();
@@ -273,18 +275,30 @@ export default function ProfileScreen() {
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Paramètres" : lang === "pt" ? "Configurações" : "Settings"}</Text>
 
-          <View style={styles.settingRow}>
-            <Text style={styles.settingEmoji}>🌙</Text>
+          <Pressable
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setColorScheme(colorScheme === "dark" ? "light" : "dark");
+            }}
+            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={styles.settingEmoji}>{colorScheme === "dark" ? "🌙" : "☀️"}</Text>
             <Text style={[styles.settingLabel, { color: colors.foreground }]}>{lang === "fr" ? "Apparence" : lang === "pt" ? "Aparência" : "Appearance"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>
               {colorScheme === "dark" ? (lang === "fr" ? "Sombre" : lang === "pt" ? "Escuro" : "Dark") : (lang === "fr" ? "Clair" : lang === "pt" ? "Claro" : "Light")}
             </Text>
-          </View>
+          </Pressable>
 
           <View style={[styles.settingDivider, { backgroundColor: colors.border }]} />
 
           <Pressable
-            onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); router.push("/notifications" as any); }}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              Alert.alert(
+                lang === "fr" ? "Notifications" : lang === "pt" ? "Notificações" : "Notifications",
+                lang === "fr" ? "Bientôt disponible." : lang === "pt" ? "Em breve." : "Coming soon."
+              );
+            }}
             style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
           >
             <Text style={styles.settingEmoji}>🔔</Text>
