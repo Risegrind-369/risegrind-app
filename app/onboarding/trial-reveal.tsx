@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -84,17 +84,10 @@ export default function TrialRevealScreen() {
         </View>
 
         {/* CTA Button */}
-        <Pressable
+        <TouchableOpacity
           onPress={handleStartTrial}
           disabled={isLoading}
-          style={({ pressed }) => [
-            styles.ctaButton,
-            {
-              backgroundColor: colors.accent,
-              opacity: isLoading ? 0.6 : pressed ? 0.9 : 1,
-              transform: [{ scale: pressed && !isLoading ? 0.97 : 1 }],
-            },
-          ]}
+          activeOpacity={0.6}
         >
           {isLoading ? (
             <ActivityIndicator color="#fff" />
@@ -103,7 +96,7 @@ export default function TrialRevealScreen() {
               {t("trial.viewPlans", { defaultValue: "View Plans" })}
             </Text>
           )}
-        </Pressable>
+        </TouchableOpacity>
 
         {/* Fine Print */}
         <Text style={[styles.finePrint, { color: colors.muted }]}>

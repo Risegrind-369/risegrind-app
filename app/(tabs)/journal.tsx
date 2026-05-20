@@ -1,20 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  StyleSheet,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform,
-  Alert,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, FlatList, StyleSheet, Modal, TextInput, KeyboardAvoidingView, Platform, Alert, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
 import * as Speech from "expo-speech";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -72,7 +59,7 @@ function JournalCard({
   const { t } = useTranslation();
   const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
   return (
-    <Pressable
+    <TouchableOpacity
       onLongPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
         Alert.alert(
@@ -108,7 +95,7 @@ function JournalCard({
           minute: "2-digit",
         })}
       </Text>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 
@@ -291,15 +278,12 @@ export default function JournalScreen() {
             {state.journalEntries.length} {t("journal.entriesCount", { defaultValue: "entries" })} · {t("journal.tagline", { defaultValue: "Write in silence" })}
           </Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={handleNewEntry}
-          style={({ pressed }) => [
-            styles.newButton,
-            { backgroundColor: colors.accent, transform: [{ scale: pressed ? 0.95 : 1 }] },
-          ]}
+          activeOpacity={0.6}
         >
           <Text style={styles.newButtonText}>{t("journal.newEntry", { defaultValue: "New" })}</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       {/* Entry List */}
@@ -312,15 +296,12 @@ export default function JournalScreen() {
           <Text style={[styles.emptySubtitle, { color: colors.muted }]}>
             {t("journal.emptySubtitle", { defaultValue: "Start writing to unlock AI insights" })}
           </Text>
-          <Pressable
+          <TouchableOpacity
             onPress={handleNewEntry}
-            style={({ pressed }) => [
-              styles.emptyButton,
-              { backgroundColor: colors.accent, transform: [{ scale: pressed ? 0.97 : 1 }] },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={styles.emptyButtonText}>{t("journal.firstEntry", { defaultValue: "Write First Entry" })}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       ) : (
         <FlatList
@@ -353,28 +334,26 @@ export default function JournalScreen() {
           <View style={[styles.editorContainer, { backgroundColor: colors.background }]}>
             {/* Editor Header — Cancel (left), Title (center), Save (right) */}
             <View style={[styles.editorHeader, { borderBottomColor: colors.border }]}>
-              <Pressable
+              <TouchableOpacity
                 onPress={handleCloseEditor}
-                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                activeOpacity={0.6}
               >
                 <Text style={[styles.editorCancel, { color: colors.foreground }]}>
                   {t("common.cancel", { defaultValue: "Cancel" })}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
               <Text style={[styles.editorTitle, { color: colors.foreground }]}>
                 {t("journal.ghostJournal", { defaultValue: "Ghost Journal" })}
               </Text>
-              <Pressable
+              <TouchableOpacity
                 onPress={handleSave}
                 disabled={!content.trim()}
-                style={({ pressed }) => ({
-                  opacity: pressed ? 0.6 : content.trim() ? 1 : 0.4,
-                })}
+                activeOpacity={0.6}
               >
                 <Text style={[styles.editorSave, { color: colors.accent }]}>
                   {t("common.save", { defaultValue: "Save" })}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
 
             <ScrollView
@@ -396,14 +375,14 @@ export default function JournalScreen() {
                   <Text style={[styles.promptLabel, { color: colors.accent }]}>
                     👻 {t("journal.ghostPrompt", { defaultValue: "Ghost Prompt" })}
                   </Text>
-                  <Pressable
+                  <TouchableOpacity
                     onPress={refreshPrompt}
-                    style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+                    activeOpacity={0.6}
                   >
                     <Text style={[styles.refreshText, { color: colors.accent }]}>
                       ↻ {t("journal.newPrompt", { defaultValue: "New" })}
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
                 <Text style={[styles.promptText, { color: colors.foreground }]}>
                   {currentPrompt}
@@ -425,17 +404,10 @@ export default function JournalScreen() {
               </View>
 
               {/* Voice Button */}
-              <Pressable
+              <TouchableOpacity
                 onPress={handleVoicePress}
                 disabled={isTranscribing}
-                style={({ pressed }) => [
-                  styles.voiceButton,
-                  {
-                    backgroundColor: isRecording ? colors.error + "15" : colors.foreground + "08",
-                    borderColor: isRecording ? colors.error : colors.border,
-                    transform: [{ scale: pressed ? 0.97 : 1 }],
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 {isTranscribing ? (
                   <View style={styles.voiceButtonInner}>
@@ -456,7 +428,7 @@ export default function JournalScreen() {
                       : `🎤 ${t("journal.speakToAI", { defaultValue: "Speak to AI" })}`}
                   </Text>
                 )}
-              </Pressable>
+              </TouchableOpacity>
 
               {/* Text Editor */}
               <TextInput
@@ -471,16 +443,10 @@ export default function JournalScreen() {
               />
 
               {/* AI Analysis Button — prominent, below text editor */}
-              <Pressable
+              <TouchableOpacity
                 onPress={handleAnalyzeAI}
                 disabled={!content.trim() || isAnalyzing}
-                style={({ pressed }) => [
-                  styles.aiAnalysisButton,
-                  {
-                    backgroundColor: colors.accent,
-                    opacity: pressed ? 0.85 : content.trim() && !isAnalyzing ? 1 : 0.5,
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 {isAnalyzing ? (
                   <ActivityIndicator size="small" color="#fff" />
@@ -489,7 +455,7 @@ export default function JournalScreen() {
                     ⚡ {t("journal.aiAnalysis", { defaultValue: "AI Analysis" })}
                   </Text>
                 )}
-              </Pressable>
+              </TouchableOpacity>
 
               {/* AI Response — shown BELOW the entry content */}
               {aiResponse && (

@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 
@@ -58,19 +59,9 @@ export function HealthMetricCard({
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => [
-        {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-          borderWidth: 1,
-          borderRadius: 12,
-          padding: 16,
-          marginBottom: 12,
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}
+      activeOpacity={0.6}
     >
       <View className="flex-row items-start justify-between mb-3">
         <View className="flex-1">
@@ -119,6 +110,6 @@ export function HealthMetricCard({
           </Text>
         )}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

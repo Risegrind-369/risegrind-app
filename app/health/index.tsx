@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -73,17 +74,13 @@ export default function HealthDashboard() {
               Today's Overview
             </Text>
           </View>
-          <Pressable
+          <TouchableOpacity
             onPress={handleRefresh}
             disabled={loading}
-            style={({ pressed }) => [
-              {
-                opacity: pressed ? 0.7 : 1,
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text className="text-2xl">{loading ? '⏳' : '🔄'}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         {/* Sleep Quality */}

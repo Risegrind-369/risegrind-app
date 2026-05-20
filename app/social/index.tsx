@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
@@ -101,20 +102,10 @@ export default function SocialHubScreen() {
         {/* Feature Cards */}
         <View className="mb-6">
           {features.map((feature) => (
-            <Pressable
+            <TouchableOpacity
               key={feature.id}
               onPress={() => handleNavigate(feature.route)}
-              style={({ pressed }) => [
-                {
-                  backgroundColor: colors.surface,
-                  borderColor: colors.border,
-                  borderWidth: 1,
-                  borderRadius: 12,
-                  padding: 16,
-                  marginBottom: 12,
-                  opacity: pressed ? 0.7 : 1,
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <View className="flex-row items-start gap-4">
                 <View
@@ -133,7 +124,7 @@ export default function SocialHubScreen() {
                 </View>
                 <Text className="text-xl text-muted">→</Text>
               </View>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
 

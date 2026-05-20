@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
@@ -54,19 +55,9 @@ export function PartnerCard({
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => [
-        {
-          backgroundColor: colors.surface,
-          borderColor: colors.border,
-          borderWidth: 1,
-          borderRadius: 12,
-          padding: 16,
-          marginBottom: 12,
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}
+      activeOpacity={0.6}
     >
       <View className="flex-row items-start justify-between mb-3">
         <View className="flex-1">
@@ -147,7 +138,7 @@ export function PartnerCard({
 
       {/* Action Button */}
       {onAction && (
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             if (status === 'pending') {
               onAction('cancel');
@@ -157,15 +148,7 @@ export function PartnerCard({
               onAction('send');
             }
           }}
-          style={({ pressed }) => [
-            {
-              backgroundColor: colors.primary,
-              paddingVertical: 10,
-              paddingHorizontal: 12,
-              borderRadius: 8,
-              opacity: pressed ? 0.8 : 1,
-            },
-          ]}
+          activeOpacity={0.6}
         >
           <Text className="text-center font-semibold text-white text-sm">
             {status === 'pending'
@@ -174,8 +157,8 @@ export function PartnerCard({
                 ? 'View Profile'
                 : actionLabel}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       )}
-    </Pressable>
+    </TouchableOpacity>
   );
 }

@@ -6,12 +6,7 @@
  * After this, user proceeds to AI message + routine generation.
  */
 import React, { useState } from "react";
-import {
-  Text,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -137,18 +132,10 @@ export default function Q7MotivationScreen() {
           {MOTIVATION_STYLES.map((style) => {
             const isSelected = selected === style.id;
             return (
-              <Pressable
+              <TouchableOpacity
                 key={style.id}
                 onPress={() => handleSelect(style.id)}
-                style={({ pressed }) => [
-                  styles.styleCard,
-                  {
-                    backgroundColor: isSelected ? colors.accent + "15" : colors.surface,
-                    borderColor: isSelected ? colors.accent : colors.border,
-                    opacity: pressed ? 0.85 : 1,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.styleEmoji}>{style.emoji}</Text>
                 <Animated.View style={styles.styleTextGroup}>
@@ -162,28 +149,22 @@ export default function Q7MotivationScreen() {
                 {isSelected && (
                   <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
                 )}
-              </Pressable>
+              </TouchableOpacity>
             );
           })}
         </Animated.View>
 
         {/* Continue Button */}
         <Animated.View entering={FadeInDown.delay(350)}>
-          <Pressable
+          <TouchableOpacity
             onPress={handleContinue}
             disabled={!selected}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: selected ? colors.accent : colors.muted + "30",
-                transform: [{ scale: pressed && selected ? 0.97 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={[styles.buttonText, { opacity: selected ? 1 : 0.5 }]}>
               {t("onboarding.q7.cta", { defaultValue: "Build My Routine →" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

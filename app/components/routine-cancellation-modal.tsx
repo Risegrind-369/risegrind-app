@@ -3,7 +3,7 @@
  * Shows when user cancels routine, allows re-achievement for double XP
  */
 import React, { useState } from "react";
-import { View, Text, Pressable, Modal, StyleSheet } from "react-native";
+import { View, Text, Modal, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, {
   FadeIn,
   FadeOut,
@@ -116,44 +116,29 @@ export function RoutineCancellationModal({
 
           {/* Action Buttons */}
           <View style={styles.buttonRow}>
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 onCancel();
               }}
-              style={({ pressed }) => [
-                styles.button,
-                styles.cancelButton,
-                {
-                  backgroundColor: colors.surface,
-                  opacity: pressed ? 0.7 : 1,
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={[styles.buttonText, { color: colors.foreground }]}>
                 Accept Loss
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 onReachieve();
               }}
-              style={({ pressed }) => [
-                styles.button,
-                styles.reachieveButton,
-                {
-                  backgroundColor: colors.primary,
-                  opacity: pressed ? 0.85 : 1,
-                  transform: [{ scale: pressed ? 0.97 : 1 }],
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={[styles.buttonText, { color: colors.background }]}>
                 🔥 Re-achieve for 2x XP
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
 
           {/* Motivational Text */}

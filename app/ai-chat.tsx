@@ -6,18 +6,7 @@
  * using the user's streak/XP/habit/health data, and full i18n.
  */
 import React, { useState, useRef, useCallback } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  FlatList,
-  Pressable,
-  StyleSheet,
-  KeyboardAvoidingView,
-  Platform,
-  ActivityIndicator,
-  Alert,
-} from "react-native";
+import { View, Text, TextInput, FlatList, StyleSheet, KeyboardAvoidingView, Platform, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -211,12 +200,12 @@ export default function AIChatScreen() {
           { paddingTop: insets.top + 12, borderBottomColor: colors.border, backgroundColor: colors.background },
         ]}
       >
-        <Pressable
+        <TouchableOpacity
           onPress={() => router.back()}
-          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 8 })}
+          activeOpacity={0.6}
         >
           <Text style={[styles.backBtn, { color: colors.primary }]}>✕</Text>
-        </Pressable>
+        </TouchableOpacity>
         <View style={styles.headerCenter}>
           <Text style={[styles.headerTitle, { color: colors.foreground }]}>
             {lang === "fr" ? "Mentor Ghost" : lang === "pt" ? "Mentor Ghost" : "Ghost Mentor"}
@@ -225,7 +214,7 @@ export default function AIChatScreen() {
             {lang === "fr" ? "IA · Toujours actif" : lang === "pt" ? "IA · Sempre ativo" : "AI · Always on"}
           </Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => {
             Alert.alert(
               lang === "fr" ? "Effacer la conversation ?" : lang === "pt" ? "Limpar conversa?" : "Clear chat?",
@@ -248,12 +237,12 @@ export default function AIChatScreen() {
               ]
             );
           }}
-          style={({ pressed }) => ({ opacity: pressed ? 0.5 : 1, padding: 8 })}
+          activeOpacity={0.6}
         >
           <Text style={[styles.clearBtn, { color: colors.muted }]}>
             {lang === "fr" ? "Effacer" : lang === "pt" ? "Limpar" : "Clear"}
           </Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       {/* Context bar */}
@@ -302,15 +291,12 @@ export default function AIChatScreen() {
             keyExtractor={(item) => item}
             contentContainerStyle={styles.quickPromptsList}
             renderItem={({ item }) => (
-              <Pressable
+              <TouchableOpacity
                 onPress={() => sendMessage(item)}
-                style={({ pressed }) => [
-                  styles.quickPromptChip,
-                  { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={[styles.quickPromptText, { color: colors.foreground }]}>{item}</Text>
-              </Pressable>
+              </TouchableOpacity>
             )}
           />
         </View>
@@ -343,20 +329,13 @@ export default function AIChatScreen() {
           returnKeyType="send"
           onSubmitEditing={() => sendMessage(input)}
         />
-        <Pressable
+        <TouchableOpacity
           onPress={() => sendMessage(input)}
           disabled={!input.trim() || chatMutation.isPending}
-          style={({ pressed }) => [
-            styles.sendBtn,
-            {
-              backgroundColor: input.trim() ? colors.primary : colors.border,
-              opacity: pressed ? 0.8 : 1,
-              transform: [{ scale: pressed ? 0.95 : 1 }],
-            },
-          ]}
+          activeOpacity={0.6}
         >
           <Text style={styles.sendBtnText}>↑</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );

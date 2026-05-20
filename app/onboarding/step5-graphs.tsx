@@ -11,14 +11,7 @@
  * Uses Reanimated for smooth animations.
  */
 import React, { useEffect } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, {
@@ -310,20 +303,17 @@ export default function Step5Graphs() {
           </Text>
 
           {/* CTA */}
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push("/onboarding/step6-trial-reveal");
             }}
-            style={({ pressed }) => [
-              styles.button,
-              { backgroundColor: colors.accent, opacity: pressed ? 0.8 : 1 },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={styles.buttonText}>
               {t("onboarding.step5.continue", { defaultValue: "Let's Go" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ScreenContainer>

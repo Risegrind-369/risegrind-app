@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 
@@ -50,19 +51,9 @@ export function LeaderboardRow({
   };
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => [
-        {
-          backgroundColor: isCurrentUser ? colors.primary + '15' : colors.surface,
-          borderColor: isCurrentUser ? colors.primary : colors.border,
-          borderWidth: 1,
-          borderRadius: 10,
-          padding: 12,
-          marginBottom: 8,
-          opacity: pressed ? 0.7 : 1,
-        },
-      ]}
+      activeOpacity={0.6}
     >
       <View className="flex-row items-center gap-3">
         {/* Rank Medal */}
@@ -129,7 +120,7 @@ export function LeaderboardRow({
           </Text>
         </View>
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }
 

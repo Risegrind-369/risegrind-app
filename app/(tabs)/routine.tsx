@@ -1,15 +1,5 @@
 import React, { useState, useRef } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  FlatList,
-  StyleSheet,
-  Modal,
-  TextInput,
-  Alert,
-  Animated,
-} from "react-native";
+import { View, Text, FlatList, StyleSheet, Modal, TextInput, Alert, Animated, TouchableOpacity } from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
 import { getMoodLabel, getHabitName } from "@/lib/translations-helper";
@@ -53,7 +43,7 @@ function HabitRow({
 
   return (
     <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-      <Pressable
+      <TouchableOpacity
         onPress={handleToggle}
         onLongPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
@@ -108,7 +98,7 @@ function HabitRow({
             <Text style={[styles.xpBadgeText, { color: colors.success }]}>+10 XP</Text>
           </View>
         )}
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   );
 }
@@ -211,15 +201,12 @@ export default function RoutineScreen() {
             {completedCount} {ofLabel} {totalCount} {completedLabel}
           </Text>
         </View>
-        <Pressable
+        <TouchableOpacity
           onPress={() => setShowAddModal(true)}
-          style={({ pressed }) => [
-            styles.addButton,
-            { backgroundColor: colors.primary, transform: [{ scale: pressed ? 0.95 : 1 }] },
-          ]}
+          activeOpacity={0.6}
         >
           <Text style={styles.addButtonText}>{addLabel}</Text>
-        </Pressable>
+        </TouchableOpacity>
       </View>
 
       {/* Progress Ring */}
@@ -294,7 +281,7 @@ export default function RoutineScreen() {
             <Text style={[styles.fieldLabel, { color: colors.muted }]}>{chooseIconLabel}</Text>
             <View style={styles.iconGrid}>
               {HABIT_ICONS.map((icon) => (
-                <Pressable
+                <TouchableOpacity
                   key={icon}
                   onPress={() => setNewHabitIcon(icon)}
                   style={[
@@ -308,7 +295,7 @@ export default function RoutineScreen() {
                   ]}
                 >
                   <Text style={styles.iconText}>{icon}</Text>
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </View>
 
@@ -351,13 +338,13 @@ export default function RoutineScreen() {
             />
 
             <View style={styles.modalActions}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => setShowAddModal(false)}
                 style={[styles.cancelButton, { borderColor: colors.border }]}
               >
                 <Text style={[styles.cancelButtonText, { color: colors.muted }]}>{t("common.cancel")}</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={handleAddHabit}
                 disabled={!newHabitName.trim()}
                 style={[
@@ -370,7 +357,7 @@ export default function RoutineScreen() {
                 <Text style={[styles.saveButtonText, { color: newHabitName.trim() ? "#fff" : colors.muted }]}>
                   {addHabitLabel}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </View>

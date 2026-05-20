@@ -5,13 +5,7 @@
  * User selects 1-3 goals from a visual grid.
  */
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -109,18 +103,10 @@ export default function Q4GoalsScreen() {
           {GOALS.map((goal, i) => {
             const isSelected = selected.includes(goal.id);
             return (
-              <Pressable
+              <TouchableOpacity
                 key={goal.id}
                 onPress={() => toggleGoal(goal.id)}
-                style={({ pressed }) => [
-                  styles.goalCard,
-                  {
-                    backgroundColor: isSelected ? colors.accent + "20" : colors.surface,
-                    borderColor: isSelected ? colors.accent : colors.border,
-                    opacity: pressed ? 0.85 : 1,
-                    transform: [{ scale: pressed ? 0.97 : 1 }],
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.goalEmoji}>{goal.emoji}</Text>
                 <Text
@@ -134,7 +120,7 @@ export default function Q4GoalsScreen() {
                 {isSelected && (
                   <View style={[styles.checkDot, { backgroundColor: colors.accent }]} />
                 )}
-              </Pressable>
+              </TouchableOpacity>
             );
           })}
         </Animated.View>
@@ -149,21 +135,15 @@ export default function Q4GoalsScreen() {
 
         {/* Continue Button */}
         <Animated.View entering={FadeInDown.delay(350)}>
-          <Pressable
+          <TouchableOpacity
             onPress={handleContinue}
             disabled={!isValid}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: isValid ? colors.accent : colors.muted + "30",
-                transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={[styles.buttonText, { opacity: isValid ? 1 : 0.5 }]}>
               {t("common.continue", { defaultValue: "Continue" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

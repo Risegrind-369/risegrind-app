@@ -3,7 +3,7 @@
  * Shows past journal entry from 7/30/90 days ago with AI-generated growth highlights
  */
 import React from "react";
-import { View, Text, Pressable, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import Animated, {
   FadeIn,
   SlideInLeft,
@@ -84,20 +84,14 @@ export function EchoJournalCard({
       </View>
 
       {/* Action Button */}
-      <Pressable
+      <TouchableOpacity
         onPress={handlePress}
-        style={({ pressed }) => [
-          styles.button,
-          {
-            backgroundColor: colors.primary,
-            opacity: pressed ? 0.8 : 1,
-          },
-        ]}
+        activeOpacity={0.6}
       >
         <Text style={[styles.buttonText, { color: colors.background }]}>
           This moved me 💜
         </Text>
-      </Pressable>
+      </TouchableOpacity>
     </Animated.View>
   );
 }

@@ -5,12 +5,7 @@
  * Single-select from time range options.
  */
 import React, { useState } from "react";
-import {
-  Text,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-} from "react-native";
+import { Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -101,18 +96,10 @@ export default function Q6WakeTimeScreen() {
           {WAKE_TIMES.map((option) => {
             const isSelected = selected === option.id;
             return (
-              <Pressable
+              <TouchableOpacity
                 key={option.id}
                 onPress={() => handleSelect(option.id)}
-                style={({ pressed }) => [
-                  styles.optionCard,
-                  {
-                    backgroundColor: isSelected ? colors.accent + "15" : colors.surface,
-                    borderColor: isSelected ? colors.accent : colors.border,
-                    opacity: pressed ? 0.85 : 1,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.optionEmoji}>{option.emoji}</Text>
                 <Animated.View style={styles.optionTextGroup}>
@@ -126,28 +113,22 @@ export default function Q6WakeTimeScreen() {
                 {isSelected && (
                   <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
                 )}
-              </Pressable>
+              </TouchableOpacity>
             );
           })}
         </Animated.View>
 
         {/* Continue Button */}
         <Animated.View entering={FadeInDown.delay(350)}>
-          <Pressable
+          <TouchableOpacity
             onPress={handleContinue}
             disabled={!selected}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: selected ? colors.accent : colors.muted + "30",
-                transform: [{ scale: pressed && selected ? 0.97 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={[styles.buttonText, { opacity: selected ? 1 : 0.5 }]}>
               {t("common.continue", { defaultValue: "Continue" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

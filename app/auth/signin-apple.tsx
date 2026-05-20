@@ -1,13 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  ActivityIndicator,
-  Alert,
-  Platform,
-} from "react-native";
+import { View, Text, ScrollView, ActivityIndicator, Alert, Platform, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -108,16 +100,10 @@ export default function SignInAppleScreen() {
           </View>
 
           {/* Apple Sign In Button */}
-          <Pressable
+          <TouchableOpacity
             onPress={handleAppleSignIn}
             disabled={isLoading}
-            style={({ pressed }) => [
-              {
-                backgroundColor: "#000",
-                opacity: pressed ? 0.8 : 1,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
             className="py-4 rounded-lg items-center flex-row justify-center gap-2 mt-6"
           >
             {isLoading ? (
@@ -130,7 +116,7 @@ export default function SignInAppleScreen() {
                 </Text>
               </>
             )}
-          </Pressable>
+          </TouchableOpacity>
 
           {/* Alternative Methods */}
           <View className="gap-3 mt-4">
@@ -151,16 +137,9 @@ export default function SignInAppleScreen() {
               />
             </View>
 
-            <Pressable
+            <TouchableOpacity
               onPress={() => router.back()}
-              style={({ pressed }) => [
-                {
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.8 : 1,
-                  transform: [{ scale: pressed ? 0.98 : 1 }],
-                },
-              ]}
+              activeOpacity={0.6}
               className="py-4 rounded-lg items-center"
             >
               <Text
@@ -169,7 +148,7 @@ export default function SignInAppleScreen() {
               >
                 Use Email Instead
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
 
           {/* Terms */}

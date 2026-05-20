@@ -5,14 +5,7 @@
  * Lists all premium features with icons.
  */
 import React from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -87,20 +80,14 @@ export default function Step6TrialRevealScreen() {
 
           {/* CTA */}
           <Animated.View entering={FadeInDown.delay(700).duration(600)} style={styles.footer}>
-            <Pressable
+            <TouchableOpacity
               onPress={handleStart}
-              style={({ pressed }) => [
-                styles.button,
-                {
-                  backgroundColor: "#E8A87C",
-                  transform: [{ scale: pressed ? 0.97 : 1 }],
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={styles.buttonText}>
                 {t("onboarding.step6.startTrial", { defaultValue: "Start My Free Trial" })}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <Text style={[styles.legalText, { color: colors.muted }]}>
               {t("onboarding.step6.legal", {

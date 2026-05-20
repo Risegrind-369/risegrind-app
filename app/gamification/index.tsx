@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { ScrollView, View, Text, FlatList, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -109,10 +110,10 @@ export default function GamificationScreen() {
         {/* Tab Navigation */}
         <View className="flex-row gap-2 mb-6">
           {(['overview', 'badges', 'masteries'] as const).map((tab) => (
-            <Pressable
+            <TouchableOpacity
               key={tab}
               onPress={() => handleTabPress(tab)}
-              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+              activeOpacity={0.6}
             >
               <View
                 className={`px-4 py-2 rounded-full border ${
@@ -133,7 +134,7 @@ export default function GamificationScreen() {
                   {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 </Text>
               </View>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
 

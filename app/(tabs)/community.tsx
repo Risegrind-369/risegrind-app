@@ -1,15 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  TextInput,
-  StyleSheet,
-  Alert,
-  Share,
-  Platform,
-} from "react-native";
+import { View, Text, ScrollView, TextInput, StyleSheet, Alert, Share, Platform, TouchableOpacity } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
@@ -191,28 +181,22 @@ export default function CommunityScreen() {
             {t("community.codeHint")}
           </Text>
           <View style={styles.codeActions}>
-            <Pressable
+            <TouchableOpacity
               onPress={handleCopyCode}
-              style={({ pressed }) => [
-                styles.codeBtn,
-                { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={[styles.codeBtnText, { color: colors.foreground }]}>
                 📋 {t("common.copy")}
               </Text>
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={handleShare}
-              style={({ pressed }) => [
-                styles.codeBtn,
-                { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={[styles.codeBtnText, { color: "#fff" }]}>
                 🔗 {t("community.shareCode")}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -234,21 +218,15 @@ export default function CommunityScreen() {
                 { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.background },
               ]}
             />
-            <Pressable
+            <TouchableOpacity
               onPress={handleAddFriend}
               disabled={adding || friendCode.length < 6}
-              style={({ pressed }) => [
-                styles.addBtn,
-                {
-                  backgroundColor: colors.primary,
-                  opacity: adding || friendCode.length < 6 ? 0.5 : pressed ? 0.8 : 1,
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={styles.addBtnText}>
                 {adding ? "..." : t("community.addFriendBtn")}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -271,7 +249,7 @@ export default function CommunityScreen() {
           ) : (
             <View style={styles.leaderboardList}>
               {allPlayers.map((player, i) => (
-                <Pressable
+                <TouchableOpacity
                   key={player.code}
                   onLongPress={
                     !player.isYou
@@ -286,7 +264,7 @@ export default function CommunityScreen() {
                     xp={player.xp}
                     isYou={player.isYou}
                   />
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </View>
           )}

@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -189,41 +190,23 @@ export default function WearablesScreen() {
 
                 {/* Actions */}
                 <View className="flex-row gap-2">
-                  <Pressable
+                  <TouchableOpacity
                     onPress={() => handleManualSync(connection.id)}
                     disabled={connection.syncStatus === 'syncing'}
-                    style={({ pressed }) => [
-                      {
-                        flex: 1,
-                        paddingVertical: 10,
-                        borderRadius: 8,
-                        backgroundColor: colors.primary,
-                        opacity: pressed ? 0.8 : 1,
-                      },
-                    ]}
+                    activeOpacity={0.6}
                   >
                     <Text className="text-center text-white text-sm font-semibold">
                       {connection.syncStatus === 'syncing' ? '⏳ Syncing...' : '🔄 Sync Now'}
                     </Text>
-                  </Pressable>
-                  <Pressable
+                  </TouchableOpacity>
+                  <TouchableOpacity
                     onPress={() => handleDisconnect(connection.id)}
-                    style={({ pressed }) => [
-                      {
-                        flex: 1,
-                        paddingVertical: 10,
-                        borderRadius: 8,
-                        backgroundColor: colors.error + '20',
-                        borderColor: colors.error,
-                        borderWidth: 1,
-                        opacity: pressed ? 0.8 : 1,
-                      },
-                    ]}
+                    activeOpacity={0.6}
                   >
                     <Text className="text-center text-sm font-semibold" style={{ color: colors.error }}>
                       Disconnect
                     </Text>
-                  </Pressable>
+                  </TouchableOpacity>
                 </View>
               </View>
             ))}
@@ -237,15 +220,10 @@ export default function WearablesScreen() {
               Available Devices
             </Text>
             {availableToConnect.map((deviceType) => (
-              <Pressable
+              <TouchableOpacity
                 key={deviceType}
                 onPress={() => handleConnect(deviceType)}
-                style={({ pressed }) => [
-                  {
-                    marginBottom: 12,
-                    opacity: pressed ? 0.7 : 1,
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 <View
                   className="rounded-lg p-4"
@@ -264,7 +242,7 @@ export default function WearablesScreen() {
                     <Text className="text-xl">→</Text>
                   </View>
                 </View>
-              </Pressable>
+              </TouchableOpacity>
             ))}
           </>
         )}

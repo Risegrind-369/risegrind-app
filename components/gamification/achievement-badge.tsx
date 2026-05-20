@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
@@ -36,14 +37,9 @@ export function AchievementBadge({
   const config = RARITY_CONFIG[rarity];
 
   return (
-    <Pressable
+    <TouchableOpacity
       onPress={onPress}
-      style={({ pressed }) => [
-        {
-          opacity: pressed ? 0.7 : 1,
-          transform: [{ scale: pressed ? 0.95 : 1 }],
-        },
-      ]}
+      activeOpacity={0.6}
     >
       <View
         className={cn(
@@ -82,6 +78,6 @@ export function AchievementBadge({
           </Text>
         )}
       </View>
-    </Pressable>
+    </TouchableOpacity>
   );
 }

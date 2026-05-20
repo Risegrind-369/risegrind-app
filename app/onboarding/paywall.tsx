@@ -5,16 +5,7 @@
  * Transparent pricing, social proof, and RevenueCat integration.
  */
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  ActivityIndicator,
-  Image,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Alert, ActivityIndicator, Image, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -161,19 +152,12 @@ export default function PaywallScreen() {
         {/* Plan Selector */}
         <Animated.View entering={FadeInDown.delay(400).duration(600)} style={styles.plans}>
           {/* Yearly — recommended */}
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               setSelectedPlan("yearly");
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
-            style={({ pressed }) => [
-              styles.planCard,
-              {
-                backgroundColor: selectedPlan === "yearly" ? "#E8A87C15" : colors.surface,
-                borderColor: selectedPlan === "yearly" ? "#E8A87C" : colors.border,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <View style={styles.planBadgeRow}>
               <View style={[styles.saveBadge, { backgroundColor: "#22C55E" }]}>
@@ -192,22 +176,15 @@ export default function PaywallScreen() {
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perYear", { defaultValue: "/year" })} · ~$3.33/mo
             </Text>
-          </Pressable>
+          </TouchableOpacity>
 
           {/* Monthly */}
-          <Pressable
+          <TouchableOpacity
             onPress={() => {
               setSelectedPlan("monthly");
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
             }}
-            style={({ pressed }) => [
-              styles.planCard,
-              {
-                backgroundColor: selectedPlan === "monthly" ? "#E8A87C15" : colors.surface,
-                borderColor: selectedPlan === "monthly" ? "#E8A87C" : colors.border,
-                transform: [{ scale: pressed ? 0.98 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <View style={styles.planBadgeRow}>
               {selectedPlan === "monthly" && (
@@ -221,23 +198,16 @@ export default function PaywallScreen() {
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perMonth", { defaultValue: "/month" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
 
         {/* CTA */}
         <Animated.View entering={FadeInDown.delay(500).duration(600)} style={styles.ctaSection}>
           {/* Trial Button — Primary CTA */}
-          <Pressable
+          <TouchableOpacity
             onPress={handlePurchase}
             disabled={isLoading}
-            style={({ pressed }) => [
-              styles.ctaButton,
-              {
-                backgroundColor: "#E8A87C",
-                transform: [{ scale: pressed ? 0.97 : 1 }],
-                opacity: isLoading ? 0.7 : 1,
-              },
-            ]}
+            activeOpacity={0.6}
           >
             {isLoading ? (
               <ActivityIndicator color="#fff" />
@@ -251,7 +221,7 @@ export default function PaywallScreen() {
                 </Text>
               </View>
             )}
-          </Pressable>
+          </TouchableOpacity>
 
           {/* Trial Info */}
           <Text style={[styles.legalText, { color: colors.muted }]}>
@@ -261,14 +231,14 @@ export default function PaywallScreen() {
           </Text>
 
           {/* Restore Button */}
-          <Pressable
+          <TouchableOpacity
             onPress={handleRestore}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+            activeOpacity={0.6}
           >
             <Text style={[styles.restoreText, { color: colors.muted }]}>
               {t("paywall.restore", { defaultValue: "Restore Purchases" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

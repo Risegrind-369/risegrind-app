@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
@@ -46,16 +47,11 @@ export function MentorStyleSelector({
           const isActive = activeMentorStyle === style.name;
 
           return (
-            <Pressable
+            <TouchableOpacity
               key={style.name}
               onPress={() => isUnlocked && handleSelectStyle(style.name)}
               disabled={!isUnlocked}
-              style={({ pressed }) => [
-                {
-                  opacity: pressed && isUnlocked ? 0.7 : 1,
-                  transform: [{ scale: pressed && isUnlocked ? 0.95 : 1 }],
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <View
                 className={cn(
@@ -80,7 +76,7 @@ export function MentorStyleSelector({
                   </Text>
                 )}
               </View>
-            </Pressable>
+            </TouchableOpacity>
           );
         })}
       </ScrollView>

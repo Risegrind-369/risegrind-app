@@ -6,15 +6,7 @@
  * Uses orange glow accents and motivational Ghost Mode copy.
  */
 import React, { useEffect, useRef } from "react";
-import {
-  View,
-  Text,
-  Modal,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-  Dimensions,
-} from "react-native";
+import { View, Text, Modal, StyleSheet, ScrollView, Dimensions, TouchableOpacity } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -257,20 +249,17 @@ export function WeeklySummaryModal({ visible, onDismiss, state, weekXpEarned }: 
             </View>
 
             {/* CTA */}
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 onDismiss();
               }}
-              style={({ pressed }) => [
-                styles.ctaButton,
-                { backgroundColor: colors.accent, opacity: pressed ? 0.85 : 1 },
-              ]}
+              activeOpacity={0.6}
             >
               <Text style={styles.ctaText}>
                 {lang === "fr" ? "Continuer à grinder 🔥" : lang === "pt" ? "Continuar grindando 🔥" : "Keep Grinding 🔥"}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </ScrollView>
         </Animated.View>
       </View>

@@ -1,13 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  View,
-  Text,
-  ScrollView,
-  Pressable,
-  StyleSheet,
-  Modal,
-  Animated,
-} from "react-native";
+import { View, Text, ScrollView, StyleSheet, Modal, Animated, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
@@ -205,12 +197,12 @@ export default function HomeScreen() {
           {/* Header */}
           <View style={styles.header}>
             {/* Settings Button (left) */}
-            <Pressable
+            <TouchableOpacity
               onPress={() => router.push("/settings" as never)}
-              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              activeOpacity={0.6}
             >
               <Text style={styles.headerIcon}>⚙️</Text>
-            </Pressable>
+            </TouchableOpacity>
 
             <View style={{ flex: 1 }}>
               <Text style={[styles.greeting, { color: colors.foreground }]}>
@@ -280,7 +272,7 @@ export default function HomeScreen() {
 
           {/* Mood Banner or Mood Picker CTA */}
           {hasMoodToday ? (
-            <Pressable
+            <TouchableOpacity
               onPress={() => setShowMoodPicker(true)}
               style={[styles.moodDone, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
@@ -294,9 +286,9 @@ export default function HomeScreen() {
                 </Text>
               </View>
               <Text style={styles.moodBannerArrow}>→</Text>
-            </Pressable>
+            </TouchableOpacity>
           ) : (
-            <Pressable
+            <TouchableOpacity
               onPress={() => setShowMoodPicker(true)}
               style={[styles.moodBanner, { backgroundColor: colors.accent + "15", borderColor: colors.accent + "30" }]}
             >
@@ -310,7 +302,7 @@ export default function HomeScreen() {
                 </Text>
               </View>
               <Text style={styles.moodBannerArrow}>→</Text>
-            </Pressable>
+            </TouchableOpacity>
           )}
 
           {/* Quick Actions */}
@@ -319,36 +311,27 @@ export default function HomeScreen() {
               {t("home.quickActions")}
             </Text>
             <View style={styles.actionGrid}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => router.push("/(tabs)/routine" as never)}
-                style={({ pressed }) => [
-                  styles.actionCard,
-                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.actionEmoji}>📋</Text>
                 <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.routine")}</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => router.push("/(tabs)/journal" as never)}
-                style={({ pressed }) => [
-                  styles.actionCard,
-                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.actionEmoji}>📝</Text>
                 <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.journal")}</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
                 onPress={() => router.push("/(tabs)/insights" as never)}
-                style={({ pressed }) => [
-                  styles.actionCard,
-                  { backgroundColor: colors.surface, borderColor: colors.border, borderWidth: 1, opacity: pressed ? 0.7 : 1 },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.actionEmoji}>📊</Text>
                 <Text style={[styles.actionLabel, { color: colors.foreground }]}>{t("home.insights")}</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -372,7 +355,7 @@ export default function HomeScreen() {
                 {t("home.recentEntries")}
               </Text>
               {recentEntries.map((entry) => (
-                <Pressable
+                <TouchableOpacity
                   key={entry.id}
                   onPress={() => router.push("/(tabs)/journal" as never)}
                   style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
@@ -383,7 +366,7 @@ export default function HomeScreen() {
                   <Text style={[styles.entryPreviewText, { color: colors.foreground }]} numberOfLines={2}>
                     {entry.content}
                   </Text>
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </View>
           )}
@@ -408,48 +391,35 @@ export default function HomeScreen() {
 
           <View style={styles.moodGrid}>
             {([1, 2, 3, 4, 5] as MoodLevel[]).map((level) => (
-              <Pressable
+              <TouchableOpacity
                 key={level}
                 onPress={() => handleMoodSelect(level)}
-                style={({ pressed }) => [
-                  styles.moodOption,
-                  {
-                    borderColor: selectedMood === level ? colors.primary : colors.border,
-                    backgroundColor: selectedMood === level ? colors.primary + "15" : colors.surface,
-                    transform: [{ scale: pressed ? 0.92 : selectedMood === level ? 1.05 : 1 }],
-                  },
-                ]}
+                activeOpacity={0.6}
               >
                 <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
                 <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
                   {getMoodLabel(level, lang)}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             ))}
           </View>
 
-          <Pressable
+          <TouchableOpacity
             onPress={handleMoodSave}
             disabled={!selectedMood}
-            style={({ pressed }) => [
-              styles.saveMoodButton,
-              {
-                backgroundColor: selectedMood ? colors.primary : colors.border,
-                transform: [{ scale: pressed ? 0.97 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={[styles.saveMoodText, { color: selectedMood ? "#fff" : colors.muted }]}>
               {t("home.logState")}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
 
-          <Pressable
+          <TouchableOpacity
             onPress={() => setShowMoodPicker(false)}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
+            activeOpacity={0.6}
           >
             <Text style={[styles.cancelText, { color: colors.muted }]}>{t("common.cancel")}</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
       </Modal>
 

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, Pressable, Modal, Animated } from "react-native";
+import { View, Text, Modal, Animated, TouchableOpacity } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
@@ -195,23 +195,12 @@ export function PremiumRecoveryQuest({
 
             {/* Action buttons */}
             <View style={{ width: "100%", gap: 12 }}>
-              <Pressable
+              <TouchableOpacity
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                   onAccept();
                 }}
-                style={({ pressed }) => ({
-                  backgroundColor: colors.success,
-                  paddingVertical: 16,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  opacity: pressed ? 0.8 : 1,
-                  shadowColor: colors.success,
-                  shadowOffset: { width: 0, height: 8 },
-                  shadowOpacity: 0.4,
-                  shadowRadius: 16,
-                  elevation: 12,
-                })}
+                activeOpacity={0.6}
               >
                 <Text
                   style={{
@@ -223,22 +212,14 @@ export function PremiumRecoveryQuest({
                 >
                   {t("accept_quest") || "Accept Challenge"}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable
+              <TouchableOpacity
                 onPress={() => {
                   Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                   onClose();
                 }}
-                style={({ pressed }) => ({
-                  paddingVertical: 14,
-                  borderRadius: 16,
-                  alignItems: "center",
-                  backgroundColor: colors.surface,
-                  borderWidth: 1.5,
-                  borderColor: colors.border,
-                  opacity: pressed ? 0.7 : 1,
-                })}
+                activeOpacity={0.6}
               >
                 <Text
                   style={{
@@ -250,7 +231,7 @@ export function PremiumRecoveryQuest({
                 >
                   {t("skip") || "Skip for now"}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </Animated.View>

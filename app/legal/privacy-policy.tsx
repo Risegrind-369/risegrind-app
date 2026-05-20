@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -18,9 +18,9 @@ export default function PrivacyPolicyScreen() {
           <Text className="text-xl font-bold text-foreground" style={{ color: colors.foreground }}>
             {t("legal.privacyPolicy") || "Privacy Policy"}
           </Text>
-          <Pressable onPress={() => router.back()}>
+          <TouchableOpacity onPress={() => router.back()}>
             <Text className="text-2xl">✕</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         {/* Content */}

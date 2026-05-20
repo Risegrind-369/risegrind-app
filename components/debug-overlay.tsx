@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, ScrollView, Pressable, StyleSheet, Modal } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Modal, TouchableOpacity } from "react-native";
 import { useColors } from "@/hooks/use-colors";
 
 const MAX_LOGS = 50;
@@ -48,7 +48,7 @@ export function DebugOverlay() {
   return (
     <>
       {/* Hidden gesture detector - long press anywhere to show debug overlay */}
-      <Pressable
+      <TouchableOpacity
         onLongPress={() => setVisible(true)}
         style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 100, zIndex: 1 }}
       />
@@ -57,9 +57,9 @@ export function DebugOverlay() {
         <View style={[styles.container, { backgroundColor: colors.background }]}>
           <View style={[styles.header, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}>
             <Text style={[styles.title, { color: colors.foreground }]}>Debug Logs (Last {logs.length})</Text>
-            <Pressable onPress={() => setVisible(false)} style={styles.closeButton}>
+            <TouchableOpacity onPress={() => setVisible(false)} style={styles.closeButton}>
               <Text style={[styles.closeText, { color: colors.primary }]}>Close</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
 
           <ScrollView
@@ -89,7 +89,7 @@ export function DebugOverlay() {
           </ScrollView>
 
           <View style={[styles.footer, { backgroundColor: colors.surface, borderTopColor: colors.border }]}>
-            <Pressable
+            <TouchableOpacity
               onPress={() => {
                 globalLogs = [];
                 setLogs([]);
@@ -97,7 +97,7 @@ export function DebugOverlay() {
               style={[styles.button, { backgroundColor: colors.error }]}
             >
               <Text style={{ color: colors.background, fontWeight: "600" }}>Clear Logs</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>

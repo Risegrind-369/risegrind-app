@@ -6,14 +6,7 @@
  * Shows a loading animation, then reveals the generated routine.
  */
 import React, { useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  StyleSheet,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
@@ -259,20 +252,14 @@ export default function Step4bRoutineScreen() {
 
         {/* Continue Button */}
         <Animated.View entering={FadeInDown.delay(600)}>
-          <Pressable
+          <TouchableOpacity
             onPress={handleContinue}
-            style={({ pressed }) => [
-              styles.button,
-              {
-                backgroundColor: colors.accent,
-                transform: [{ scale: pressed ? 0.97 : 1 }],
-              },
-            ]}
+            activeOpacity={0.6}
           >
             <Text style={styles.buttonText}>
               {t("onboarding.routine.cta", { defaultValue: "This Looks Great →" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

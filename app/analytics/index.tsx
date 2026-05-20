@@ -1,3 +1,4 @@
+import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -144,21 +145,10 @@ export default function AnalyticsDashboard() {
         {/* Tabs */}
         <View className="flex-row gap-2 mb-4">
           {(['risks', 'correlations', 'patterns'] as const).map((tab) => (
-            <Pressable
+            <TouchableOpacity
               key={tab}
               onPress={() => handleTabPress(tab)}
-              style={({ pressed }) => [
-                {
-                  flex: 1,
-                  paddingVertical: 10,
-                  paddingHorizontal: 12,
-                  borderRadius: 8,
-                  backgroundColor: selectedTab === tab ? colors.primary : colors.surface,
-                  borderColor: colors.border,
-                  borderWidth: 1,
-                  opacity: pressed ? 0.8 : 1,
-                },
-              ]}
+              activeOpacity={0.6}
             >
               <Text
                 className="text-xs font-semibold text-center"
@@ -166,7 +156,7 @@ export default function AnalyticsDashboard() {
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           ))}
         </View>
 
