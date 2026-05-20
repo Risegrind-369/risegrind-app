@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, Alert, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
@@ -203,10 +210,16 @@ export default function DeleteAccountScreen() {
           <View className="flex-1" />
 
           {/* Delete Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={handleDeleteAccount}
             disabled={isDeleting}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                backgroundColor: colors.error,
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
             className="py-4 rounded-lg items-center"
           >
             {isDeleting ? (
@@ -217,12 +230,16 @@ export default function DeleteAccountScreen() {
                   "Delete My Account Permanently"}
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Cancel Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.back()}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.6 : 1,
+              },
+            ]}
             className="py-4 items-center"
           >
             <Text
@@ -231,7 +248,7 @@ export default function DeleteAccountScreen() {
             >
               {t("common.cancel") || "Cancel"}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Info text */}
           <Text

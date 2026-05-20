@@ -1,6 +1,6 @@
 import { Tabs, useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Platform, StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 import { useTranslation } from "react-i18next";
 import * as Haptics from "expo-haptics";
 
@@ -26,16 +26,23 @@ function ConnectFloatingButton({ bottom }: { bottom: number }) {
       style={[styles.fabContainer, { bottom, left: 16 }]}
       pointerEvents="box-none"
     >
-      <TouchableOpacity
+      <Pressable
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           router.push("/friends" as never);
         }}
-        activeOpacity={0.6}
+        style={({ pressed }) => [
+          styles.connectFab,
+          {
+            backgroundColor: colors.surface,
+            borderColor: colors.border,
+            transform: [{ scale: pressed ? 0.92 : 1 }],
+          },
+        ]}
         accessibilityLabel="Connect with friends"
       >
         <Text style={styles.connectFabIcon}>👥</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }
@@ -50,17 +57,24 @@ function AIFloatingButton() {
   const { t } = useTranslation();
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
         router.push("/ai-chat" as never);
       }}
-      activeOpacity={0.6}
+      style={({ pressed }) => [
+        styles.aiFab,
+        {
+          backgroundColor: colors.accent,
+          shadowColor: colors.accent,
+          transform: [{ scale: pressed ? 0.92 : 1 }],
+        },
+      ]}
       accessibilityLabel={t("tabs.aiMentor", { defaultValue: "AI Mentor" })}
     >
       <Text style={styles.aiFabIcon}>💬</Text>
       <Text style={styles.aiFabText}>AI</Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

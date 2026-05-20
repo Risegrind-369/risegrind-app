@@ -5,7 +5,13 @@
  * User selects up to 3 problems from a visual grid.
  */
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -106,10 +112,18 @@ export default function Q5ProblemsScreen() {
           {PROBLEMS.map((problem) => {
             const isSelected = selected.includes(problem.id);
             return (
-              <TouchableOpacity
+              <Pressable
                 key={problem.id}
                 onPress={() => toggleProblem(problem.id)}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  styles.problemCard,
+                  {
+                    backgroundColor: isSelected ? "#EF444420" : colors.surface,
+                    borderColor: isSelected ? "#EF4444" : colors.border,
+                    opacity: pressed ? 0.85 : 1,
+                    transform: [{ scale: pressed ? 0.97 : 1 }],
+                  },
+                ]}
               >
                 <Text style={styles.problemEmoji}>{problem.emoji}</Text>
                 <Text
@@ -123,7 +137,7 @@ export default function Q5ProblemsScreen() {
                 {isSelected && (
                   <View style={[styles.checkDot, { backgroundColor: "#EF4444" }]} />
                 )}
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </Animated.View>
@@ -138,15 +152,21 @@ export default function Q5ProblemsScreen() {
 
         {/* Continue Button */}
         <Animated.View entering={FadeInDown.delay(350)}>
-          <TouchableOpacity
+          <Pressable
             onPress={handleContinue}
             disabled={!isValid}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              styles.button,
+              {
+                backgroundColor: isValid ? colors.accent : colors.muted + "30",
+                transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
+              },
+            ]}
           >
             <Text style={[styles.buttonText, { opacity: isValid ? 1 : 0.5 }]}>
               {t("common.continue", { defaultValue: "Continue" })}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>

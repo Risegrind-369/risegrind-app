@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable, ActivityIndicator } from 'react-native';
 import { useRevenueCat } from '@/lib/revenuecat-provider';
 import { ScreenContainer } from '@/components/screen-container';
@@ -104,10 +103,15 @@ export default function ElitePaywall() {
           {/* Pricing Options */}
           <View className="gap-3">
             {/* Monthly Option */}
-            <TouchableOpacity
+            <Pressable
               onPress={() => handlePurchase('elite_monthly')}
               disabled={purchasing}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                {
+                  transform: [{ scale: pressed ? 0.97 : 1 }],
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
             >
               <View className="bg-primary rounded-2xl p-4 gap-2">
                 <View className="flex-row justify-between items-center">
@@ -125,13 +129,18 @@ export default function ElitePaywall() {
                   7-day free trial, then $19.99/month. Cancel anytime.
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Annual Option (Best Value) */}
-            <TouchableOpacity
+            <Pressable
               onPress={() => handlePurchase('elite_annual')}
               disabled={purchasing}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                {
+                  transform: [{ scale: pressed ? 0.97 : 1 }],
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
             >
               <View className="bg-surface rounded-2xl p-4 gap-2 border-2 border-primary">
                 <View className="absolute top-2 right-4 bg-primary rounded-full px-2 py-1">
@@ -152,7 +161,7 @@ export default function ElitePaywall() {
                   7-day free trial, then $159.99/year. Save 33% vs monthly.
                 </Text>
               </View>
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {/* Error Message */}
@@ -163,14 +172,18 @@ export default function ElitePaywall() {
           )}
 
           {/* Continue Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.back()}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                opacity: pressed ? 0.7 : 1,
+              },
+            ]}
           >
             <Text className="text-center text-base text-primary font-semibold">
               Continue with Pro
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Footer */}
           <View className="gap-1 mt-4">

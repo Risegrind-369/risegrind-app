@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -114,15 +122,21 @@ export default function ForgotPasswordScreen() {
             </View>
 
             {/* Back Button */}
-            <TouchableOpacity
+            <Pressable
               onPress={handleBackToSignIn}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                {
+                  backgroundColor: colors.primary,
+                  opacity: pressed ? 0.8 : 1,
+                  transform: [{ scale: pressed ? 0.98 : 1 }],
+                },
+              ]}
               className="py-4 rounded-lg items-center mt-6"
             >
               <Text className="text-white font-semibold text-base">
                 Back to Sign In
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </ScrollView>
       </ScreenContainer>
@@ -217,10 +231,16 @@ export default function ForgotPasswordScreen() {
           </View>
 
           {/* Send Reset Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={handleSendReset}
             disabled={isLoading}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
             className="py-4 rounded-lg items-center mt-4"
           >
             {isLoading ? (
@@ -230,7 +250,7 @@ export default function ForgotPasswordScreen() {
                 Send Reset Link
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Back to Sign In */}
           <View className="flex-row justify-center gap-1">
@@ -240,14 +260,14 @@ export default function ForgotPasswordScreen() {
             >
               Remember your password?
             </Text>
-            <TouchableOpacity onPress={handleBackToSignIn}>
+            <Pressable onPress={handleBackToSignIn}>
               <Text
                 className="text-base font-semibold"
                 style={{ color: colors.primary }}
               >
                 Sign In
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

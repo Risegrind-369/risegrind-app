@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -96,10 +95,20 @@ export default function LeaderboardScreen() {
       {/* Tab Navigation */}
       <View className="flex-row gap-2 mb-4">
         {(['global', 'weekly', 'monthly'] as const).map((tab) => (
-          <TouchableOpacity
+          <Pressable
             key={tab}
             onPress={() => setActiveTab(tab)}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                flex: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: 8,
+                backgroundColor:
+                  activeTab === tab ? colors.primary : colors.surface,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
           >
             <Text
               className="text-center text-sm font-semibold"
@@ -113,7 +122,7 @@ export default function LeaderboardScreen() {
                   ? t('social.leaderboard.weekly', 'Weekly')
                   : t('social.leaderboard.monthly', 'Monthly')}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 

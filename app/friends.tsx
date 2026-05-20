@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TextInput, Alert, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Alert, FlatList } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -58,12 +58,12 @@ export default function FriendsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.back()}
-            activeOpacity={0.6}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
             <Text style={[styles.backButton, { color: colors.accent }]}>← {t("common.back", { defaultValue: "Back" })}</Text>
-          </TouchableOpacity>
+          </Pressable>
           <Text style={[styles.title, { color: colors.foreground }]}>
             {t("friends.title", { defaultValue: "Ghost Crew" })}
           </Text>
@@ -133,18 +133,24 @@ export default function FriendsScreen() {
         </View>
 
         {/* Add Friend Button */}
-        <TouchableOpacity
+        <Pressable
           onPress={() => setShowAddFriend(true)}
-          activeOpacity={0.6}
+          style={({ pressed }) => [
+            styles.addButton,
+            {
+              backgroundColor: colors.accent,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
         >
           <Text style={styles.addButtonText}>+ {t("friends.addFriend", { defaultValue: "Add Friend" })}</Text>
-        </TouchableOpacity>
+        </Pressable>
       </ScrollView>
 
       {/* Add Friend Bottom Sheet Modal */}
       {showAddFriend && (
         <View style={[styles.bottomSheetOverlay, { backgroundColor: "rgba(0,0,0,0.5)" }]}>
-          <TouchableOpacity
+          <Pressable
             style={styles.bottomSheetBackdrop}
             onPress={() => setShowAddFriend(false)}
           />
@@ -196,23 +202,29 @@ export default function FriendsScreen() {
                 />
               </View>
 
-              <TouchableOpacity
+              <Pressable
                 onPress={handleAddFriend}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  styles.submitButton,
+                  {
+                    backgroundColor: colors.accent,
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
               >
                 <Text style={styles.submitButtonText}>
                   {t("friends.addFriend", { defaultValue: "Add Friend" })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
 
-              <TouchableOpacity
+              <Pressable
                 onPress={() => setShowAddFriend(false)}
-                activeOpacity={0.6}
+                style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
                 <Text style={[styles.cancelButtonText, { color: colors.muted }]}>
                   {t("common.cancel", { defaultValue: "Cancel" })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>

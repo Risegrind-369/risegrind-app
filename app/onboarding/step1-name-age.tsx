@@ -5,7 +5,16 @@
  * Collects first name and age to personalize the experience.
  */
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -45,9 +54,9 @@ export default function Step1NameAgeScreen() {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.container}>
             {/* Back Button */}
-            <TouchableOpacity onPress={handleBack} activeOpacity={0.6}>
+            <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
               <Text style={{ fontSize: 24 }}>← Back</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Header */}
             <Animated.View entering={FadeInDown.delay(100).duration(600)} style={styles.header}>
@@ -110,15 +119,22 @@ export default function Step1NameAgeScreen() {
 
             {/* Continue Button */}
             <Animated.View entering={FadeInDown.delay(400).duration(600)} style={styles.footer}>
-              <TouchableOpacity
+              <Pressable
                 onPress={handleContinue}
                 disabled={!isValid}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  styles.button,
+                  {
+                    backgroundColor: isValid ? "#E8A87C" : colors.border,
+                    transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
+                    opacity: isValid ? 1 : 0.5,
+                  },
+                ]}
               >
                 <Text style={styles.buttonText}>
                   {t("onboarding.step1.continue", { defaultValue: "Continue" })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
           </View>
         </ScrollView>

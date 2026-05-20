@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { View, Text, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 
@@ -28,9 +27,19 @@ export function GroupCard({
   const colors = useColors();
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={onPress}
-      activeOpacity={0.6}
+      style={({ pressed }) => [
+        {
+          backgroundColor: colors.surface,
+          borderColor: colors.border,
+          borderWidth: 1,
+          borderRadius: 12,
+          padding: 16,
+          marginBottom: 12,
+          opacity: pressed ? 0.7 : 1,
+        },
+      ]}
     >
       <View className="flex-row items-start justify-between mb-2">
         <View className="flex-1">
@@ -83,15 +92,23 @@ export function GroupCard({
 
       {/* Join Button */}
       {!isMember && onJoin && (
-        <TouchableOpacity
+        <Pressable
           onPress={onJoin}
-          activeOpacity={0.6}
+          style={({ pressed }) => [
+            {
+              backgroundColor: colors.primary,
+              paddingVertical: 10,
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
         >
           <Text className="text-center font-semibold text-white text-sm">
             Join Group
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }

@@ -1,5 +1,4 @@
 'use client';
-import { TouchableOpacity } from "react-native";
 import 'react-native-reanimated';
 import React, { useState } from 'react';
 import {
@@ -71,12 +70,16 @@ function MoodOption({
   }));
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         onPress();
       }}
-      activeOpacity={0.6}
+      style={({ pressed }) => [
+        {
+          opacity: pressed ? 0.8 : 1,
+        },
+      ]}
     >
       <Animated.View
         style={[
@@ -97,7 +100,7 @@ function MoodOption({
           {MOOD_LABELS[level]}
         </Text>
       </Animated.View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -151,10 +154,16 @@ export function AnimatedMoodPicker({
             ))}
           </View>
 
-          <TouchableOpacity
+          <Pressable
             onPress={handleSave}
             disabled={!tempSelected}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              styles.saveMoodButton,
+              {
+                backgroundColor: tempSelected ? colors.primary : colors.border,
+                transform: [{ scale: pressed ? 0.97 : 1 }],
+              },
+            ]}
           >
             <Text
               style={[
@@ -164,14 +173,14 @@ export function AnimatedMoodPicker({
             >
               Save Mood
             </Text>
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             onPress={onClose}
-            activeOpacity={0.6}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1, padding: 12 })}
           >
             <Text style={[styles.cancelText, { color: colors.muted }]}>Cancel</Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </View>
     </Modal>

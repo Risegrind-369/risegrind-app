@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Pressable, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { ThemedView } from "@/components/themed-view";
@@ -60,7 +60,7 @@ export default function ThemeLabScreen() {
         <View className="gap-4 pb-8">
           <View className="flex-row gap-2">
             {(["light", "dark"] as ColorScheme[]).map((scheme) => (
-              <TouchableOpacity
+              <Pressable
                 key={scheme}
                 style={[
                   styles.schemeToggle,
@@ -106,7 +106,7 @@ export default function ThemeLabScreen() {
                 >
                   Global theme (NativeWind + useColors)
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
 

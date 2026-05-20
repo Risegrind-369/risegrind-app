@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -99,12 +99,12 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.back()}
-            activeOpacity={0.6}
+            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
           >
             <Text style={[styles.backButton, { color: colors.accent }]}>← {t("common.back", { defaultValue: "Back" })}</Text>
-          </TouchableOpacity>
+          </Pressable>
           <Text style={[styles.title, { color: colors.foreground }]}>
             {t("settings.title", { defaultValue: "Settings" })}
           </Text>
@@ -166,7 +166,7 @@ export default function SettingsScreen() {
               </View>
             )}
             {/* Manage Subscription — shows Superwall paywall immediately, even during trial */}
-            <TouchableOpacity
+            <Pressable
               onPress={async () => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                 // On native: Superwall handles the beautiful paywall UI
@@ -177,12 +177,18 @@ export default function SettingsScreen() {
                   router.push("/onboarding/paywall" as never);
                 }
               }}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                styles.settingButton,
+                {
+                  backgroundColor: colors.accent,
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
             >
               <Text style={styles.settingButtonText}>
                 💳 {t("settings.managePlan", { defaultValue: "Manage Subscription" })}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
 
@@ -194,12 +200,19 @@ export default function SettingsScreen() {
           <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
             {["light", "dark"].map((theme, idx) => (
               <React.Fragment key={theme}>
-                <TouchableOpacity
+                <Pressable
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     setColorScheme(theme as "light" | "dark");
                   }}
-                  activeOpacity={0.6}
+                  style={({ pressed }) => [
+                    styles.languageRow,
+                    {
+                      backgroundColor:
+                        colorScheme === theme ? colors.accent + "15" : "transparent",
+                      opacity: pressed ? 0.7 : 1,
+                    },
+                  ]}
                 >
                   <Text style={styles.languageEmoji}>
                     {theme === "light" ? "☀️" : "🌙"}
@@ -210,7 +223,7 @@ export default function SettingsScreen() {
                   {colorScheme === theme && (
                     <Text style={[styles.checkmark, { color: colors.accent }]}>✓</Text>
                   )}
-                </TouchableOpacity>
+                </Pressable>
                 {idx < 1 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
               </React.Fragment>
             ))}
@@ -241,14 +254,21 @@ export default function SettingsScreen() {
 
         {/* Danger Zone */}
         <View style={styles.section}>
-          <TouchableOpacity
+          <Pressable
             onPress={handleLogout}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              styles.dangerButton,
+              {
+                backgroundColor: colors.error + "15",
+                borderColor: colors.error,
+                opacity: pressed ? 0.7 : 1,
+              },
+            ]}
           >
             <Text style={[styles.dangerButtonText, { color: colors.error }]}>
               {t("common.logout", { defaultValue: "Logout" })}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
       </ScrollView>
     </ScreenContainer>

@@ -1,5 +1,12 @@
 import { useState, useEffect } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Modal, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  ActivityIndicator,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { useColors } from "@/hooks/use-colors";
 import { cn } from "@/lib/utils";

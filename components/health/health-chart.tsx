@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useColors } from '@/hooks/use-colors';
 
@@ -52,13 +51,21 @@ export function HealthChart({
         {onDateRangeChange && (
           <View className="flex-row gap-1">
             {(['7d', '30d', '90d'] as const).map((range) => (
-              <TouchableOpacity
+              <Pressable
                 key={range}
                 onPress={() => onDateRangeChange(range)}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  {
+                    paddingHorizontal: 8,
+                    paddingVertical: 4,
+                    borderRadius: 6,
+                    backgroundColor: pressed ? colors.border : 'transparent',
+                    opacity: pressed ? 0.7 : 1,
+                  },
+                ]}
               >
                 <Text className="text-xs text-muted">{range}</Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         )}

@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Dimensions,
+  Image,
+} from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -53,7 +60,7 @@ function LanguageCard({
       entering={FadeInDown.delay(delay).springify().damping(18)}
       style={animStyle}
     >
-      <TouchableOpacity
+      <Pressable
         onPress={handlePress}
         style={[
           styles.langCard,
@@ -81,7 +88,7 @@ function LanguageCard({
             <Text style={styles.checkMark}>✓</Text>
           </View>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </Animated.View>
   );
 }
@@ -141,12 +148,19 @@ export default function LanguageScreen() {
           entering={FadeInDown.delay(600).springify().damping(18)}
           style={styles.footer}
         >
-          <TouchableOpacity
+          <Pressable
             onPress={handleContinue}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              styles.continueBtn,
+              {
+                backgroundColor: colors.primary,
+                transform: [{ scale: pressed ? 0.97 : 1 }],
+                opacity: pressed ? 0.9 : 1,
+              },
+            ]}
           >
             <Text style={styles.continueBtnText}>{t("langScreen.continue")}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </Animated.View>
       </View>
     </ScreenContainer>

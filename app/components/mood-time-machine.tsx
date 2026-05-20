@@ -3,7 +3,7 @@
  * Interactive graph showing mood from 1/3/6 months ago for comparison
  */
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, StyleSheet } from "react-native";
 import Animated, { FadeIn, SlideInUp } from "react-native-reanimated";
 import { useColors } from "@/hooks/use-colors";
 
@@ -97,7 +97,7 @@ export function MoodTimeMachine({
       {/* Period Selector */}
       <View style={styles.periodSelector}>
         {(["1m", "3m", "6m"] as const).map((period) => (
-          <TouchableOpacity
+          <Pressable
             key={period}
             onPress={() => setSelectedPeriod(period)}
             style={[
@@ -120,7 +120,7 @@ export function MoodTimeMachine({
             >
               {period === "1m" ? "1 Month" : period === "3m" ? "3 Months" : "6 Months"}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 

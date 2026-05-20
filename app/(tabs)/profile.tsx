@@ -1,6 +1,18 @@
 import React, { useState } from "react";
 import { router } from "expo-router";
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Switch, Alert, TextInput, Modal, Linking } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  TouchableOpacity,
+  StyleSheet,
+  Switch,
+  Alert,
+  TextInput,
+  Modal,
+  Linking,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";

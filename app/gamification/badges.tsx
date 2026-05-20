@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { ScrollView, View, Text, FlatList, Pressable } from 'react-native';
 import { useState, useEffect } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -104,10 +103,10 @@ export default function BadgeGalleryScreen() {
           <Text className="text-sm font-semibold text-foreground mb-3">Filter by Rarity</Text>
           <View className="flex-row gap-2 flex-wrap">
             {(['all', 'common', 'rare', 'epic', 'legendary'] as const).map((filter) => (
-              <TouchableOpacity
+              <Pressable
                 key={filter}
                 onPress={() => handleFilterPress(filter)}
-                activeOpacity={0.6}
+                style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
               >
                 <View
                   className={`px-4 py-2 rounded-full border ${
@@ -128,7 +127,7 @@ export default function BadgeGalleryScreen() {
                     {filter}
                   </Text>
                 </View>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         </View>

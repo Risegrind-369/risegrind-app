@@ -5,7 +5,16 @@
  * Open text field with empathetic tone and bold instruction.
  */
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -98,15 +107,21 @@ export default function Step2EmpathyScreen() {
 
           {/* Continue Button */}
           <Animated.View entering={FadeInDown.delay(500)}>
-            <TouchableOpacity
+            <Pressable
               onPress={handleContinue}
               disabled={!isValid}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                styles.button,
+                {
+                  backgroundColor: isValid ? colors.accent : colors.muted + "30",
+                  transform: [{ scale: pressed && isValid ? 0.97 : 1 }],
+                },
+              ]}
             >
               <Text style={[styles.buttonText, { opacity: isValid ? 1 : 0.5 }]}>
                 {t("common.continue", { defaultValue: "Continue" })}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
         </ScrollView>
       </KeyboardAvoidingView>

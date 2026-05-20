@@ -5,7 +5,14 @@
  * Shows loading state, then displays the message with animation.
  */
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
@@ -130,14 +137,20 @@ export default function Step4AIMessageScreen() {
           {/* Continue Button */}
           {!isLoading && (
             <Animated.View entering={FadeInDown.delay(300).duration(600)} style={styles.footer}>
-              <TouchableOpacity
+              <Pressable
                 onPress={handleContinue}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  styles.button,
+                  {
+                    backgroundColor: "#E8A87C",
+                    transform: [{ scale: pressed ? 0.97 : 1 }],
+                  },
+                ]}
               >
                 <Text style={styles.buttonText}>
                   {t("onboarding.step4.continue", { defaultValue: "See Your Potential" })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
           )}
         </View>

@@ -7,7 +7,17 @@
  * Apple Sign-In button is code-ready for when Apple Dev account is approved.
  */
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -107,9 +117,9 @@ export default function CreateAccountScreen() {
         >
           <View style={styles.container}>
             {/* Back Button */}
-            <TouchableOpacity onPress={handleBack} activeOpacity={0.6}>
+            <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
               <Text style={{ fontSize: 24 }}>← Back</Text>
-            </TouchableOpacity>
+            </Pressable>
 
             {/* Header */}
             <Animated.View
@@ -200,12 +210,12 @@ export default function CreateAccountScreen() {
                   editable={!loading}
                   secureTextEntry={!showPassword}
                 />
-                <TouchableOpacity
+                <Pressable
                   onPress={() => setShowPassword(!showPassword)}
-                  activeOpacity={0.6}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
                 >
                   <Text style={{ fontSize: 20 }}>{showPassword ? "👁️" : "👁️‍🗨️"}</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </Animated.View>
 
@@ -236,12 +246,12 @@ export default function CreateAccountScreen() {
                   editable={!loading}
                   secureTextEntry={!showConfirmPassword}
                 />
-                <TouchableOpacity
+                <Pressable
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  activeOpacity={0.6}
+                  style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
                 >
                   <Text style={{ fontSize: 20 }}>{showConfirmPassword ? "👁️" : "👁️‍🗨️"}</Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </Animated.View>
 
@@ -250,7 +260,7 @@ export default function CreateAccountScreen() {
               entering={FadeInDown.delay(500).duration(600)}
               style={styles.buttonGroup}
             >
-              <TouchableOpacity
+              <Pressable
                 onPress={handleCreateAccount}
                 disabled={!isValid || loading}
                 style={[
@@ -269,7 +279,7 @@ export default function CreateAccountScreen() {
                     })}
                   </Text>
                 )}
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
 
             {/* Apple Sign-In Button (code-ready) */}
@@ -287,7 +297,7 @@ export default function CreateAccountScreen() {
               entering={FadeInDown.delay(600).duration(600)}
               style={styles.appleButtonGroup}
             >
-              <TouchableOpacity
+              <Pressable
                 onPress={handleAppleSignIn}
                 disabled={loading}
                 style={[styles.appleButton, { backgroundColor: colors.foreground }]}
@@ -295,7 +305,7 @@ export default function CreateAccountScreen() {
                 <Text style={[styles.appleButtonText, { color: colors.background }]}>
                   Sign in with Apple
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
             */}
 
@@ -309,7 +319,7 @@ export default function CreateAccountScreen() {
                   defaultValue: "Already have an account?",
                 })}{" "}
               </Text>
-              <TouchableOpacity onPress={handleSignIn} disabled={loading}>
+              <Pressable onPress={handleSignIn} disabled={loading}>
                 <Text
                   style={[
                     styles.signInLink,
@@ -320,7 +330,7 @@ export default function CreateAccountScreen() {
                     defaultValue: "Sign in",
                   })}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </Animated.View>
           </View>
         </ScrollView>

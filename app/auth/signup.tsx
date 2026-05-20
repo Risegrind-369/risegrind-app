@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useRouter, Link } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -199,10 +207,16 @@ export default function SignUpScreen() {
           </View>
 
           {/* Sign Up Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={handleSignUp}
             disabled={isLoading}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
             className="py-4 rounded-lg items-center mt-4"
           >
             {isLoading ? (
@@ -212,7 +226,7 @@ export default function SignUpScreen() {
                 Create Account
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Sign In Link */}
           <View className="flex-row justify-center gap-1">
@@ -222,14 +236,14 @@ export default function SignUpScreen() {
             >
               Already have an account?
             </Text>
-            <TouchableOpacity onPress={handleSignInLink}>
+            <Pressable onPress={handleSignInLink}>
               <Text
                 className="text-base font-semibold"
                 style={{ color: colors.primary }}
               >
                 Sign In
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

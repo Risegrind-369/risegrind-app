@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import { View, Text, Pressable, ActivityIndicator, Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -67,10 +67,15 @@ export default function LogoutScreen() {
           </Text>
         </View>
 
-        <TouchableOpacity
+        <Pressable
           onPress={handleLogout}
           disabled={isLoggingOut}
-          activeOpacity={0.6}
+          style={({ pressed }) => [
+            {
+              backgroundColor: colors.error,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
           className="rounded-lg p-4 items-center"
         >
           {isLoggingOut ? (
@@ -78,9 +83,9 @@ export default function LogoutScreen() {
           ) : (
             <Text className="text-base font-semibold text-background">Logout</Text>
           )}
-        </TouchableOpacity>
+        </Pressable>
 
-        <TouchableOpacity
+        <Pressable
           onPress={() => router.back()}
           disabled={isLoggingOut}
           className="rounded-lg p-4 items-center border"
@@ -89,7 +94,7 @@ export default function LogoutScreen() {
           }}
         >
           <Text className="text-base font-semibold text-foreground">Cancel</Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </ScreenContainer>
   );

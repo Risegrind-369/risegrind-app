@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -113,13 +112,23 @@ export default function InsightsScreen() {
         {/* Filter Tabs */}
         <View className="flex-row gap-2 mb-4">
           {(['all', 'sleep', 'stress', 'energy'] as const).map((filter) => (
-            <TouchableOpacity
+            <Pressable
               key={filter}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setSelectedFilter(filter);
               }}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                {
+                  paddingVertical: 8,
+                  paddingHorizontal: 12,
+                  borderRadius: 8,
+                  backgroundColor: selectedFilter === filter ? colors.primary : colors.surface,
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
             >
               <Text
                 className="text-xs font-semibold"
@@ -127,7 +136,7 @@ export default function InsightsScreen() {
               >
                 {filter.charAt(0).toUpperCase() + filter.slice(1)}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
 
@@ -159,12 +168,12 @@ export default function InsightsScreen() {
                       </View>
                     </View>
                   </View>
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => handleArchive(insight.id)}
-                    activeOpacity={0.6}
+                    style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
                   >
                     <Text className="text-lg">✕</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 </View>
 
                 {/* Description */}

@@ -1,5 +1,12 @@
 import React, { useState, useMemo } from "react";
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, MOOD_LABELS, type MoodLevel } from "@/lib/app-context";
@@ -32,7 +39,7 @@ function FilterTabs({
   return (
     <View style={[styles.filterRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       {periods.map((p) => (
-        <TouchableOpacity
+        <Pressable
           key={p}
           onPress={() => {
             Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -51,7 +58,7 @@ function FilterTabs({
           >
             {t(`insights.filters.${p}`)}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       ))}
     </View>
   );
@@ -391,17 +398,20 @@ export default function InsightsScreen() {
                 {t("insights.aiSubtitle")}
               </Text>
             </View>
-            <TouchableOpacity
+            <Pressable
               onPress={handleGenerate}
               disabled={generateMutation.isPending}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                styles.generateButton,
+                { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
+              ]}
             >
               {generateMutation.isPending ? (
                 <ActivityIndicator color="#fff" size="small" />
               ) : (
                 <Text style={styles.generateButtonText}>{t("insights.analyze")}</Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </View>
 
           {generateMutation.isPending ? (

@@ -1,5 +1,4 @@
 'use client';
-import { TouchableOpacity } from "react-native";
 import 'react-native-reanimated';
 import React, { useState } from 'react';
 import {
@@ -107,13 +106,15 @@ export function AnimatedHabitCheckbox({
         rowAnimatedStyle,
       ]}
     >
-      <TouchableOpacity
+      <Pressable
         onPress={handleToggle}
         onLongPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
           onDelete();
         }}
-        activeOpacity={0.6}
+        style={({ pressed }) => ({
+          opacity: pressed ? 0.8 : 1,
+        })}
       >
         <View
           style={[
@@ -135,7 +136,7 @@ export function AnimatedHabitCheckbox({
             </Animated.Text>
           )}
         </View>
-      </TouchableOpacity>
+      </Pressable>
 
       <Text style={styles.habitIcon}>{habit.icon}</Text>
 

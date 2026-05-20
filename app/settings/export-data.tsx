@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, ActivityIndicator, Alert, Share, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  ActivityIndicator,
+  Alert,
+  Share,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -162,10 +170,16 @@ export default function ExportDataScreen() {
           <View className="flex-1" />
 
           {/* Export Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={handleExportData}
             disabled={isExporting}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed ? 0.8 : 1,
+                transform: [{ scale: pressed ? 0.98 : 1 }],
+              },
+            ]}
             className="py-4 rounded-lg items-center"
           >
             {isExporting ? (
@@ -175,7 +189,7 @@ export default function ExportDataScreen() {
                 {t("settings.exportData.button") || "Export All My Data"}
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Info text */}
           <Text

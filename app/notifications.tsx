@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Switch, ScrollView, StyleSheet, Alert, Platform, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Switch,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Alert,
+  Platform,
+} from "react-native";
 import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
@@ -71,12 +80,12 @@ export default function NotificationsScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
-          <TouchableOpacity
+          <Pressable
             onPress={() => router.back()}
-            activeOpacity={0.6}
+            style={({ pressed }) => [styles.backBtn, { opacity: pressed ? 0.6 : 1 }]}
           >
             <Text style={[styles.backText, { color: colors.primary }]}>← Back</Text>
-          </TouchableOpacity>
+          </Pressable>
           <Text style={[styles.headerTitle, { color: colors.foreground }]}>
             🔔 {t("notifications.title")}
           </Text>
@@ -84,14 +93,17 @@ export default function NotificationsScreen() {
 
         {/* Permission Banner */}
         {!permissionGranted && Platform.OS !== "web" && (
-          <TouchableOpacity
+          <Pressable
             onPress={handleRequestPermission}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              styles.permissionBanner,
+              { backgroundColor: colors.warning + "20", borderColor: colors.warning + "40", opacity: pressed ? 0.8 : 1 },
+            ]}
           >
             <Text style={[styles.permissionText, { color: colors.warning }]}>
               ⚠️ Notifications are disabled. Tap to enable.
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         )}
 
         {/* Daily Reminder */}
@@ -128,7 +140,7 @@ export default function NotificationsScreen() {
                 contentContainerStyle={styles.hourPicker}
               >
                 {HOURS.map((h) => (
-                  <TouchableOpacity
+                  <Pressable
                     key={h}
                     onPress={() => updateSetting("reminderHour", h)}
                     style={[
@@ -147,7 +159,7 @@ export default function NotificationsScreen() {
                     >
                       {h.toString().padStart(2, "0")}h
                     </Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 ))}
               </ScrollView>
             </View>

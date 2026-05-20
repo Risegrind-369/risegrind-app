@@ -1,5 +1,13 @@
 import React, { useState } from "react";
-import { View, Text, ScrollView, StyleSheet, Modal, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Pressable,
+  StyleSheet,
+  Modal,
+  Alert,
+} from "react-native";
 import { useTranslation } from "react-i18next";
 import { useLanguage } from "@/lib/language-context";
 import { getSideQuestTranslation } from "@/lib/translations-helper";
@@ -66,12 +74,21 @@ function QuestCard({
   const catColor = CATEGORY_COLORS[quest.category];
 
   return (
-            <TouchableOpacity
+            <Pressable
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 onPress();
               }}
-      activeOpacity={0.6}
+      style={({ pressed }) => [
+        styles.questCard,
+        {
+          backgroundColor: colors.surface,
+          borderColor: isActive ? catColor + "60" : isCompleted ? colors.success + "40" : colors.border,
+          borderWidth: isActive ? 1.5 : 1,
+          opacity: pressed ? 0.9 : 1,
+          transform: [{ scale: pressed ? 0.98 : 1 }],
+        },
+      ]}
     >
       {/* Status badge */}
       {isCompleted && (
@@ -122,7 +139,7 @@ function QuestCard({
           </Text>
         </View>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 
@@ -246,7 +263,7 @@ export default function QuestsScreen() {
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
           <View style={styles.filterRow}>
             {FILTERS.map((f) => (
-              <TouchableOpacity
+              <Pressable
                 key={f.key}
                 onPress={() => {
                   setFilter(f.key);
@@ -268,7 +285,7 @@ export default function QuestsScreen() {
                 >
                   {f.label} {f.count > 0 ? `(${f.count})` : ""}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             ))}
           </View>
         </ScrollView>
@@ -307,7 +324,7 @@ export default function QuestsScreen() {
         onRequestClose={() => setSelectedQuest(null)}
       >
         <View style={styles.modalOverlay}>
-          <TouchableOpacity style={styles.modalBackdrop} onPress={() => setSelectedQuest(null)} />
+          <Pressable style={styles.modalBackdrop} onPress={() => setSelectedQuest(null)} />
           {selectedQuest && (
             <View style={[styles.modalSheet, { backgroundColor: colors.background }]}>
               <View style={[styles.modalHandle, { backgroundColor: colors.border }]} />
@@ -351,27 +368,27 @@ export default function QuestsScreen() {
               {/* Actions */}
               <View style={styles.modalActions}>
                 {!selectedQuest.startedAt && !selectedQuest.completedAt && (
-                  <TouchableOpacity
+                  <Pressable
                     onPress={() => handleStart(selectedQuest)}
                     style={[styles.actionBtn, { backgroundColor: colors.primary }]}
                   >
                     <Text style={styles.actionBtnText}>⚡ {lang === "fr" ? "Accepter la mission" : lang === "pt" ? "Aceitar missão" : "Accept Mission"}</Text>
-                  </TouchableOpacity>
+                  </Pressable>
                 )}
                 {selectedQuest.startedAt && !selectedQuest.completedAt && (
                   <>
-                    <TouchableOpacity
+                    <Pressable
                       onPress={() => handleComplete(selectedQuest)}
                       style={[styles.actionBtn, { backgroundColor: colors.success }]}
                     >
                       <Text style={styles.actionBtnText}>✓ {lang === "fr" ? "Marquer terminé" : lang === "pt" ? "Marcar concluído" : "Mark Complete"}</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
+                    </Pressable>
+                    <Pressable
                       onPress={() => handleAbandon(selectedQuest)}
                       style={[styles.abandonBtn, { borderColor: colors.error }]}
                     >
                       <Text style={[styles.abandonBtnText, { color: colors.error }]}>{lang === "fr" ? "Abandonner" : lang === "pt" ? "Abandonar" : "Abandon Quest"}</Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   </>
                 )}
                 {selectedQuest.completedAt && (
@@ -395,7 +412,7 @@ export default function QuestsScreen() {
         onRequestClose={() => setShareQuest(null)}
       >
         <View style={[styles.modalOverlay, { justifyContent: "center", paddingHorizontal: 24 }]}>
-          <TouchableOpacity style={[styles.modalBackdrop, { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }]} onPress={() => setShareQuest(null)} />
+          <Pressable style={[styles.modalBackdrop, { position: "absolute", top: 0, left: 0, right: 0, bottom: 0 }]} onPress={() => setShareQuest(null)} />
           {shareQuest && (
             <View style={[styles.shareCard, { backgroundColor: "#0D0D0F", borderColor: "#333" }]}>
               <Text style={{ fontSize: 60, textAlign: "center", marginBottom: 8 }}>{shareQuest.icon}</Text>
@@ -413,25 +430,36 @@ export default function QuestsScreen() {
               </Text>
               <Text style={{ fontSize: 11, color: "#555", textAlign: "center", marginBottom: 20 }}>risegrind.app</Text>
               <View style={{ gap: 10 }}>
-                <TouchableOpacity
+                <Pressable
                   onPress={() => {
                     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
                     setShareQuest(null);
                   }}
-                  activeOpacity={0.6}
+                  style={({ pressed }) => ({
+                    backgroundColor: "#fff",
+                    paddingVertical: 14,
+                    borderRadius: 14,
+                    alignItems: "center",
+                    opacity: pressed ? 0.8 : 1,
+                  })}
                 >
                   <Text style={{ color: "#000", fontSize: 16, fontWeight: "800" }}>
                     📸 {lang === "fr" ? "Partager sur Stories" : lang === "pt" ? "Compartilhar nos Stories" : "Share to Stories"}
                   </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                </Pressable>
+                <Pressable
                   onPress={() => setShareQuest(null)}
-                  activeOpacity={0.6}
+                  style={({ pressed }) => ({
+                    paddingVertical: 12,
+                    borderRadius: 14,
+                    alignItems: "center",
+                    opacity: pressed ? 0.6 : 1,
+                  })}
                 >
                   <Text style={{ color: "#666", fontSize: 14 }}>
                     {lang === "fr" ? "Fermer" : lang === "pt" ? "Fechar" : "Close"}
                   </Text>
-                </TouchableOpacity>
+                </Pressable>
               </View>
             </View>
           )}

@@ -8,7 +8,15 @@
  * - Sign up (onboarding account creation)
  */
 import { useState, useEffect } from "react";
-import { View, Text, TextInput, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  Pressable,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -180,14 +188,14 @@ export default function SignInScreen() {
               >
                 Password
               </Text>
-              <TouchableOpacity onPress={handleForgotPassword} disabled={isLoading}>
+              <Pressable onPress={handleForgotPassword} disabled={isLoading}>
                 <Text
                   className="text-sm font-semibold"
                   style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
                 >
                   Forgot?
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
             <View style={{
               flexDirection: "row",
@@ -213,12 +221,12 @@ export default function SignInScreen() {
                   fontSize: 16,
                 }}
               />
-              <TouchableOpacity
+              <Pressable
                 onPress={() => setShowPassword(!showPassword)}
-                activeOpacity={0.6}
+                style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
               >
                 <Text style={{ fontSize: 20 }}>{showPassword ? "👁️" : "👁️‍🗨️"}</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
             {errors.password && (
               <Text className="text-sm" style={{ color: colors.error }}>
@@ -228,10 +236,16 @@ export default function SignInScreen() {
           </View>
 
           {/* Sign In Button */}
-          <TouchableOpacity
+          <Pressable
             onPress={handleSignIn}
             disabled={isLoading}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                backgroundColor: colors.primary,
+                opacity: pressed && !isLoading ? 0.8 : 1,
+                transform: [{ scale: pressed && !isLoading ? 0.98 : 1 }],
+              },
+            ]}
             className="py-4 rounded-lg items-center mt-4"
           >
             {isLoading ? (
@@ -241,7 +255,7 @@ export default function SignInScreen() {
                 Sign In
               </Text>
             )}
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Sign Up Link */}
           <View className="flex-row justify-center gap-1">
@@ -251,14 +265,14 @@ export default function SignInScreen() {
             >
               Don't have an account?
             </Text>
-            <TouchableOpacity onPress={handleSignUpLink} disabled={isLoading}>
+            <Pressable onPress={handleSignUpLink} disabled={isLoading}>
               <Text
                 className="text-base font-semibold"
                 style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
               >
                 Sign Up
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </View>
         </View>
       </ScrollView>

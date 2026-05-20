@@ -10,7 +10,15 @@
  * - Auto-check for email verification every 3 seconds
  */
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, TouchableOpacity } from "react-native";
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+  Alert,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -182,9 +190,9 @@ export default function VerifyEmailScreen() {
       >
         <View style={styles.container}>
           {/* Back Button */}
-          <TouchableOpacity onPress={handleBack} activeOpacity={0.6}>
+          <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
             <Text style={{ fontSize: 24 }}>← Back</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {/* Header */}
           <Animated.View
@@ -244,7 +252,7 @@ export default function VerifyEmailScreen() {
             entering={FadeInDown.delay(300).duration(600)}
             style={styles.buttonGroup}
           >
-            <TouchableOpacity
+            <Pressable
               onPress={handleResendEmail}
               disabled={!canResend || isResending}
               style={[
@@ -268,7 +276,7 @@ export default function VerifyEmailScreen() {
                       })}
                 </Text>
               )}
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
 
           {/* Developer Skip Option (will be removed before launch) */}
@@ -276,9 +284,11 @@ export default function VerifyEmailScreen() {
             entering={FadeInDown.delay(400).duration(600)}
             style={styles.skipGroup}
           >
-            <TouchableOpacity
+            <Pressable
               onPress={handleSkipForNow}
-              activeOpacity={0.6}
+              style={({ pressed }) => ({
+                opacity: pressed ? 0.6 : 1,
+              })}
             >
               <Text
                 style={[
@@ -290,7 +300,7 @@ export default function VerifyEmailScreen() {
                   defaultValue: "Skip for now (dev only)",
                 })}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           </Animated.View>
 
           {/* Help Text */}

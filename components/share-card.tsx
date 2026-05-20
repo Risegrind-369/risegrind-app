@@ -1,5 +1,12 @@
 import React, { useRef, useCallback } from "react";
-import { View, Text, StyleSheet, Share, Alert, Platform } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Share,
+  Alert,
+  Platform,
+} from "react-native";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
 import * as FileSystem from "expo-file-system/legacy";

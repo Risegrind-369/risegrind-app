@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable, TextInput } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -66,12 +65,12 @@ export default function SleepTrackingScreen() {
             <Text className="text-3xl font-bold text-foreground">Sleep</Text>
             <Text className="text-sm text-muted mt-1">Track your sleep quality</Text>
           </View>
-          <TouchableOpacity
+          <Pressable
             onPress={() => setShowAddForm(!showAddForm)}
-            activeOpacity={0.6}
+            style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
           >
             <Text className="text-2xl">{showAddForm ? '❌' : '➕'}</Text>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Add Sleep Form */}
@@ -109,10 +108,18 @@ export default function SleepTrackingScreen() {
                 <Text className="text-sm text-muted mb-2">Quality</Text>
                 <View className="flex-row gap-2">
                   {(['poor', 'fair', 'good', 'excellent'] as const).map((q) => (
-                    <TouchableOpacity
+                    <Pressable
                       key={q}
                       onPress={() => setQuality(q)}
-                      activeOpacity={0.6}
+                      style={({ pressed }) => [
+                        {
+                          flex: 1,
+                          paddingVertical: 8,
+                          borderRadius: 8,
+                          backgroundColor: quality === q ? colors.primary : colors.border,
+                          opacity: pressed ? 0.7 : 1,
+                        },
+                      ]}
                     >
                       <Text
                         className="text-xs font-semibold text-center"
@@ -120,17 +127,24 @@ export default function SleepTrackingScreen() {
                       >
                         {q.charAt(0).toUpperCase() + q.slice(1)}
                       </Text>
-                    </TouchableOpacity>
+                    </Pressable>
                   ))}
                 </View>
               </View>
 
-              <TouchableOpacity
+              <Pressable
                 onPress={handleAddSleep}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  {
+                    backgroundColor: colors.primary,
+                    paddingVertical: 12,
+                    borderRadius: 8,
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
               >
                 <Text className="text-center text-white font-semibold">Save Sleep</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         )}

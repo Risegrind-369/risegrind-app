@@ -1,5 +1,4 @@
 'use client';
-import { TouchableOpacity } from "react-native";
 import 'react-native-reanimated';
 import React, { useState } from 'react';
 import {
@@ -55,7 +54,7 @@ function AnimatedPressable({
   }));
 
   return (
-    <TouchableOpacity
+    <Pressable
       onPress={() => {
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         scaleValue.value = withSpring(0.96, { damping: 8, mass: 1 });
@@ -68,7 +67,7 @@ function AnimatedPressable({
       <Animated.View style={[animatedStyle, style]}>
         {children}
       </Animated.View>
-    </TouchableOpacity>
+    </Pressable>
   );
 }
 

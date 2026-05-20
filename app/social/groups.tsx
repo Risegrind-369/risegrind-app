@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { useState, useEffect } from 'react';
 import {
   View,
@@ -142,23 +141,42 @@ export default function GroupsScreen() {
 
       {/* Action Buttons */}
       <View className="flex-row gap-2 mb-4">
-        <TouchableOpacity
+        <Pressable
           onPress={() => setShowCreateModal(true)}
-          activeOpacity={0.6}
+          style={({ pressed }) => [
+            {
+              flex: 1,
+              paddingVertical: 10,
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              backgroundColor: colors.primary,
+              opacity: pressed ? 0.8 : 1,
+            },
+          ]}
         >
           <Text className="text-center font-semibold text-white text-sm">
             {t('social.groups.createGroup', 'Create Group')}
           </Text>
-        </TouchableOpacity>
+        </Pressable>
       </View>
 
       {/* Tab Navigation */}
       <View className="flex-row gap-2 mb-4">
         {(['public', 'my'] as const).map((tab) => (
-          <TouchableOpacity
+          <Pressable
             key={tab}
             onPress={() => setActiveTab(tab)}
-            activeOpacity={0.6}
+            style={({ pressed }) => [
+              {
+                flex: 1,
+                paddingVertical: 8,
+                paddingHorizontal: 12,
+                borderRadius: 8,
+                backgroundColor:
+                  activeTab === tab ? colors.primary : colors.surface,
+                opacity: pressed ? 0.8 : 1,
+              },
+            ]}
           >
             <Text
               className="text-center text-sm font-semibold"
@@ -170,7 +188,7 @@ export default function GroupsScreen() {
                 ? `Public (${publicGroups.length})`
                 : `My Groups (${myGroups.length})`}
             </Text>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
 
@@ -222,9 +240,9 @@ export default function GroupsScreen() {
               <Text className="text-lg font-bold text-foreground">
                 {t('social.groups.createNew', 'Create New Group')}
               </Text>
-              <TouchableOpacity onPress={() => setShowCreateModal(false)}>
+              <Pressable onPress={() => setShowCreateModal(false)}>
                 <Text className="text-lg text-muted">✕</Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
 
             {/* Form */}
@@ -287,24 +305,41 @@ export default function GroupsScreen() {
 
             {/* Buttons */}
             <View className="flex-row gap-2">
-              <TouchableOpacity
+              <Pressable
                 onPress={() => setShowCreateModal(false)}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  {
+                    flex: 1,
+                    paddingVertical: 12,
+                    borderRadius: 8,
+                    backgroundColor: colors.border,
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
               >
                 <Text className="text-center font-semibold text-foreground">
                   {t('common.cancel', 'Cancel')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
 
-              <TouchableOpacity
+              <Pressable
                 onPress={handleCreateGroup}
                 disabled={!groupName.trim()}
-                activeOpacity={0.6}
+                style={({ pressed }) => [
+                  {
+                    flex: 1,
+                    paddingVertical: 12,
+                    borderRadius: 8,
+                    backgroundColor: colors.primary,
+                    opacity:
+                      pressed && groupName.trim() ? 0.8 : groupName.trim() ? 1 : 0.5,
+                  },
+                ]}
               >
                 <Text className="text-center font-semibold text-white">
                   {t('common.create', 'Create')}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             </View>
           </View>
         </View>

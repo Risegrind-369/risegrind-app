@@ -1,4 +1,3 @@
-import { TouchableOpacity } from "react-native";
 import { ScrollView, Text, View, Pressable } from 'react-native';
 import { useState } from 'react';
 import { ScreenContainer } from '@/components/screen-container';
@@ -65,10 +64,20 @@ export default function StressTrackingScreen() {
         {/* Tabs */}
         <View className="flex-row gap-2 mb-4">
           {(['overview', 'triggers', 'recommendations'] as const).map((tab) => (
-            <TouchableOpacity
+            <Pressable
               key={tab}
               onPress={() => handleTabPress(tab)}
-              activeOpacity={0.6}
+              style={({ pressed }) => [
+                {
+                  flex: 1,
+                  paddingVertical: 10,
+                  borderRadius: 8,
+                  backgroundColor: selectedTab === tab ? colors.primary : colors.surface,
+                  borderColor: colors.border,
+                  borderWidth: 1,
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
             >
               <Text
                 className="text-xs font-semibold text-center"
@@ -76,7 +85,7 @@ export default function StressTrackingScreen() {
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
           ))}
         </View>
 
