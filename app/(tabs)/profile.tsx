@@ -101,6 +101,33 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* DEV: Force Logout — isolates whether bug is in button, dialog, or completeLogout */}
+        <TouchableOpacity
+          activeOpacity={0.7}
+          onPress={async () => {
+            console.log("[DEV] Force Logout button tapped");
+            try {
+              if (isLoggingOutRef) isLoggingOutRef.current = true;
+              await completeLogout(dispatch, isLoggingOutRef);
+              console.log("[DEV] completeLogout finished — navigating");
+              router.replace("/onboarding/language" as never);
+            } catch (err) {
+              console.error("[DEV] Force Logout error:", err);
+              Alert.alert("DEV Error", String(err));
+            }
+          }}
+          style={{
+            backgroundColor: "#FF3B30",
+            marginBottom: 8,
+            paddingVertical: 14,
+            paddingHorizontal: 20,
+            borderRadius: 14,
+            alignItems: "center",
+          }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "800", fontSize: 15 }}>🔴 DEV: Force Logout</Text>
+        </TouchableOpacity>
+
         {/* Profile Header */}
         <View style={[styles.profileHeader, { backgroundColor: rankColor + "15", borderColor: rankColor + "30" }]}>
           <View style={[styles.avatarContainer, { backgroundColor: rankColor + "25" }]}>
@@ -339,8 +366,11 @@ export default function ProfileScreen() {
 
         {/* Logout Button */}
         <View style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-          <Pressable
-            onPress={async () => {
+          <TouchableOpacity
+            activeOpacity={0.6}
+            onPress={() => {
+              console.log("[Profile] Sign Out button tapped — showing confirmation dialog");
+              try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); } catch {}
               Alert.alert(
                 lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out",
                 lang === "fr" ? "Êtes-vous sûr de vouloir vous déconnecter?" : lang === "pt" ? "Tem certeza de que deseja sair?" : "Are you sure you want to sign out?",
@@ -350,8 +380,10 @@ export default function ProfileScreen() {
                     text: lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out",
                     style: "destructive",
                     onPress: async () => {
+                      console.log("[Profile] Confirmed — calling completeLogout");
                       try {
                         await completeLogout(dispatch, isLoggingOutRef);
+                        console.log("[Profile] completeLogout done — navigating to onboarding");
                         router.replace("/onboarding/language" as never);
                       } catch (error) {
                         console.error("[Profile] Logout error:", error);
@@ -362,12 +394,12 @@ export default function ProfileScreen() {
                 ]
               );
             }}
-            style={({ pressed }) => [styles.settingRow, { opacity: pressed ? 0.6 : 1 }]}
+            style={styles.settingRow}
           >
             <Text style={styles.settingEmoji}>🚪</Text>
             <Text style={[styles.settingLabel, { color: colors.error }]}>{lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out"}</Text>
             <Text style={[styles.settingValue, { color: colors.muted }]}>›</Text>
-          </Pressable>
+          </TouchableOpacity>
         </View>
 
         {/* App Info */}
