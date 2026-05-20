@@ -134,14 +134,14 @@ export default function ProfileScreen() {
             <Text style={styles.avatarEmoji}>{rankIcon}</Text>
           </View>
           <View style={styles.profileInfo}>
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.7}
               onPress={() => setShowNameEdit(true)}
-              style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
             >
               <Text style={[styles.profileName, { color: colors.foreground }]}>
                 {state.userName || (lang === "fr" ? "Ami" : lang === "pt" ? "Amigo" : "Friend")} ✏️
               </Text>
-            </Pressable>
+            </TouchableOpacity>
             <View style={[styles.rankBadge, { backgroundColor: rankColor }]}>
               <Text style={styles.rankBadgeText}>{rank}</Text>
             </View>
@@ -233,36 +233,34 @@ export default function ProfileScreen() {
                 {isPremium ? (lang === "fr" ? "Premium Actif" : lang === "pt" ? "Premium Ativo" : "Premium Active") : (lang === "fr" ? "Plan Gratuit" : lang === "pt" ? "Plano Gratuito" : "Free Plan")}
               </Text>
             </View>
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.6}
               onPress={() => restorePurchases()}
-              style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
             >
               <Text style={[styles.restoreText, { color: colors.primary }]}>{lang === "fr" ? "Restaurer" : lang === "pt" ? "Restaurar" : "Restore"}</Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
           {isPremium && (
-            <Pressable
+            <TouchableOpacity
+              activeOpacity={0.6}
               onPress={() => Linking.openURL("https://apps.apple.com/account/subscriptions")}
-              style={({ pressed }) => ([
-                {
-                  marginTop: 10,
-                  paddingVertical: 10,
-                  paddingHorizontal: 14,
-                  borderRadius: 12,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  flexDirection: "row",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  opacity: pressed ? 0.6 : 1,
-                },
-              ])}
+              style={{
+                marginTop: 10,
+                paddingVertical: 10,
+                paddingHorizontal: 14,
+                borderRadius: 12,
+                borderWidth: 1,
+                borderColor: colors.border,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
             >
               <Text style={{ color: colors.foreground, fontSize: 14, fontWeight: "600" }}>
                 {lang === "fr" ? "Gérer l'abonnement" : lang === "pt" ? "Gerenciar assinatura" : "Manage Subscription"}
               </Text>
               <Text style={{ color: colors.muted, fontSize: 14 }}>›</Text>
-            </Pressable>
+            </TouchableOpacity>
           )}
         </View>
 
@@ -271,13 +269,14 @@ export default function ProfileScreen() {
           <Text style={[styles.cardTitle, { color: colors.foreground }]}>{lang === "fr" ? "Langue" : lang === "pt" ? "Idioma" : "Language"}</Text>
           <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", marginTop: 4 }}>
             {SUPPORTED_LANGUAGES.map((lang) => (
-              <Pressable
+              <TouchableOpacity
                 key={lang.code}
+                activeOpacity={0.7}
                 onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  try { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); } catch {}
                   setLanguage(lang.code);
                 }}
-                style={({ pressed }) => ({
+                style={{
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 6,
@@ -287,14 +286,13 @@ export default function ProfileScreen() {
                   borderWidth: 1.5,
                   borderColor: language === lang.code ? colors.primary : colors.border,
                   backgroundColor: language === lang.code ? colors.primary + "12" : "transparent",
-                  opacity: pressed ? 0.7 : 1,
-                })}
+                }}
               >
                 <Text style={{ fontSize: 18 }}>{lang.flag}</Text>
                 <Text style={{ fontSize: 14, fontWeight: language === lang.code ? "700" : "500", color: language === lang.code ? colors.primary : colors.foreground }}>
                   {lang.label}
                 </Text>
-              </Pressable>
+              </TouchableOpacity>
             ))}
           </View>
         </View>
@@ -430,18 +428,20 @@ export default function ProfileScreen() {
               maxLength={30}
             />
             <View style={styles.modalActions}>
-              <Pressable
+              <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={() => setShowNameEdit(false)}
                 style={[styles.modalCancel, { borderColor: colors.border }]}
               >
                 <Text style={[styles.modalCancelText, { color: colors.muted }]}>{lang === "fr" ? "Annuler" : lang === "pt" ? "Cancelar" : "Cancel"}</Text>
-              </Pressable>
-              <Pressable
+              </TouchableOpacity>
+              <TouchableOpacity
+                activeOpacity={0.7}
                 onPress={handleSaveName}
                 style={[styles.modalSave, { backgroundColor: colors.primary }]}
               >
                 <Text style={styles.modalSaveText}>{lang === "fr" ? "Enregistrer" : lang === "pt" ? "Salvar" : "Save"}</Text>
-              </Pressable>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
