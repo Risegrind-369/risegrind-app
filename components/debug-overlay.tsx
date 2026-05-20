@@ -47,10 +47,12 @@ export function DebugOverlay() {
 
   return (
     <>
-      {/* Hidden gesture detector - long press anywhere to show debug overlay */}
+      {/* Hidden gesture detector - long press on small top-right corner to show debug overlay */}
+      {/* IMPORTANT: Must NOT cover the full header width — that blocks the gear icon and other header buttons */}
       <Pressable
         onLongPress={() => setVisible(true)}
-        style={{ position: "absolute", top: 0, left: 0, width: "100%", height: 100, zIndex: 1 }}
+        onPress={() => {/* intentional no-op: prevents Android from consuming taps in this zone */}}
+        style={{ position: "absolute", top: 0, right: 0, width: 60, height: 60, zIndex: 1 }}
       />
 
       <Modal visible={visible} transparent animationType="slide">
