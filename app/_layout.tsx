@@ -22,6 +22,7 @@ import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
 import { AppProvider, useApp } from "@/lib/app-context";
+import { SyncLoadingScreen } from "@/components/sync-loading-screen";
 import { LanguageProvider, useLanguage } from "@/lib/language-context";
 import "@/lib/i18n"; // Initialize i18next
 import { RevenueCatProvider } from "@/lib/revenuecat-provider";
@@ -59,7 +60,7 @@ export const unstable_settings = {
 };
 
 function OnboardingGuard({ children }: { children: React.ReactNode }) {
-  const { state } = useApp();
+  const { state, isSyncing, syncError, retrySync } = useApp();
   const { language, isLanguageLoaded } = useLanguage();
   const segments = useSegments();
   const router = useRouter();
@@ -126,6 +127,10 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);
+
+  if (isSyncing || syncError) {
+    return <SyncLoadingScreen error={syncError} onRetry={retrySync} />;
+  }
 
   return <>{children}</>;
 }

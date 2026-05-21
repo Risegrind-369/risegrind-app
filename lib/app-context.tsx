@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback } from "react";
+import React, { createContext, useContext, useReducer, useEffect, useRef, useCallback, useState } from "react";
+import { useSyncToServer } from "./use-sync";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -521,6 +522,10 @@ interface AppContextValue {
   todayProgress: number;
   rank: Rank;
   nextRankXP: number;
+  // Milestone 2 Phase C: sync state
+  isSyncing: boolean;
+  syncError: string | null;
+  retrySync: () => void;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -529,6 +534,8 @@ const STORAGE_KEY = "@risegrind_state";
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(appReducer, INITIAL_STATE);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncError, setSyncError] = useState<string | null>(null);
 
   // BUG 4 FIX (Part 2 — revised): Use a mutable ref instead of state.isLoggingOut.
   //
@@ -579,13 +586,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     }
   }, [state]);
 
+  // Milestone 2 Phase C: sync hook
+  const { retryFirstSync } = useSyncToServer({
+    state,
+    dispatch,
+    onSyncingChange: setIsSyncing,
+    onSyncError: setSyncError,
+  });
+
   const todayCompletions = state.completions.filter((c) => c.date === todayStr());
   const todayProgress = state.habits.length > 0 ? todayCompletions.length / state.habits.length : 0;
   const rank = getRank(state.xp);
   const nextRankXP = getNextRankXP(state.xp);
 
   return (
-    <AppContext.Provider value={{ state, dispatch, isLoggingOutRef, todayCompletions, todayProgress, rank, nextRankXP }}>
+    <AppContext.Provider value={{ state, dispatch, isLoggingOutRef, todayCompletions, todayProgress, rank, nextRankXP, isSyncing, syncError, retrySync: retryFirstSync }}>
       {children}
     </AppContext.Provider>
   );

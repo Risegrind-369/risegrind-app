@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Alert, FlatList } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Alert, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
+import { trpc } from "@/lib/trpc";
 import * as Haptics from "expo-haptics";
 
 export default function FriendsScreen() {
@@ -15,42 +16,52 @@ export default function FriendsScreen() {
   const [showAddFriend, setShowAddFriend] = useState(false);
   const [friendName, setFriendName] = useState("");
   const [friendCode, setFriendCode] = useState("");
+  const [isAdding, setIsAdding] = useState(false);
 
-  const handleAddFriend = () => {
-    if (!friendName.trim() || !friendCode.trim()) {
-      Alert.alert(t("friends.error", { defaultValue: "Error" }), t("friends.fillFields", { defaultValue: "Please fill in all fields" }));
+  const addFriendMutation = trpc.sync.addFriendByCode.useMutation();
+
+  const handleAddFriend = async () => {
+    if (!friendCode.trim()) {
+      Alert.alert(t("friends.error", { defaultValue: "Error" }), t("friends.fillFields", { defaultValue: "Please enter a Ghost Code" }));
       return;
     }
 
-    // Validate that friendName contains only letters and spaces (no random usernames)
-    if (!/^[a-zA-Z\s]+$/.test(friendName.trim())) {
+    setIsAdding(true);
+    try {
+      const result = await addFriendMutation.mutateAsync({ code: friendCode.trim().toUpperCase() });
+
+      if (!result.success) {
+        Alert.alert(t("friends.error", { defaultValue: "Error" }), result.error ?? "Could not add friend");
+        return;
+      }
+
+      // result.friend has live streak/xp from server
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      dispatch({
+        type: "ADD_FRIEND",
+        payload: {
+          code: result.friend.code,
+          name: result.friend.name,
+          streak: result.friend.streak,
+          xp: result.friend.xp,
+          addedAt: result.friend.addedAt,
+        },
+      });
+
       Alert.alert(
-        t("friends.invalidName", { defaultValue: "Invalid Name" }),
-        t("friends.realNameOnly", { defaultValue: "Please use a real first name (letters only)" })
+        t("friends.success", { defaultValue: "Friend Added!" }),
+        t("friends.friendAdded", { defaultValue: `${result.friend.name} has been added to your Ghost Crew.` })
       );
-      return;
+
+      setFriendName("");
+      setFriendCode("");
+      setShowAddFriend(false);
+    } catch (err) {
+      console.error("[friends] addFriendByCode error:", err);
+      Alert.alert(t("friends.error", { defaultValue: "Error" }), "Could not reach server. Try again.");
+    } finally {
+      setIsAdding(false);
     }
-
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    dispatch({
-      type: "ADD_FRIEND",
-      payload: {
-        code: friendCode.trim(),
-        name: friendName.trim(),
-        streak: 0,
-        xp: 0,
-        addedAt: Date.now(),
-      },
-    });
-
-    Alert.alert(
-      t("friends.success", { defaultValue: "Friend Added!" }),
-      t("friends.friendAdded", { defaultValue: `${friendName} has been added to your Ghost Crew.` })
-    );
-
-    setFriendName("");
-    setFriendCode("");
-    setShowAddFriend(false);
   };
 
   return (

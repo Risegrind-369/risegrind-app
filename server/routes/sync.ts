@@ -555,4 +555,76 @@ export const syncRouter = router({
       };
     }
   }),
+
+  // ─── Ghost Crew: Add Friend by Code ────────────────────────────────────────
+  addFriendByCode: protectedProcedure
+    .input(z.object({ code: z.string().min(1).max(20) }))
+    .mutation(async ({ ctx, input }) => {
+      try {
+        const db = await getDb();
+        if (!db) return { success: false as const, error: "Database unavailable" };
+        const authUserId = getSyncUserId(ctx.user);
+
+        // Look up the friend by their ghostCode (stored in users.friendCode)
+        const friendRows = await db
+          .select({ supabase_user_id: users.supabase_user_id, displayName: users.displayName, friendCode: users.friendCode })
+          .from(users)
+          .where(eq(users.friendCode, input.code.toUpperCase()))
+          .limit(1);
+
+        if (friendRows.length === 0) {
+          return { success: false as const, error: "No user found with that Ghost Code" };
+        }
+
+        const friend = friendRows[0];
+        const friendUserId = friend.supabase_user_id;
+
+        if (!friendUserId) {
+          return { success: false as const, error: "Friend account not fully set up" };
+        }
+
+        if (friendUserId === authUserId) {
+          return { success: false as const, error: "You cannot add yourself" };
+        }
+
+        // Check if already friends
+        const existing = await db
+          .select({ id: ghostCrewFriends.id })
+          .from(ghostCrewFriends)
+          .where(and(eq(ghostCrewFriends.userId, authUserId), eq(ghostCrewFriends.friendId, friendUserId)))
+          .limit(1);
+
+        if (existing.length > 0) {
+          return { success: false as const, error: "Already in your Ghost Crew" };
+        }
+
+        // Insert the friendship
+        await db.insert(ghostCrewFriends).values({
+          userId: authUserId,
+          friendId: friendUserId,
+          addedAt: new Date(),
+        });
+
+        // Get friend's live progress
+        const progressRows = await db
+          .select({ xp: userProgress.xp, streak: userProgress.streak })
+          .from(userProgress)
+          .where(eq(userProgress.userId, friendUserId))
+          .limit(1);
+
+        return {
+          success: true as const,
+          friend: {
+            code: friend.friendCode ?? input.code.toUpperCase(),
+            name: friend.displayName ?? "Ghost",
+            streak: progressRows[0]?.streak ?? 0,
+            xp: progressRows[0]?.xp ?? 0,
+            addedAt: Date.now(),
+          },
+        };
+      } catch (error) {
+        console.error("[sync.addFriendByCode] Error:", error);
+        return { success: false as const, error: "Failed to add friend" };
+      }
+    }),
 });
