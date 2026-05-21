@@ -1,0 +1,46 @@
+{
+  "query": "SHOW TABLES LIKE 'user%'; SHOW TABLES LIKE 'habit%'; SHOW TABLES LIKE 'journal%';",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute SHOW TABLES LIKE 'user%'; SHOW TABLES LIKE 'habit%'; SHOW TABLES LIKE 'journal%';",
+  "rows": [
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "userAchievements"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "userHabits"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "userProfiles"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "userProgress"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "userSideQuests"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "users"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "Tables_in_FX74FzCVEe6tC4xxrVKhws (habit%)"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "habitCompletions"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "habitRecommendations"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "habitStacks"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "Tables_in_FX74FzCVEe6tC4xxrVKhws (journal%)"
+    },
+    {
+      "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)": "journalEntries"
+    }
+  ],
+  "messages": [],
+  "stdout": "Tables_in_FX74FzCVEe6tC4xxrVKhws (user%)\nuserAchievements\nuserHabits\nuserProfiles\nuserProgress\nuserSideQuests\nusers\nTables_in_FX74FzCVEe6tC4xxrVKhws (habit%)\nhabitCompletions\nhabitRecommendations\nhabitStacks\nTables_in_FX74FzCVEe6tC4xxrVKhws (journal%)\njournalEntries\n",
+  "stderr": "",
+  "execution_time_ms": 850
+}

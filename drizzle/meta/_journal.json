@@ -71,6 +71,13 @@
       "when": 1778431182672,
       "tag": "0009_nostalgic_warlock",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "5",
+      "when": 1779373811759,
+      "tag": "0010_magenta_sphinx",
+      "breakpoints": true
     }
   ]
 }

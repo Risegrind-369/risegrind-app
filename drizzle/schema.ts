@@ -1,4 +1,4 @@
-import { boolean, date, decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, bigint, date, decimal, int, mysqlEnum, mysqlTable, text, timestamp, varchar, uniqueIndex } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -538,4 +538,152 @@ export const moodSnapshots = mysqlTable("moodSnapshots", {
 export type MoodSnapshot = typeof moodSnapshots.$inferSelect;
 export type InsertMoodSnapshot = typeof moodSnapshots.$inferInsert;
 
-// TODO: Add your tables here
+// ─── Milestone 2: Core App State Sync Tables ─────────────────────────────────
+
+/**
+ * User habits — synced from AppState.habits.
+ * clientId is the local UUID (e.g. "h1", "h-abc123").
+ * Soft-delete via deletedAt: null = active, timestamp = deleted.
+ */
+export const userHabits = mysqlTable(
+  "userHabits",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(), // Supabase user ID
+    clientId: varchar("clientId", { length: 255 }).notNull(), // local UUID
+    name: varchar("name", { length: 255 }).notNull(),
+    icon: varchar("icon", { length: 10 }).notNull(), // emoji
+    durationMin: int("durationMin").default(0).notNull(),
+    isDefault: boolean("isDefault").default(false).notNull(),
+    order: int("order").default(0).notNull(),
+    deletedAt: timestamp("deletedAt"), // null = active
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    userClientIdx: uniqueIndex("userHabits_userId_clientId_unique").on(t.userId, t.clientId),
+  }),
+);
+export type UserHabit = typeof userHabits.$inferSelect;
+export type InsertUserHabit = typeof userHabits.$inferInsert;
+
+/**
+ * Habit completions — synced from AppState.completions.
+ * One row per (userId, habitClientId, date).
+ */
+export const habitCompletions = mysqlTable(
+  "habitCompletions",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    habitClientId: varchar("habitClientId", { length: 255 }).notNull(), // matches userHabits.clientId
+    date: varchar("date", { length: 10 }).notNull(), // "YYYY-MM-DD"
+    completedAt: bigint("completedAt", { mode: "number" }).notNull(), // unix ms
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    userHabitDateIdx: uniqueIndex("habitCompletions_userId_habitClientId_date_unique").on(
+      t.userId,
+      t.habitClientId,
+      t.date,
+    ),
+  }),
+);
+export type HabitCompletion = typeof habitCompletions.$inferSelect;
+export type InsertHabitCompletion = typeof habitCompletions.$inferInsert;
+
+/**
+ * Journal entries — synced from AppState.journalEntries.
+ * clientId is the local UUID assigned when the entry is created.
+ */
+export const journalEntries = mysqlTable(
+  "journalEntries",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    clientId: varchar("clientId", { length: 255 }).notNull(), // local UUID
+    date: varchar("date", { length: 10 }).notNull(), // "YYYY-MM-DD"
+    content: text("content").notNull(),
+    prompt: text("prompt").notNull(),
+    moodLevel: int("moodLevel"), // 1-5, nullable
+    createdAt: bigint("createdAt", { mode: "number" }).notNull(), // unix ms
+    syncedAt: timestamp("syncedAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    userClientIdx: uniqueIndex("journalEntries_userId_clientId_unique").on(t.userId, t.clientId),
+  }),
+);
+export type JournalEntry = typeof journalEntries.$inferSelect;
+export type InsertJournalEntry = typeof journalEntries.$inferInsert;
+
+/**
+ * User progress — one row per user, server-authoritative for XP and streak.
+ * ghostCode is NOT stored here — it lives in users.friendCode to avoid duplication.
+ */
+export const userProgress = mysqlTable("userProgress", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: varchar("userId", { length: 255 }).notNull().unique(), // one row per user
+  xp: int("xp").default(0).notNull(),
+  streak: int("streak").default(0).notNull(),
+  lastActiveDate: varchar("lastActiveDate", { length: 10 }), // "YYYY-MM-DD" or null
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type UserProgress = typeof userProgress.$inferSelect;
+export type InsertUserProgress = typeof userProgress.$inferInsert;
+
+/**
+ * User achievements — synced from AppState.achievements.
+ * achievementId matches the Achievement.id string from the client.
+ */
+export const userAchievements = mysqlTable(
+  "userAchievements",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    achievementId: varchar("achievementId", { length: 255 }).notNull(), // matches Achievement.id
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    icon: varchar("icon", { length: 10 }).notNull(),
+    unlockedAt: bigint("unlockedAt", { mode: "number" }), // unix ms, null = locked
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (t) => ({
+    userAchievementIdx: uniqueIndex("userAchievements_userId_achievementId_unique").on(
+      t.userId,
+      t.achievementId,
+    ),
+  }),
+);
+export type UserAchievement = typeof userAchievements.$inferSelect;
+export type InsertUserAchievement = typeof userAchievements.$inferInsert;
+
+/**
+ * User side quests — synced from AppState.sideQuests.
+ * questId matches the SideQuest.id string from the client.
+ */
+export const userSideQuests = mysqlTable(
+  "userSideQuests",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(),
+    questId: varchar("questId", { length: 255 }).notNull(), // matches SideQuest.id
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description").notNull(),
+    icon: varchar("icon", { length: 10 }).notNull(),
+    durationDays: int("durationDays").notNull(),
+    xpReward: int("xpReward").notNull(),
+    badgeId: varchar("badgeId", { length: 255 }).notNull(),
+    category: mysqlEnum("category", ["discipline", "wellness", "mindset", "body"]).notNull(),
+    startedAt: bigint("startedAt", { mode: "number" }), // unix ms, null = not started
+    completedAt: bigint("completedAt", { mode: "number" }), // unix ms, null = not completed
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+    updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+  },
+  (t) => ({
+    userQuestIdx: uniqueIndex("userSideQuests_userId_questId_unique").on(t.userId, t.questId),
+  }),
+);
+export type UserSideQuest = typeof userSideQuests.$inferSelect;
+export type InsertUserSideQuest = typeof userSideQuests.$inferInsert;
+
