@@ -563,6 +563,47 @@ export function useSyncToServer({ state, dispatch, onSyncingChange, onSyncError 
     push();
   }, [state.sideQuests, state.isLoading, hasSession]);
 
+  // ─── Immediate pushProgress on habit completion (XP gain) or streak milestone ─
+  useEffect(() => {
+    if (state.isLoading) return;
+    const prev = prevStateRef.current;
+
+    // Detect XP gain (habit completed) or streak milestone (7, 30, 60, 90, 180, 365)
+    const xpGained = state.xp > prev.xp;
+    const streakMilestones = [7, 30, 60, 90, 180, 365];
+    const hitStreakMilestone =
+      state.streak !== prev.streak && streakMilestones.includes(state.streak);
+    const newCompletion = state.completions.length > prev.completions.length;
+
+    if (!xpGained && !hitStreakMilestone && !newCompletion) return;
+
+    const push = async () => {
+      const authenticated = await hasSession();
+      if (!authenticated) return;
+      const payload = {
+        xp: state.xp,
+        streak: state.streak,
+        lastActiveDate: state.lastActiveDate ?? null,
+      };
+      if (isOnlineRef.current) {
+        try {
+          const client = makeSyncClient();
+          await client.sync.pushProgress.mutate(payload);
+          console.log(
+            `[sync] Immediate pushProgress — XP: ${state.xp}, streak: ${state.streak}${
+              hitStreakMilestone ? ` (milestone: ${state.streak} days!)` : ""
+            }`
+          );
+        } catch {
+          await enqueueSyncItem({ type: "progress", payload });
+        }
+      } else {
+        await enqueueSyncItem({ type: "progress", payload });
+      }
+    };
+    push();
+  }, [state.xp, state.streak, state.completions, state.isLoading, state.lastActiveDate, hasSession]);
+
   // ─── Retry first sync (called from error UI) ──────────────────────────────
   const retryFirstSync = useCallback(() => {
     hasRunFirstSync.current = false;

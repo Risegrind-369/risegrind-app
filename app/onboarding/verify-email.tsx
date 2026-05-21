@@ -6,7 +6,6 @@
  * Includes:
  * - "Check your email" message
  * - "Resend email" button (rate-limited)
- * - "Skip for now" button (developer only - removed before launch)
  * - Auto-check for email verification every 3 seconds
  */
 import React, { useState, useEffect } from "react";
@@ -141,16 +140,6 @@ export default function VerifyEmailScreen() {
     }
   };
 
-  const handleSkipForNow = () => {
-    // Developer-only option - will be removed before launch
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    console.log("[VerifyEmail] Developer skip: proceeding without verification");
-    router.push({
-      pathname: "/onboarding/step2-empathy",
-      params: { name: params.name, age: params.age },
-    } as never);
-  };
-
   if (isVerified) {
     return (
       <ScreenContainer containerClassName="bg-background">
@@ -279,30 +268,6 @@ export default function VerifyEmailScreen() {
             </Pressable>
           </Animated.View>
 
-          {/* Developer Skip Option (will be removed before launch) */}
-          <Animated.View
-            entering={FadeInDown.delay(400).duration(600)}
-            style={styles.skipGroup}
-          >
-            <Pressable
-              onPress={handleSkipForNow}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.6 : 1,
-              })}
-            >
-              <Text
-                style={[
-                  styles.skipText,
-                  { color: colors.muted, textDecorationLine: "underline" },
-                ]}
-              >
-                {t("onboarding.verifyEmail.skipForNow", {
-                  defaultValue: "Skip for now (dev only)",
-                })}
-              </Text>
-            </Pressable>
-          </Animated.View>
-
           {/* Help Text */}
           <Animated.View
             entering={FadeInDown.delay(500).duration(600)}
@@ -383,14 +348,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
-  },
-  skipGroup: {
-    alignItems: "center",
-    marginTop: 8,
-  },
-  skipText: {
-    fontSize: 14,
-    fontWeight: "500",
   },
   helpText: {
     gap: 8,
