@@ -1,0 +1,34 @@
+{
+  "query": "\nSELECT TABLE_NAME, TABLE_ROWS \nFROM information_schema.TABLES \nWHERE TABLE_SCHEMA = DATABASE() \nAND TABLE_NAME IN ('userHabits','habitCompletions','journalEntries','userProgress','userAchievements','userSideQuests')\nORDER BY TABLE_NAME;\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute \nSELECT TABLE_NAME, TABLE_ROWS \nFROM information_schema.TABLES \nWHERE TABLE_SCHEMA = DATABASE() \nAND TABLE_NAME IN ('userHabits','habitCompletions','journalEntries','userProgress','userAchievements','userSideQuests')\nORDER BY TABLE_NAME;\n",
+  "rows": [
+    {
+      "TABLE_NAME": "habitCompletions",
+      "TABLE_ROWS": "0"
+    },
+    {
+      "TABLE_NAME": "journalEntries",
+      "TABLE_ROWS": "0"
+    },
+    {
+      "TABLE_NAME": "userAchievements",
+      "TABLE_ROWS": "0"
+    },
+    {
+      "TABLE_NAME": "userHabits",
+      "TABLE_ROWS": "0"
+    },
+    {
+      "TABLE_NAME": "userProgress",
+      "TABLE_ROWS": "0"
+    },
+    {
+      "TABLE_NAME": "userSideQuests",
+      "TABLE_ROWS": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "TABLE_NAME\tTABLE_ROWS\nhabitCompletions\t0\njournalEntries\t0\nuserAchievements\t0\nuserHabits\t0\nuserProgress\t0\nuserSideQuests\t0\n",
+  "stderr": "",
+  "execution_time_ms": 583
+}

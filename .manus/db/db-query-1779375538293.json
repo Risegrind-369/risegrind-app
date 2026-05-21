@@ -1,0 +1,18 @@
+{
+  "query": "\nSHOW COLUMNS FROM users WHERE Field = 'friendCode' OR Field = 'supabase_user_id';\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute \nSHOW COLUMNS FROM users WHERE Field = 'friendCode' OR Field = 'supabase_user_id';\n",
+  "rows": [
+    {
+      "Field": "friendCode",
+      "Type": "varchar(6)",
+      "Null": "YES",
+      "Key": "UNI",
+      "Default": "NULL",
+      "Extra": ""
+    }
+  ],
+  "messages": [],
+  "stdout": "Field\tType\tNull\tKey\tDefault\tExtra\nfriendCode\tvarchar(6)\tYES\tUNI\tNULL\t\n",
+  "stderr": "",
+  "execution_time_ms": 569
+}

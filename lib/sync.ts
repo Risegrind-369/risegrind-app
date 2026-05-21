@@ -264,3 +264,57 @@ export async function pushAllState(state: {
     return { success: false, error: String(e) };
   }
 }
+
+// ─── pullAndMergeStandalone ───────────────────────────────────────────────────
+
+/**
+ * Standalone pullAll → merge helper for use in screens (community, friends).
+ * Returns the raw server data so the caller can dispatch LOAD_STATE.
+ * Does NOT dispatch — caller is responsible for merging and dispatching.
+ */
+export async function pullAllFromServer(): Promise<{
+  habits: unknown[];
+  completions: unknown[];
+  journal: unknown[];
+  progress: { xp: number; streak: number; lastActiveDate?: string | null } | null;
+  achievements: unknown[];
+  sideQuests: unknown[];
+  mood: unknown[];
+  friends: unknown[];
+} | null> {
+  try {
+    const client = createSyncClient();
+    const data = await client.sync.pullAll.query();
+    if (!data || !data.success) return null;
+    return {
+      habits: (data.habits as unknown[]) ?? [],
+      completions: (data.completions as unknown[]) ?? [],
+      journal: (data.journal as unknown[]) ?? [],
+      progress: (data.progress as { xp: number; streak: number; lastActiveDate?: string | null } | null) ?? null,
+      achievements: (data.achievements as unknown[]) ?? [],
+      sideQuests: (data.sideQuests as unknown[]) ?? [],
+      mood: (data.mood as unknown[]) ?? [],
+      friends: (data.friends as unknown[]) ?? [],
+    };
+  } catch (e) {
+    console.warn("[sync] pullAllFromServer failed:", e);
+    return null;
+  }
+}
+
+// ─── Sync flag helpers ────────────────────────────────────────────────────────
+
+export const SYNCED_FLAG_KEY = "@risegrind_synced";
+
+/**
+ * Clear the @risegrind_synced flag so the next app launch triggers first-sync.
+ * Used by Danger Zone "Reset All Data".
+ */
+export async function clearSyncedFlag(): Promise<void> {
+  try {
+    await AsyncStorage.removeItem(SYNCED_FLAG_KEY);
+    console.log("[sync] Cleared @risegrind_synced flag — next launch will re-sync from server");
+  } catch (e) {
+    console.warn("[sync] Failed to clear synced flag:", e);
+  }
+}

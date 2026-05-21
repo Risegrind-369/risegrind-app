@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Alert, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, Pressable, StyleSheet, ScrollView, TextInput, Alert, FlatList, ActivityIndicator, TouchableOpacity, RefreshControl } from "react-native";
+import { pullAllFromServer } from "@/lib/sync";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -17,8 +18,33 @@ export default function FriendsScreen() {
   const [friendName, setFriendName] = useState("");
   const [friendCode, setFriendCode] = useState("");
   const [isAdding, setIsAdding] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
   const addFriendMutation = trpc.sync.addFriendByCode.useMutation();
+
+  // Pull latest friend stats from server on mount
+  useEffect(() => {
+    const refresh = async () => {
+      const data = await pullAllFromServer();
+      if (!data) return;
+      const serverFriends = (data.friends as Array<{ code: string; name: string; streak: number; xp: number; addedAt: number }>) ?? [];
+      serverFriends.forEach((sf) => dispatch({ type: "ADD_FRIEND", payload: sf }));
+    };
+    refresh();
+  }, [dispatch]);
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const data = await pullAllFromServer();
+      if (data) {
+        const serverFriends = (data.friends as Array<{ code: string; name: string; streak: number; xp: number; addedAt: number }>) ?? [];
+        serverFriends.forEach((sf) => dispatch({ type: "ADD_FRIEND", payload: sf }));
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  };
 
   const handleAddFriend = async () => {
     if (!friendCode.trim()) {
@@ -66,15 +92,25 @@ export default function FriendsScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
+      >
         {/* Header */}
         <View style={styles.header}>
-          <Pressable
+          <TouchableOpacity
             onPress={() => router.back()}
-            style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
+            activeOpacity={0.6}
           >
             <Text style={[styles.backButton, { color: colors.accent }]}>← {t("common.back", { defaultValue: "Back" })}</Text>
-          </Pressable>
+          </TouchableOpacity>
           <Text style={[styles.title, { color: colors.foreground }]}>
             {t("friends.title", { defaultValue: "Ghost Crew" })}
           </Text>

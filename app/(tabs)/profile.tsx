@@ -101,33 +101,6 @@ export default function ProfileScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* DEV: Force Logout — isolates whether bug is in button, dialog, or completeLogout */}
-        <TouchableOpacity
-          activeOpacity={0.7}
-          onPress={async () => {
-            console.log("[DEV] Force Logout button tapped");
-            try {
-              if (isLoggingOutRef) isLoggingOutRef.current = true;
-              await completeLogout(dispatch, isLoggingOutRef);
-              console.log("[DEV] completeLogout finished — navigating");
-              router.replace("/onboarding/language" as never);
-            } catch (err) {
-              console.error("[DEV] Force Logout error:", err);
-              Alert.alert("DEV Error", String(err));
-            }
-          }}
-          style={{
-            backgroundColor: "#FF3B30",
-            marginBottom: 8,
-            paddingVertical: 14,
-            paddingHorizontal: 20,
-            borderRadius: 14,
-            alignItems: "center",
-          }}
-        >
-          <Text style={{ color: "#fff", fontWeight: "800", fontSize: 15 }}>🔴 DEV: Force Logout</Text>
-        </TouchableOpacity>
-
         {/* Profile Header */}
         <View style={[styles.profileHeader, { backgroundColor: rankColor + "15", borderColor: rankColor + "30" }]}>
           <View style={[styles.avatarContainer, { backgroundColor: rankColor + "25" }]}>

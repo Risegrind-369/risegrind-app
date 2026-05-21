@@ -1,0 +1,25 @@
+{
+  "query": "\nSELECT COUNT(*) as userCount FROM users;\nSELECT COUNT(*) as friendCount FROM ghostCrewFriends;\nSELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = 'ghostCrewFriends' AND TABLE_SCHEMA = DATABASE();\n",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute \nSELECT COUNT(*) as userCount FROM users;\nSELECT COUNT(*) as friendCount FROM ghostCrewFriends;\nSELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_NAME = 'ghostCrewFriends' AND TABLE_SCHEMA = DATABASE();\n",
+  "rows": [
+    {
+      "userCount": "0"
+    },
+    {
+      "userCount": "friendCount"
+    },
+    {
+      "userCount": "0"
+    },
+    {
+      "userCount": "TABLE_NAME"
+    },
+    {
+      "userCount": "ghostCrewFriends"
+    }
+  ],
+  "messages": [],
+  "stdout": "userCount\n0\nfriendCount\n0\nTABLE_NAME\nghostCrewFriends\n",
+  "stderr": "",
+  "execution_time_ms": 686
+}

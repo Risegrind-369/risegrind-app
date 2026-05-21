@@ -1,20 +1,23 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   ScrollView,
-  Pressable,
+  TouchableOpacity,
   TextInput,
   StyleSheet,
   Alert,
   Share,
-  Platform,
+  RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import * as Clipboard from "expo-clipboard";
 import * as Haptics from "expo-haptics";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, getRank, type GhostFriend } from "@/lib/app-context";
+import { trpc } from "@/lib/trpc";
+import { pullAllFromServer } from "@/lib/sync";
 import { useTranslation } from "react-i18next";
 
 // ─── Rank medal helper ────────────────────────────────────────────────────────
@@ -88,6 +91,25 @@ export default function CommunityScreen() {
   const { t } = useTranslation();
   const [friendCode, setFriendCode] = useState("");
   const [adding, setAdding] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const addFriendMutation = trpc.sync.addFriendByCode.useMutation();
+
+  // Pull latest friend stats from server on mount
+  useEffect(() => {
+    const refresh = async () => {
+      const data = await pullAllFromServer();
+      if (!data) return;
+      // Update friends with live server stats
+      const serverFriends = (data.friends as Array<{ code: string; name: string; streak: number; xp: number; addedAt: number }>) ?? [];
+      if (serverFriends.length > 0) {
+        serverFriends.forEach((sf) => {
+          dispatch({ type: "ADD_FRIEND", payload: sf }); // ADD_FRIEND is idempotent (upsert by code)
+        });
+      }
+    };
+    refresh();
+  }, [dispatch]);
 
   // Build leaderboard: self + friends, sorted by XP desc
   const allPlayers = [
@@ -113,9 +135,9 @@ export default function CommunityScreen() {
     }
   };
 
-  const handleAddFriend = () => {
+  const handleAddFriend = async () => {
     const code = friendCode.trim().toUpperCase();
-    if (code.length !== 6) {
+    if (code.length < 4) {
       Alert.alert("👻", t("community.invalidCode"));
       return;
     }
@@ -124,27 +146,48 @@ export default function CommunityScreen() {
       return;
     }
     if (state.friends.some((f) => f.code === code)) {
-      Alert.alert("👻", t("community.friendAdded"));
+      Alert.alert("👻", "Already in your Ghost Crew!");
       return;
     }
 
     setAdding(true);
-    // In a real app this would hit the server. For now we simulate a "found" ghost.
-    setTimeout(() => {
-      setAdding(false);
-      // Simulate a friend with random stats
-      const simulatedFriend: GhostFriend = {
-        code,
-        name: `Ghost_${code.slice(0, 4)}`,
-        streak: Math.floor(Math.random() * 20) + 1,
-        xp: Math.floor(Math.random() * 2000) + 100,
-        addedAt: Date.now(),
-      };
-      dispatch({ type: "ADD_FRIEND", payload: simulatedFriend });
+    try {
+      const result = await addFriendMutation.mutateAsync({ code });
+      if (!result.success) {
+        Alert.alert("👻", result.error ?? "Could not find that Ghost Code");
+        return;
+      }
+      dispatch({ type: "ADD_FRIEND", payload: result.friend });
       setFriendCode("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert("👻", t("community.friendAdded"));
-    }, 800);
+    } catch {
+      Alert.alert("👻", "Could not reach server. Try again.");
+    } finally {
+      setAdding(false);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    try {
+      const data = await pullAllFromServer();
+      if (data) {
+        const serverFriends = (data.friends as Array<{ code: string; name: string; streak: number; xp: number; addedAt: number }>) ?? [];
+        serverFriends.forEach((sf) => dispatch({ type: "ADD_FRIEND", payload: sf }));
+        if (data.progress) {
+          dispatch({
+            type: "LOAD_STATE",
+            payload: {
+              xp: Math.max(state.xp, data.progress.xp),
+              streak: Math.max(state.streak, data.progress.streak),
+            },
+          });
+        }
+      }
+    } finally {
+      setRefreshing(false);
+    }
   };
 
   const handleRemoveFriend = (code: string, name: string) => {
@@ -168,6 +211,13 @@ export default function CommunityScreen() {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            tintColor={colors.primary}
+          />
+        }
       >
         {/* Header */}
         <View style={styles.header}>
@@ -191,28 +241,24 @@ export default function CommunityScreen() {
             {t("community.codeHint")}
           </Text>
           <View style={styles.codeActions}>
-            <Pressable
+            <TouchableOpacity
               onPress={handleCopyCode}
-              style={({ pressed }) => [
-                styles.codeBtn,
-                { backgroundColor: colors.surface, borderColor: colors.border, opacity: pressed ? 0.7 : 1 },
-              ]}
+              activeOpacity={0.7}
+              style={[styles.codeBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
             >
               <Text style={[styles.codeBtnText, { color: colors.foreground }]}>
                 📋 {t("common.copy")}
               </Text>
-            </Pressable>
-            <Pressable
+            </TouchableOpacity>
+            <TouchableOpacity
               onPress={handleShare}
-              style={({ pressed }) => [
-                styles.codeBtn,
-                { backgroundColor: colors.primary, opacity: pressed ? 0.8 : 1 },
-              ]}
+              activeOpacity={0.8}
+              style={[styles.codeBtn, { backgroundColor: colors.primary }]}
             >
               <Text style={[styles.codeBtnText, { color: "#fff" }]}>
                 🔗 {t("community.shareCode")}
               </Text>
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -234,21 +280,17 @@ export default function CommunityScreen() {
                 { color: colors.foreground, borderColor: colors.border, backgroundColor: colors.background },
               ]}
             />
-            <Pressable
+            <TouchableOpacity
               onPress={handleAddFriend}
-              disabled={adding || friendCode.length < 6}
-              style={({ pressed }) => [
-                styles.addBtn,
-                {
-                  backgroundColor: colors.primary,
-                  opacity: adding || friendCode.length < 6 ? 0.5 : pressed ? 0.8 : 1,
-                },
-              ]}
+              disabled={adding || friendCode.length < 4}
+              activeOpacity={0.8}
+              style={[styles.addBtn, { backgroundColor: colors.primary, opacity: adding || friendCode.length < 4 ? 0.5 : 1 }]}
             >
-              <Text style={styles.addBtnText}>
-                {adding ? "..." : t("community.addFriendBtn")}
-              </Text>
-            </Pressable>
+              {adding
+                ? <ActivityIndicator size="small" color="#fff" />
+                : <Text style={styles.addBtnText}>{t("community.addFriendBtn")}</Text>
+              }
+            </TouchableOpacity>
           </View>
         </View>
 
@@ -271,8 +313,9 @@ export default function CommunityScreen() {
           ) : (
             <View style={styles.leaderboardList}>
               {allPlayers.map((player, i) => (
-                <Pressable
+                <TouchableOpacity
                   key={player.code}
+                  activeOpacity={0.85}
                   onLongPress={
                     !player.isYou
                       ? () => handleRemoveFriend(player.code, player.name)
@@ -286,7 +329,7 @@ export default function CommunityScreen() {
                     xp={player.xp}
                     isYou={player.isYou}
                   />
-                </Pressable>
+                </TouchableOpacity>
               ))}
             </View>
           )}

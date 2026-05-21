@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ScrollView, Alert } from "react-native";
+import { View, Text, Pressable, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { clearSyncedFlag } from "@/lib/sync";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -75,6 +77,34 @@ export default function SettingsScreen() {
   };
 
   // Language is now locked after onboarding - no changes allowed
+
+  const handleResetAllData = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Alert.alert(
+      "⚠️ Reset All Local Data",
+      "This will erase all habits, journal entries, XP, and streaks from this device.\n\nYour account and server data are preserved — you can restore them on next login.",
+      [
+        { text: "Cancel", style: "cancel" },
+        {
+          text: "Reset",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Clear the synced flag so first-sync runs on next launch
+              await clearSyncedFlag();
+              // Clear all local AsyncStorage data
+              await AsyncStorage.clear();
+              // Reset app state
+              dispatch({ type: "LOGOUT" });
+              router.replace("/onboarding/language" as never);
+            } catch (err) {
+              Alert.alert("Error", "Failed to reset data: " + String(err));
+            }
+          },
+        },
+      ]
+    );
+  };
 
   const handleLogout = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -254,21 +284,25 @@ export default function SettingsScreen() {
 
         {/* Danger Zone */}
         <View style={styles.section}>
-          <Pressable
+          <Text style={[styles.sectionTitle, { color: colors.error }]}>⚠️ Danger Zone</Text>
+          <TouchableOpacity
             onPress={handleLogout}
-            style={({ pressed }) => [
-              styles.dangerButton,
-              {
-                backgroundColor: colors.error + "15",
-                borderColor: colors.error,
-                opacity: pressed ? 0.7 : 1,
-              },
-            ]}
+            activeOpacity={0.7}
+            style={[styles.dangerButton, { backgroundColor: colors.error + "15", borderColor: colors.error }]}
           >
             <Text style={[styles.dangerButtonText, { color: colors.error }]}>
               {t("common.logout", { defaultValue: "Logout" })}
             </Text>
-          </Pressable>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={handleResetAllData}
+            activeOpacity={0.7}
+            style={[styles.dangerButton, { backgroundColor: colors.error + "25", borderColor: colors.error, marginTop: 8 }]}
+          >
+            <Text style={[styles.dangerButtonText, { color: colors.error }]}>
+              🗑️ Reset All Local Data
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ScreenContainer>

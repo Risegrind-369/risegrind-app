@@ -18,7 +18,7 @@
  */
 
 import { z } from "zod";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 import { router, protectedProcedure } from "../_core/trpc";
 import { getDb } from "../db";
 import {
@@ -35,9 +35,11 @@ import {
 
 // ─── Helper ───────────────────────────────────────────────────────────────────
 
-/** Derive the canonical sync userId from the authenticated session. */
-function getSyncUserId(user: { id: number; supabase_user_id?: string | null }): string {
-  return user.supabase_user_id ?? String(user.id);
+/** Derive the canonical sync userId from the authenticated session.
+ * Uses the numeric users.id as a string — consistent across all sync tables.
+ */
+function getSyncUserId(user: { id: number }): string {
+  return String(user.id);
 }
 
 // ─── Zod input schemas ────────────────────────────────────────────────────────
@@ -514,7 +516,8 @@ export const syncRouter = router({
             streak: userProgress.streak,
           })
           .from(ghostCrewFriends)
-          .leftJoin(users, eq(users.supabase_user_id, ghostCrewFriends.friendId))
+          // friendId is stored as String(user.id) — cast to int for the join
+          .leftJoin(users, sql`${users.id} = CAST(${ghostCrewFriends.friendId} AS UNSIGNED)`)
           .leftJoin(userProgress, eq(userProgress.userId, ghostCrewFriends.friendId))
           .where(eq(ghostCrewFriends.userId, authUserId)),
       ]);
@@ -567,7 +570,7 @@ export const syncRouter = router({
 
         // Look up the friend by their ghostCode (stored in users.friendCode)
         const friendRows = await db
-          .select({ supabase_user_id: users.supabase_user_id, displayName: users.displayName, friendCode: users.friendCode })
+          .select({ id: users.id, displayName: users.displayName, friendCode: users.friendCode })
           .from(users)
           .where(eq(users.friendCode, input.code.toUpperCase()))
           .limit(1);
@@ -577,11 +580,8 @@ export const syncRouter = router({
         }
 
         const friend = friendRows[0];
-        const friendUserId = friend.supabase_user_id;
-
-        if (!friendUserId) {
-          return { success: false as const, error: "Friend account not fully set up" };
-        }
+        // friendUserId is the canonical String(user.id) used across all sync tables
+        const friendUserId = String(friend.id);
 
         if (friendUserId === authUserId) {
           return { success: false as const, error: "You cannot add yourself" };
