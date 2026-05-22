@@ -19,7 +19,7 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import Constants from "expo-constants";
+
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
@@ -270,31 +270,30 @@ export default function VerifyEmailScreen() {
             </Pressable>
           </Animated.View>
 
-          {/* DEV ONLY: Skip email verification for testing */}
-          {Constants.expoConfig?.extra?.isDev !== false && __DEV__ && (
-            <Animated.View
-              entering={FadeInDown.delay(400).duration(600)}
-              style={styles.buttonGroup}
+          {/* Skip email verification button */}
+          <Animated.View
+            entering={FadeInDown.delay(400).duration(600)}
+            style={styles.buttonGroup}
+          >
+            <TouchableOpacity
+              activeOpacity={0.7}
+              onPress={() => {
+                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                router.push({
+                  pathname: "/onboarding/step2-empathy",
+                  params: { name: params.name, age: params.age },
+                } as never);
+              }}
+              style={[
+                styles.button,
+                { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
+              ]}
             >
-              <TouchableOpacity
-                activeOpacity={0.7}
-                onPress={() => {
-                  router.push({
-                    pathname: "/onboarding/step2-empathy",
-                    params: { name: params.name, age: params.age },
-                  } as never);
-                }}
-                style={[
-                  styles.button,
-                  { backgroundColor: "transparent", borderWidth: 1, borderColor: "#ff6b35" },
-                ]}
-              >
-                <Text style={{ fontSize: 13, fontWeight: "600", color: "#ff6b35" }}>
-                  🛠 DEV: Skip Email Verification
-                </Text>
-              </TouchableOpacity>
-            </Animated.View>
-          )}
+              <Text style={{ fontSize: 14, fontWeight: "500", color: colors.foreground }}>
+                Skip for now
+              </Text>
+            </TouchableOpacity>
+          </Animated.View>
 
           {/* Help Text */}
           <Animated.View
