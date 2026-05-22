@@ -598,11 +598,21 @@ export const syncRouter = router({
           return { success: false as const, error: "Already in your Ghost Crew" };
         }
 
-        // Insert the friendship
-        await db.insert(ghostCrewFriends).values({
-          userId: authUserId,
-          friendId: friendUserId,
-          addedAt: new Date(),
+        // Insert BOTH rows atomically so the friendship is mutual:
+        //   Row 1: ghost2 (requester) → ghost1 (target)
+        //   Row 2: ghost1 (target)    → ghost2 (requester)  [auto-reverse]
+        // ON DUPLICATE KEY UPDATE is a no-op (set addedAt = addedAt) so
+        // pre-existing rows are silently skipped — no crash on duplicates.
+        await db.transaction(async (tx) => {
+          await tx
+            .insert(ghostCrewFriends)
+            .values({ userId: authUserId, friendId: friendUserId, addedAt: new Date() })
+            .onDuplicateKeyUpdate({ set: { addedAt: sql`${ghostCrewFriends.addedAt}` } });
+
+          await tx
+            .insert(ghostCrewFriends)
+            .values({ userId: friendUserId, friendId: authUserId, addedAt: new Date() })
+            .onDuplicateKeyUpdate({ set: { addedAt: sql`${ghostCrewFriends.addedAt}` } });
         });
 
         // Get friend's live progress

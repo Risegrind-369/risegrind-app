@@ -604,6 +604,42 @@ export function useSyncToServer({ state, dispatch, onSyncingChange, onSyncError 
     push();
   }, [state.xp, state.streak, state.completions, state.isLoading, state.lastActiveDate, hasSession]);
 
+  // ─── Immediate pushCompletions on habit tap ───────────────────────────────
+  // Fires without debounce the moment a new completion is recorded so the
+  // Ghost Crew leaderboard and server DB reflect the tap in real-time.
+  const prevCompletionsLengthRef = useRef(state.completions.length);
+  useEffect(() => {
+    if (state.isLoading) return;
+    const prevLen = prevCompletionsLengthRef.current;
+    const currLen = state.completions.length;
+    prevCompletionsLengthRef.current = currLen;
+
+    // Only fire when a new completion is added (not on initial load or removal)
+    if (currLen <= prevLen) return;
+
+    const push = async () => {
+      const authenticated = await hasSession();
+      if (!authenticated) return;
+      const payload = {
+        completions: state.completions.map((c) => ({
+          habitClientId: c.habitId, date: c.date, completedAt: c.completedAt,
+        })),
+      };
+      if (isOnlineRef.current) {
+        try {
+          const client = makeSyncClient();
+          await client.sync.pushCompletions.mutate(payload);
+          console.log(`[sync] Immediate pushCompletions — ${currLen - prevLen} new completion(s)`);
+        } catch {
+          await enqueueSyncItem({ type: "completions", payload });
+        }
+      } else {
+        await enqueueSyncItem({ type: "completions", payload });
+      }
+    };
+    push();
+  }, [state.completions, state.isLoading, hasSession]);
+
   // ─── Retry first sync (called from error UI) ──────────────────────────────
   const retryFirstSync = useCallback(() => {
     hasRunFirstSync.current = false;
