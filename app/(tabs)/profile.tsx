@@ -351,9 +351,9 @@ export default function ProfileScreen() {
                     text: lang === "fr" ? "Déconnexion" : lang === "pt" ? "Sair" : "Sign Out",
                     style: "destructive",
                     onPress: async () => {
-                      console.log("[Profile] Confirmed — calling completeLogout");
+                      console.log("[Profile] Confirmed — calling completeLogout with preserveUserData=true");
                       try {
-                        await completeLogout(dispatch, isLoggingOutRef);
+                        await completeLogout(dispatch, isLoggingOutRef, true); // preserveUserData=true for logout
                         console.log("[Profile] completeLogout done — navigating to onboarding");
                         router.replace("/onboarding/language" as never);
                       } catch (error) {

@@ -563,6 +563,9 @@ export const syncRouter = router({
   addFriendByCode: protectedProcedure
     .input(z.object({ code: z.string().min(1).max(20) }))
     .mutation(async ({ ctx, input }) => {
+      // TEST: Log immediately to verify endpoint is being hit
+      console.log("[sync.addFriendByCode] *** ENDPOINT HIT *** code=", input.code);
+      
       try {
         const db = await getDb();
         if (!db) {

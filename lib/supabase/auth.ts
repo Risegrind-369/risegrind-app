@@ -164,16 +164,18 @@ export async function restoreSessionFromStorage() {
  * 1. Sign out from Supabase
  * 2. Clear auth tokens from secure storage
  * 3. Clear Supabase session
- * 4. Clear AsyncStorage cache
+ * 4. Clear AsyncStorage cache (optionally preserve user data)
  * 5. Dispatch LOGOUT action to reset in-memory state
  *
- * Note: User data (habits, XP, journal, etc.) is cleared from AsyncStorage here.
- * TODO Milestone 2: When server sync is implemented, data will be preserved on server
- * and restored on next login. For now, data is lost on logout (single-user per device).
+ * @param dispatch - Redux dispatch function
+ * @param isLoggingOutRef - Mutable ref to block AsyncStorage reloads during logout
+ * @param preserveUserData - If true, keep habits/XP/journal/moods in AsyncStorage (logout case)
+ *                           If false, wipe all user data (reset all data case)
  */
 export async function completeLogout(
   dispatch?: React.Dispatch<any>,
-  isLoggingOutRef?: React.MutableRefObject<boolean>
+  isLoggingOutRef?: React.MutableRefObject<boolean>,
+  preserveUserData: boolean = true
 ) {
   try {
     console.log("[LOGOUT] STEP 1: Starting logout — setting isLoggingOutRef.current = true FIRST");
@@ -210,9 +212,19 @@ export async function completeLogout(
     // 4. Clear AsyncStorage (app state, user info, etc.)
     try {
       const AsyncStorage = (await import("@react-native-async-storage/async-storage")).default;
+      // Always clear user info (auth state)
       await AsyncStorage.removeItem("manus-runtime-user-info");
-      await AsyncStorage.removeItem("@risegrind_state");
-      console.log("[Auth] AsyncStorage cleared");
+      // Clear @risegrind_synced flag so next login re-syncs from server
+      await AsyncStorage.removeItem("@risegrind_synced");
+      
+      // Only clear user data if NOT preserving it (i.e., reset all data case)
+      if (!preserveUserData) {
+        console.log("[Auth] Clearing user data (habits, XP, journal, etc.) — reset all data");
+        await AsyncStorage.removeItem("@risegrind_state");
+      } else {
+        console.log("[Auth] Preserving user data in AsyncStorage — logout only");
+      }
+      console.log("[Auth] AsyncStorage cleared (preserveUserData=" + preserveUserData + ")");
     } catch (storageError) {
       console.warn("[Auth] Error clearing AsyncStorage (non-fatal):", storageError);
     }
