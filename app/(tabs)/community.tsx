@@ -161,7 +161,12 @@ export default function CommunityScreen() {
       setFriendCode("");
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       Alert.alert("👻", t("community.friendAdded"));
-    } catch {
+    } catch (err) {
+      console.error("[community] addFriendByCode error:", {
+        message: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        error: err,
+      });
       Alert.alert("👻", "Could not reach server. Try again.");
     } finally {
       setAdding(false);

@@ -52,12 +52,18 @@ export type InsertAccountabilityPartner = typeof accountabilityPartners.$inferIn
  * Ghost Crew friends table for v1.0 social features
  * Uses Supabase user IDs for proper auth integration
  */
-export const ghostCrewFriends = mysqlTable("ghostCrewFriends", {
-  id: int("id").autoincrement().primaryKey(),
-  userId: varchar("userId", { length: 255 }).notNull(), // Supabase user ID
-  friendId: varchar("friendId", { length: 255 }).notNull(), // Supabase user ID
-  addedAt: timestamp("addedAt").defaultNow().notNull(),
-});
+export const ghostCrewFriends = mysqlTable(
+  "ghostCrewFriends",
+  {
+    id: int("id").autoincrement().primaryKey(),
+    userId: varchar("userId", { length: 255 }).notNull(), // Supabase user ID
+    friendId: varchar("friendId", { length: 255 }).notNull(), // Supabase user ID
+    addedAt: timestamp("addedAt").defaultNow().notNull(),
+  },
+  (table) => ({
+    userIdFriendIdUnique: uniqueIndex("ghostCrewFriends_userId_friendId_unique").on(table.userId, table.friendId),
+  })
+);
 
 export type GhostCrewFriend = typeof ghostCrewFriends.$inferSelect;
 export type InsertGhostCrewFriend = typeof ghostCrewFriends.$inferInsert;

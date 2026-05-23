@@ -565,8 +565,12 @@ export const syncRouter = router({
     .mutation(async ({ ctx, input }) => {
       try {
         const db = await getDb();
-        if (!db) return { success: false as const, error: "Database unavailable" };
+        if (!db) {
+          console.error("[sync.addFriendByCode] Database unavailable");
+          return { success: false as const, error: "Database unavailable" };
+        }
         const authUserId = getSyncUserId(ctx.user);
+        console.log("[sync.addFriendByCode] Starting for user:", authUserId);
 
         // Look up the friend by their ghostCode (stored in users.friendCode)
         const friendRows = await db
@@ -576,14 +580,17 @@ export const syncRouter = router({
           .limit(1);
 
         if (friendRows.length === 0) {
+          console.warn("[sync.addFriendByCode] No user found with code:", input.code.toUpperCase());
           return { success: false as const, error: "No user found with that Ghost Code" };
         }
 
         const friend = friendRows[0];
         // friendUserId is the canonical String(user.id) used across all sync tables
         const friendUserId = String(friend.id);
+        console.log("[sync.addFriendByCode] Found friend:", { friendUserId, displayName: friend.displayName });
 
         if (friendUserId === authUserId) {
+          console.warn("[sync.addFriendByCode] User tried to add themselves");
           return { success: false as const, error: "You cannot add yourself" };
         }
 
@@ -595,14 +602,16 @@ export const syncRouter = router({
           .limit(1);
 
         if (existing.length > 0) {
+          console.log("[sync.addFriendByCode] Already friends");
           return { success: false as const, error: "Already in your Ghost Crew" };
         }
 
         // Insert BOTH rows atomically so the friendship is mutual:
         //   Row 1: ghost2 (requester) → ghost1 (target)
         //   Row 2: ghost1 (target)    → ghost2 (requester)  [auto-reverse]
-        // ON DUPLICATE KEY UPDATE is a no-op (set addedAt = addedAt) so
-        // pre-existing rows are silently skipped — no crash on duplicates.
+        // The unique constraint on (userId, friendId) ensures ON DUPLICATE KEY UPDATE
+        // can properly detect and skip duplicates without crashing.
+        console.log("[sync.addFriendByCode] Inserting mutual friendship rows");
         await db.transaction(async (tx) => {
           await tx
             .insert(ghostCrewFriends)
@@ -614,6 +623,7 @@ export const syncRouter = router({
             .values({ userId: friendUserId, friendId: authUserId, addedAt: new Date() })
             .onDuplicateKeyUpdate({ set: { addedAt: sql`${ghostCrewFriends.addedAt}` } });
         });
+        console.log("[sync.addFriendByCode] Transaction completed successfully");
 
         // Get friend's live progress
         const progressRows = await db
@@ -622,6 +632,7 @@ export const syncRouter = router({
           .where(eq(userProgress.userId, friendUserId))
           .limit(1);
 
+        console.log("[sync.addFriendByCode] Returning success with friend data");
         return {
           success: true as const,
           friend: {
@@ -633,7 +644,11 @@ export const syncRouter = router({
           },
         };
       } catch (error) {
-        console.error("[sync.addFriendByCode] Error:", error);
+        console.error("[sync.addFriendByCode] Full error object:", {
+          message: error instanceof Error ? error.message : String(error),
+          stack: error instanceof Error ? error.stack : undefined,
+          error,
+        });
         return { success: false as const, error: "Failed to add friend" };
       }
     }),
