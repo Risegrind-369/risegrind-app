@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE `aiUsageLogs` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` varchar(255) NOT NULL,\n\t`feature` varchar(50) NOT NULL,\n\t`model` varchar(50) NOT NULL,\n\t`inputTokens` int NOT NULL DEFAULT 0,\n\t`outputTokens` int NOT NULL DEFAULT 0,\n\t`estimatedCostUsd` decimal(8,6) NOT NULL,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `aiUsageLogs_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `userProgress` ADD `mentorMessagesUsed` int DEFAULT 0 NOT NULL;\nALTER TABLE `userProgress` ADD `mentorMessagesResetAt` timestamp DEFAULT (now()) NOT NULL;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute CREATE TABLE `aiUsageLogs` (\n\t`id` int AUTO_INCREMENT NOT NULL,\n\t`userId` varchar(255) NOT NULL,\n\t`feature` varchar(50) NOT NULL,\n\t`model` varchar(50) NOT NULL,\n\t`inputTokens` int NOT NULL DEFAULT 0,\n\t`outputTokens` int NOT NULL DEFAULT 0,\n\t`estimatedCostUsd` decimal(8,6) NOT NULL,\n\t`createdAt` timestamp NOT NULL DEFAULT (now()),\n\tCONSTRAINT `aiUsageLogs_id` PRIMARY KEY(`id`)\n);\nALTER TABLE `userProgress` ADD `mentorMessagesUsed` int DEFAULT 0 NOT NULL;\nALTER TABLE `userProgress` ADD `mentorMessagesResetAt` timestamp DEFAULT (now()) NOT NULL;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 3221
+}

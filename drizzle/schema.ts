@@ -634,6 +634,9 @@ export const userProgress = mysqlTable("userProgress", {
   lastActiveDate: varchar("lastActiveDate", { length: 10 }), // "YYYY-MM-DD" or null
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  // Milestone 3: Mentor chat rate limiting
+  mentorMessagesUsed: int("mentorMessagesUsed").default(0).notNull(),
+  mentorMessagesResetAt: timestamp("mentorMessagesResetAt").defaultNow().notNull(),
 });
 export type UserProgress = typeof userProgress.$inferSelect;
 export type InsertUserProgress = typeof userProgress.$inferInsert;
@@ -692,4 +695,21 @@ export const userSideQuests = mysqlTable(
 );
 export type UserSideQuest = typeof userSideQuests.$inferSelect;
 export type InsertUserSideQuest = typeof userSideQuests.$inferInsert;
+
+/**
+ * AI usage logs — tracks every Anthropic API call for cost monitoring.
+ * One row per API call, keyed by userId + feature + timestamp.
+ */
+export const aiUsageLogs = mysqlTable("aiUsageLogs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: varchar("userId", { length: 255 }).notNull(),
+  feature: varchar("feature", { length: 50 }).notNull(),
+  model: varchar("model", { length: 50 }).notNull(),
+  inputTokens: int("inputTokens").default(0).notNull(),
+  outputTokens: int("outputTokens").default(0).notNull(),
+  estimatedCostUsd: decimal("estimatedCostUsd", { precision: 8, scale: 6 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+export type AiUsageLog = typeof aiUsageLogs.$inferSelect;
+export type InsertAiUsageLog = typeof aiUsageLogs.$inferInsert;
 
