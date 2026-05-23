@@ -28,9 +28,18 @@ export const API_BASE_URL = env.apiBaseUrl;
  * Get the API base URL, deriving from current hostname if not set.
  * Metro runs on 8081, API server runs on 3000.
  * URL pattern: https://PORT-sandboxid.region.domain
+ *
+ * IMPORTANT: On native (Android/iOS), Expo bakes EXPO_PUBLIC_* env vars into the bundle
+ * at BUILD TIME. If the env var was not set when the APK was compiled, it is empty.
+ * We therefore also hardcode the production URL as a native fallback.
  */
+
+// Production API URL — hardcoded as the native fallback so it survives even if
+// the EXPO_PUBLIC_API_BASE_URL env var was not baked into the APK at build time.
+const PRODUCTION_API_URL = "https://habitapp-fx74fzcv.manus.space";
+
 export function getApiBaseUrl(): string {
-  // If API_BASE_URL is set, use it
+  // If API_BASE_URL is set (env var baked into bundle at build time), use it
   if (API_BASE_URL) {
     return API_BASE_URL.replace(/\/$/, "");
   }
@@ -45,7 +54,13 @@ export function getApiBaseUrl(): string {
     }
   }
 
-  // Fallback to empty (will use relative URL)
+  // On native: use hardcoded production URL as guaranteed fallback.
+  // This ensures the APK always reaches the server even if the env var was empty at build time.
+  if (ReactNative.Platform.OS !== "web") {
+    return PRODUCTION_API_URL;
+  }
+
+  // Web fallback: relative URL
   return "";
 }
 

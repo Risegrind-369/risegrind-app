@@ -18,6 +18,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useApp, getRank, type GhostFriend } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
 import { pullAllFromServer } from "@/lib/sync";
+import { getApiBaseUrl } from "@/constants/oauth";
 import { useTranslation } from "react-i18next";
 
 // ─── Rank medal helper ────────────────────────────────────────────────────────
@@ -149,6 +150,11 @@ export default function CommunityScreen() {
       Alert.alert("👻", "Already in your Ghost Crew!");
       return;
     }
+
+    // DEBUG: Show the actual API URL being used so we can verify it on device
+    const debugUrl = getApiBaseUrl();
+    console.log("[DEBUG] API URL:", debugUrl);
+    Alert.alert("Debug", `API URL: ${debugUrl || "(empty — will fail)"}`);
 
     setAdding(true);
     try {

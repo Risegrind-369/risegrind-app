@@ -217,12 +217,35 @@ export async function completeLogout(
       // Clear @risegrind_synced flag so next login re-syncs from server
       await AsyncStorage.removeItem("@risegrind_synced");
       
-      // Only clear user data if NOT preserving it (i.e., reset all data case)
+      // Only clear ALL user data if NOT preserving it (i.e., reset all data case)
       if (!preserveUserData) {
-        console.log("[Auth] Clearing user data (habits, XP, journal, etc.) — reset all data");
+        console.log("[Auth] Clearing ALL user data (habits, XP, journal, etc.) — reset all data");
         await AsyncStorage.removeItem("@risegrind_state");
       } else {
-        console.log("[Auth] Preserving user data in AsyncStorage — logout only");
+        // LOGOUT CASE: Preserve habits/XP/journal/moods but CLEAR isOnboarded.
+        // This is critical: OnboardingGuard reads state.isOnboarded from AsyncStorage
+        // on next app launch. If isOnboarded stays true, the guard redirects to Home
+        // instead of onboarding, even though the user is logged out.
+        console.log("[Auth] Logout: preserving user data but clearing isOnboarded from AsyncStorage");
+        try {
+          const raw = await AsyncStorage.getItem("@risegrind_state");
+          if (raw) {
+            const saved = JSON.parse(raw);
+            // Clear auth-related fields, keep habits/XP/journal/moods
+            saved.isOnboarded = false;
+            saved.isLoggingOut = false;
+            // Clear user identity fields that belong to the logged-out account
+            saved.userName = "";
+            saved.userProfile = null;
+            saved.isPremium = false;
+            await AsyncStorage.setItem("@risegrind_state", JSON.stringify(saved));
+            console.log("[Auth] isOnboarded cleared in persisted state — OnboardingGuard will redirect to onboarding");
+          }
+        } catch (patchError) {
+          console.warn("[Auth] Could not patch persisted state (non-fatal):", patchError);
+          // If patching fails, remove the whole state so isOnboarded defaults to false
+          await AsyncStorage.removeItem("@risegrind_state");
+        }
       }
       console.log("[Auth] AsyncStorage cleared (preserveUserData=" + preserveUserData + ")");
     } catch (storageError) {
