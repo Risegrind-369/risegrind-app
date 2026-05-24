@@ -4,6 +4,8 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router } from "./_core/trpc";
 import { invokeLLM } from "./_core/llm";
+import { anthropic, MODELS, MAX_TOKENS } from './lib/anthropic-client';
+import { logAiUsage } from './lib/ai-logger';
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
 import { getSearchContextForEntry } from "./web-search";
@@ -74,30 +76,37 @@ Their goal with RiseGrind: "${input.goalAnswer}"
 
 Generate a short, deeply personal message that acknowledges their feelings and inspires them.`;
 
+        const localizedFallback = input.language === "fr"
+          ? `Je te vois, ${input.name}. Tu es ici parce que tu sais que tu peux être plus. Avec RiseGrind, tu le seras.`
+          : input.language === "pt"
+          ? `Eu te vejo, ${input.name}. Você está aqui porque sabe que pode ser mais. Com o RiseGrind, você será.`
+          : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`;
+
         try {
-          const response = await invokeLLM({
-            messages: [
-              { role: "system" as const, content: systemPrompt },
-              { role: "user" as const, content: userMessage },
-            ],
+          const response = await anthropic.messages.create({
+            model: MODELS.HAIKU,
+            max_tokens: MAX_TOKENS.WELCOME_MESSAGE,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }],
           });
-          const content = response?.choices?.[0]?.message?.content ?? "";
-          const localizedFallback = input.language === "fr"
-            ? `Je te vois, ${input.name}. Tu es ici parce que tu sais que tu peux être plus. Avec RiseGrind, tu le seras.`
-            : input.language === "pt"
-            ? `Eu te vejo, ${input.name}. Você está aqui porque sabe que pode ser mais. Com o RiseGrind, você será.`
-            : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`;
+
+          const content = response.content[0].type === 'text' ? response.content[0].text : '';
+
+          // Fire-and-forget usage log (non-blocking)
+          logAiUsage(
+            'onboarding',
+            'welcome_message',
+            MODELS.HAIKU,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+          ).catch(() => {});
+
           return {
-            message: typeof content === "string" && content.length > 0 ? content : localizedFallback,
+            message: content.length > 0 ? content : localizedFallback,
           };
         } catch (e) {
-          console.error("Onboarding AI error:", e);
-          const localizedFallback2 = input.language === "fr"
-            ? `Je te vois, ${input.name}. Tu es ici parce que tu sais que tu peux être plus. Avec RiseGrind, tu le seras.`
-            : input.language === "pt"
-            ? `Eu te vejo, ${input.name}. Você está aqui porque sabe que pode ser mais. Com o RiseGrind, você será.`
-            : `I see you, ${input.name}. You're here because you know you can be more. With RiseGrind, you will be.`;
-          return { message: localizedFallback2 };
+          console.error('[Anthropic] generatePersonalMessage error:', e);
+          return { message: localizedFallback };
         }
       }),
 
@@ -198,14 +207,25 @@ Generate their personalized morning routine and journal prompts.`;
             }
           }
 
-          const response = await invokeLLM({
-            messages: [
-              { role: "system" as const, content: systemPrompt },
-              { role: "user" as const, content: userMessage },
-            ],
+          const response = await anthropic.messages.create({
+            model: MODELS.SONNET,
+            max_tokens: MAX_TOKENS.ROUTINE_GENERATION,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }],
           });
-          const content = response?.choices?.[0]?.message?.content ?? "";
-          if (typeof content === "string" && content.length > 0) {
+
+          const content = response.content[0].type === 'text' ? response.content[0].text : '';
+
+          // Fire-and-forget usage log (non-blocking)
+          logAiUsage(
+            ctx.user?.id?.toString() ?? 'onboarding',
+            'routine_generation',
+            MODELS.SONNET,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+          ).catch(() => {});
+
+          if (content.length > 0) {
             // Extract JSON from response (handle markdown code blocks)
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
@@ -215,7 +235,7 @@ Generate their personalized morning routine and journal prompts.`;
           }
           return { ...fallbackRoutine, createdAt: Date.now() };
         } catch (e) {
-          console.error("Routine generation error:", e);
+          console.error('[Anthropic] generateRoutine error:', e);
           return { ...fallbackRoutine, createdAt: Date.now() };
         }
       }),
@@ -256,16 +276,27 @@ Generate their personalized morning routine and journal prompts.`;
         const systemPrompt = `You are a Ghost Mode AI mentor — an elite discipline coach who understands the human mind deeply. ${langInstruction}\n\nYour job:\n1. Acknowledge what they shared with empathy and precision\n2. Identify a key insight or pattern from their words\n3. Give ONE specific, actionable next step\n4. End with a powerful 1-sentence motivational push in Ghost Mode style\n\nRules:\n- Be concise: 3-5 sentences total\n- Be intelligent: reference specific things they wrote\n- Zero generic advice. Be specific to THEIR situation.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- Never be preachy. Be like a coach who respects the athlete's time.\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
         const userMessage = `My journal entry today:\n"${input.entryContent}"\n\nMy mood today: ${moodDesc}\nMy current streak: ${input.streak} days\n${recentContext}${searchContext}\n\nGive me your honest, sharp analysis and one clear action step.`;
         try {
-          const response = await invokeLLM({
-            messages: [
-              { role: "system" as const, content: systemPrompt },
-              { role: "user" as const, content: userMessage },
-            ],
+          const response = await anthropic.messages.create({
+            model: MODELS.HAIKU,
+            max_tokens: MAX_TOKENS.JOURNAL_ANALYSIS,
+            system: systemPrompt,
+            messages: [{ role: "user", content: userMessage }],
           });
-          const content = response?.choices?.[0]?.message?.content ?? "";
-          return { reply: typeof content === "string" && content.length > 0 ? content : null };
+
+          const content = response.content[0].type === 'text' ? response.content[0].text : '';
+
+          // Fire-and-forget usage log (non-blocking)
+          logAiUsage(
+            'journal',
+            'journal_analysis',
+            MODELS.HAIKU,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+          ).catch(() => {});
+
+          return { reply: content.length > 0 ? content : null };
         } catch (e) {
-          console.error("Journal AI error:", e);
+          console.error('[Anthropic] analyzeEntry error:', e);
           return { reply: null };
         }
       }),
@@ -333,15 +364,24 @@ User data:
 Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestions": ["...", "...", "..."]}`;
 
         try {
-          const response = await invokeLLM({
-            messages: [
-              { role: "system", content: `You are a Ghost Mode discipline coach that responds only with valid JSON. ${langInstruction}` },
-              { role: "user", content: prompt },
-            ],
+          const response = await anthropic.messages.create({
+            model: MODELS.SONNET,
+            max_tokens: MAX_TOKENS.WEEKLY_INSIGHTS,
+            system: `You are a Ghost Mode discipline coach that responds only with valid JSON. ${langInstruction}`,
+            messages: [{ role: "user", content: prompt }],
           });
 
-          const rawContent = response?.choices?.[0]?.message?.content ?? "";
-          const text = typeof rawContent === "string" ? rawContent : "";
+          const text = response.content[0].type === 'text' ? response.content[0].text : '';
+
+          // Fire-and-forget usage log (non-blocking)
+          logAiUsage(
+            'insights',
+            'weekly_insights',
+            MODELS.SONNET,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+          ).catch(() => {});
+
           const jsonMatch = text.match(/\{[\s\S]*\}/);
           if (jsonMatch) {
             const parsed = JSON.parse(jsonMatch[0]);
@@ -351,7 +391,7 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
             };
           }
         } catch (e) {
-          console.error("LLM error:", e);
+          console.error('[Anthropic] generateInsights error:', e);
         }
 
         // Fallback — localized
@@ -434,15 +474,31 @@ Respond ONLY with valid JSON in this exact format: {"insight": "...", "suggestio
 
         try {
           const messages = [
-            { role: "system" as const, content: systemPrompt },
             ...input.history.map((h) => ({ role: h.role as "user" | "assistant", content: h.content })),
             { role: "user" as const, content: input.message + searchContext },
           ];
-          const response = await invokeLLM({ messages });
-          const content = response?.choices?.[0]?.message?.content ?? "";
-          return { reply: typeof content === "string" ? content : "Keep going. You're on the right path." };
+
+          const response = await anthropic.messages.create({
+            model: MODELS.SONNET,
+            max_tokens: MAX_TOKENS.MENTOR_CHAT,
+            system: systemPrompt,
+            messages,
+          });
+
+          const content = response.content[0].type === 'text' ? response.content[0].text : '';
+
+          // Fire-and-forget usage log (non-blocking)
+          logAiUsage(
+            ctx.user?.id?.toString() ?? 'mentor',
+            'mentor_chat',
+            MODELS.SONNET,
+            response.usage.input_tokens,
+            response.usage.output_tokens,
+          ).catch(() => {});
+
+          return { reply: content.length > 0 ? content : "Keep going. You're on the right path." };
         } catch (e) {
-          console.error("AI chat error:", e);
+          console.error('[Anthropic] chat error:', e);
           return { reply: input.language === "fr" ? "Connexion au mentor impossible. Réessaie." : input.language === "pt" ? "Não foi possível conectar ao mentor. Tente novamente." : "Couldn't reach the mentor. Try again." };
         }
       }),
