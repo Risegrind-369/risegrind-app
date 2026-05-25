@@ -4,6 +4,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
+import { PaywallModal } from '@/app/onboarding/paywall-modal';
 
 interface ChatMessage {
   id: string;
@@ -19,6 +20,8 @@ export default function MentorChatScreen() {
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [mentorPersonality, setMentorPersonality] = useState('supportive');
+  const [showPaywall, setShowPaywall] = useState(false);
+  const [userMessageCount, setUserMessageCount] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const personalities = [
@@ -53,6 +56,12 @@ export default function MentorChatScreen() {
   const sendMessage = async () => {
     if (!inputText.trim()) return;
 
+    // Check if user has hit 5-message limit
+    if (userMessageCount >= 5) {
+      setShowPaywall(true);
+      return;
+    }
+
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       role: 'user',
@@ -61,6 +70,7 @@ export default function MentorChatScreen() {
     };
 
     setMessages(prev => [...prev, userMessage]);
+    setUserMessageCount(prev => prev + 1);
     setInputText('');
     setLoading(true);
 
@@ -95,7 +105,8 @@ export default function MentorChatScreen() {
   };
 
   return (
-    <ScreenContainer className="flex-1 bg-background">
+    <>
+      <ScreenContainer className="flex-1 bg-background">
       <View className="flex-1 flex-col">
         {/* Header */}
         <View className="px-4 py-4 border-b border-border">
@@ -192,16 +203,25 @@ export default function MentorChatScreen() {
           )}
         </ScrollView>
 
+        {/* Message Limit Indicator */}
+        {userMessageCount > 0 && (
+          <View className="px-4 py-2 bg-surface border-t border-border">
+            <Text className="text-xs text-muted text-center">
+              {userMessageCount}/5 free messages this month
+            </Text>
+          </View>
+        )}
+
         {/* Input Area */}
         <View className="px-4 py-4 border-t border-border bg-background">
           <View className="flex-row items-center gap-2">
             <TextInput
               value={inputText}
               onChangeText={setInputText}
-              placeholder="Ask your mentor..."
+              placeholder={userMessageCount >= 5 ? "Upgrade to continue" : "Ask your mentor..."}
               placeholderTextColor={colors.muted}
               className="flex-1 px-4 py-3 rounded-full bg-surface text-foreground border border-border"
-              editable={!loading}
+              editable={!loading && userMessageCount < 5}
             />
             <TouchableOpacity
               onPress={sendMessage}
@@ -217,5 +237,7 @@ export default function MentorChatScreen() {
         </View>
       </View>
     </ScreenContainer>
+    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" />
+    </>
   );
 }

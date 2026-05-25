@@ -4,7 +4,7 @@
  * Shows "Enjoy 3 full days of RiseGrind completely free – no card required right now."
  * Lists all premium features with icons.
  */
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -19,6 +19,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
+import { PaywallModal } from "./paywall-modal";
 
 const ICON_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663533327081/FX74FzCVEe6tC4xxrVKhws/risegrind-icon-v2-fGbAHYbpaF4huMRJsUSWRR.png";
@@ -36,14 +37,16 @@ export default function Step6TrialRevealScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/onboarding/setup" as never);
+    setShowPaywall(true);
   };
 
   return (
-    <ScreenContainer containerClassName="bg-background">
+    <>
+      <ScreenContainer containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Icon */}
@@ -111,6 +114,8 @@ export default function Step6TrialRevealScreen() {
         </View>
       </ScrollView>
     </ScreenContainer>
+    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="onboarding" />
+    </>
   );
 }
 
