@@ -36,6 +36,7 @@ export const API_BASE_URL = env.apiBaseUrl;
 
 // Production API URL — hardcoded as the native fallback so it survives even if
 // the EXPO_PUBLIC_API_BASE_URL env var was not baked into the APK at build time.
+// Production API URL — can be overridden via EXPO_PUBLIC_API_BASE_URL env var
 const PRODUCTION_API_URL = "https://habitapp-fx74fzcv.manus.space";
 
 export function getApiBaseUrl(): string {

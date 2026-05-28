@@ -12,7 +12,7 @@ import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
-import { useAuth } from "@/hooks/use-auth";
+import { useSupabaseAuth } from "@/lib/supabase/auth-context";
 import { trpc } from "@/lib/trpc";
 import * as Haptics from "expo-haptics";
 
@@ -20,7 +20,7 @@ export default function DeleteAccountScreen() {
   const colors = useColors();
   const { t } = useTranslation();
   const router = useRouter();
-  const { user } = useAuth();
+  const { user } = useSupabaseAuth();
   const { dispatch } = useApp();
   const [isDeleting, setIsDeleting] = useState(false);
   const [step, setStep] = useState<"warning" | "confirm" | "deleted">("warning");

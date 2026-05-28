@@ -202,13 +202,11 @@ const normalizeToolChoice = (
 };
 
 const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
+  "https://api.anthropic.com/v1/messages"; // Using Anthropic API directly
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  if (!ENV.anthropicApiKey) {
+    throw new Error("ANTHROPIC_API_KEY is not configured");
   }
 };
 
@@ -300,7 +298,8 @@ export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
     method: "POST",
     headers: {
       "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
+      "x-api-key": ENV.anthropicApiKey!,
+      "anthropic-version": "2023-06-01",
     },
     body: JSON.stringify(payload),
   });

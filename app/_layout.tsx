@@ -43,6 +43,7 @@ import { initManusRuntime, subscribeSafeAreaInsets } from "@/lib/_core/manus-run
 import { useSessionRestoration } from "@/lib/use-session-restoration";
 import * as Linking from "expo-linking";
 import { supabase } from "@/lib/supabase/client";
+import { SupabaseAuthProvider } from "@/lib/supabase/auth-context";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -289,6 +290,7 @@ export default function RootLayout() {
       <trpc.Provider client={trpcClient} queryClient={queryClient}>
         <QueryClientProvider client={queryClient}>
           <LanguageProvider>
+            <SupabaseAuthProvider>
           {/* RevenueCat MUST be initialized before Superwall */}
           <RevenueCatProvider>
             {/* Superwall uses RevenueCat as its PurchaseController */}
@@ -314,6 +316,7 @@ export default function RootLayout() {
               </AppProvider>
             </SuperwallProvider>
           </RevenueCatProvider>
+            </SupabaseAuthProvider>
           </LanguageProvider>
         </QueryClientProvider>
       </trpc.Provider>
