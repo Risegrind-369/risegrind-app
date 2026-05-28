@@ -34,10 +34,9 @@ export const API_BASE_URL = env.apiBaseUrl;
  * We therefore also hardcode the production URL as a native fallback.
  */
 
-// Production API URL — hardcoded as the native fallback so it survives even if
-// the EXPO_PUBLIC_API_BASE_URL env var was not baked into the APK at build time.
-// Production API URL — can be overridden via EXPO_PUBLIC_API_BASE_URL env var
-const PRODUCTION_API_URL = "https://habitapp-fx74fzcv.manus.space";
+// Production API URL — Railway backend
+// Can be overridden via EXPO_PUBLIC_API_BASE_URL env var at build time
+const PRODUCTION_API_URL = "https://risegrind-backend-production.up.railway.app";
 
 export function getApiBaseUrl(): string {
   // If API_BASE_URL is set (env var baked into bundle at build time), use it
