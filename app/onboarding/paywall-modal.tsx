@@ -101,7 +101,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
       );
 
       if (!selectedPackage) {
-        Alert.alert('Error', 'Package not found. Please try again.');
+        Alert.alert('Payment coming soon', 'Payment coming soon. Stay tuned 🔒');
         setLoading(false);
         return;
       }
@@ -120,7 +120,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
         return;
       }
       console.error('[Paywall] Purchase error:', error);
-      Alert.alert('Purchase Failed', 'Please try again or contact support.');
+      Alert.alert('Payment coming soon', 'Payment coming soon. Stay tuned 🔒');
     } finally {
       setLoading(false);
     }
@@ -169,17 +169,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Close Button */}
-          <View className="flex-row justify-end p-4">
-            <Pressable
-              onPress={handleClose}
-              style={({ pressed }) => [
-                { opacity: pressed ? 0.5 : 0.8 },
-              ]}
-            >
-              <Text className="text-2xl text-white">✕</Text>
-            </Pressable>
-          </View>
+          {/* No Close Button - users must select a plan */}
 
           {/* Title */}
           <View className="px-6 py-4">
@@ -188,68 +178,27 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
             </Text>
           </View>
 
-          {/* Timeline Visual */}
-          <View className="px-6 py-8">
-            <View className="gap-6">
-              {/* Timeline Item 1 */}
-              <View className="flex-row gap-4">
-                <View className="items-center">
-                  <View className="w-6 h-6 rounded-full bg-purple-500 items-center justify-center">
-                    <Text className="text-white text-sm font-bold">✓</Text>
-                  </View>
-                  <View className="w-0.5 h-12 bg-purple-500 mt-2" />
-                </View>
-                <View className="flex-1 justify-center">
-                  <Text className="text-lg font-semibold text-white">Today</Text>
-                  <Text className="text-sm text-gray-400">Full access starts</Text>
-                </View>
-              </View>
+          {/* Removed timeline - direct paywall, no trial */}
 
-              {/* Timeline Item 2 */}
-              <View className="flex-row gap-4">
-                <View className="items-center">
-                  <View className="w-6 h-6 rounded-full bg-purple-500 items-center justify-center">
-                    <Text className="text-white text-sm font-bold">✓</Text>
-                  </View>
-                  <View className="w-0.5 h-12 bg-purple-500 mt-2" />
-                </View>
-                <View className="flex-1 justify-center">
-                  <Text className="text-lg font-semibold text-white">Day 5</Text>
-                  <Text className="text-sm text-gray-400">
-                    We'll remind you before trial ends
-                  </Text>
-                </View>
-              </View>
-
-              {/* Timeline Item 3 */}
-              <View className="flex-row gap-4">
-                <View className="items-center">
-                  <View className="w-6 h-6 rounded-full bg-purple-500 items-center justify-center">
-                    <Text className="text-white text-sm font-bold">✓</Text>
-                  </View>
-                </View>
-                <View className="flex-1 justify-center">
-                  <Text className="text-lg font-semibold text-white">Day 7</Text>
-                  <Text className="text-sm text-gray-400">
-                    Subscription begins. Cancel anytime.
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
-
-          {/* Feature Checklist */}
+          {/* Feature Checklist - 8 features */}
           <View className="px-6 py-6 bg-gray-900 rounded-2xl mx-6 mb-8">
-            <View className="gap-4">
+            <Text className="text-white font-bold text-lg mb-4">WHAT YOU GET:</Text>
+            <View className="gap-3">
               {[
-                'Unlimited AI Mentor (Claude-powered)',
-                'Ghost Crew — unlimited friends',
-                'Hard Mode + custom routines',
-                'Advanced stats & XP boosters',
+                { text: 'Unlimited AI mentor conversations', icon: '🔒' },
+                { text: 'Claude-powered mentor (the most advanced AI)', icon: '🟠', isOrange: true },
+                { text: 'XP system + level progression', icon: '⚡' },
+                { text: 'Ghost Crew leaderboard', icon: '👻' },
+                { text: 'Unlimited habit streaks', icon: '🔥' },
+                { text: 'Weekly performance insights', icon: '📊' },
+                { text: 'AI-powered journal analysis', icon: '📓' },
+                { text: 'Side Quests + achievements', icon: '🏆' },
               ].map((feature, idx) => (
-                <View key={idx} className="flex-row gap-3 items-center">
-                  <Text className="text-purple-500 text-lg">✓</Text>
-                  <Text className="text-white text-base flex-1">{feature}</Text>
+                <View key={idx} className="flex-row gap-3 items-flex-start">
+                  <Text className="text-lg mt-0.5">{feature.icon}</Text>
+                  <Text className={cn('text-base flex-1', feature.isOrange ? 'text-orange-500 font-semibold' : 'text-white')}>
+                    {feature.text}
+                  </Text>
                 </View>
               ))}
             </View>
@@ -327,7 +276,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                   <ActivityIndicator color="white" />
                 ) : (
                   <Text className="text-white text-lg font-bold">
-                    Start 7-Day Free Trial
+                    Start Subscription
                   </Text>
                 )}
               </View>
@@ -335,8 +284,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
 
             {/* Compliance Text */}
             <Text className="text-xs text-gray-500 text-center leading-relaxed">
-              7 days free, then $59.99/year. Auto-renews unless cancelled 24
-              hours before period ends.
+              $59.99/year or $9.99/week. Auto-renews unless cancelled 24 hours before period ends.
             </Text>
 
             {/* Links */}

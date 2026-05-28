@@ -61,12 +61,9 @@ export default function VerifyEmailScreen() {
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
           console.log("[VerifyEmail] Email verified! Proceeding to next step.");
 
-          // After verification, continue to next onboarding step
+          // After verification, redirect to login screen
           setTimeout(() => {
-            router.push({
-              pathname: "/onboarding/step2-empathy",
-              params: { name: params.name, age: params.age },
-            } as never);
+            router.replace("/");
           }, 1500);
         }
       } catch (error) {

@@ -30,6 +30,11 @@ export default function Step2EmpathyScreen() {
   const [answer, setAnswer] = useState("");
   const isValid = answer.trim().length > 20; // At least 20 chars for meaningful response
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -54,6 +59,11 @@ export default function Step2EmpathyScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* Back Button */}
+          <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
+            <Text style={{ fontSize: 24 }}>← Back</Text>
+          </Pressable>
+
           {/* Progress Indicator */}
           <Animated.View
             entering={FadeInDown.delay(100)}
