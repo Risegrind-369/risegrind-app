@@ -81,10 +81,10 @@ export default function CreateAccountScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      // Continue to email verification step
+      // Email verification disabled - go directly to onboarding
       router.push({
-        pathname: "/onboarding/verify-email",
-        params: { name: params.name, age: params.age, email: email.trim() },
+        pathname: "/onboarding/step2-empathy",
+        params: { name: params.name, age: params.age },
       } as never);
     } catch (err) {
       const message = err instanceof Error ? err.message : "An error occurred";
