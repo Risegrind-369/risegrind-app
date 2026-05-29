@@ -23,9 +23,8 @@ import { Platform } from 'react-native';
 import Constants, { ExecutionEnvironment } from 'expo-constants';
 
 // ─── Environment Keys ────────────────────────────────────────────────────────
-// iOS key starts with 'appl_', Android key starts with 'goog_'
-const RC_API_KEY_IOS = process.env.EXPO_PUBLIC_RC_API_KEY_IOS ?? '';
-const RC_API_KEY_ANDROID = process.env.EXPO_PUBLIC_RC_API_KEY_ANDROID ?? '';
+// Single unified key from RevenueCat (starts with 'appl_' for iOS)
+const RC_API_KEY = process.env.EXPO_PUBLIC_REVENUECAT_API_KEY ?? '';
 
 // ─── Guard: only run native SDK in dev/production builds, not Expo Go or web ─
 const IS_NATIVE_BUILD =
@@ -89,8 +88,8 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       // Enable verbose logging for debugging purchase flows
       await Purchases.setLogLevel(LOG_LEVEL.VERBOSE);
 
-      // Select the correct API key based on platform
-      const apiKey = Platform.OS === 'ios' ? RC_API_KEY_IOS : RC_API_KEY_ANDROID;
+      // Use the unified RevenueCat API key
+      const apiKey = RC_API_KEY;
 
       if (!apiKey) {
         console.warn(
