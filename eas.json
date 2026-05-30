@@ -7,7 +7,7 @@
       "developmentClient": true,
       "distribution": "internal",
       "ios": {
-        "resourceClass": "m1"
+        "resourceClass": "m1-medium"
       },
       "android": {
         "resourceClass": "medium"
@@ -16,7 +16,7 @@
     "preview": {
       "distribution": "internal",
       "ios": {
-        "resourceClass": "m1"
+        "resourceClass": "m1-medium"
       },
       "android": {
         "resourceClass": "medium"
@@ -25,7 +25,7 @@
     "production": {
       "distribution": "store",
       "ios": {
-        "resourceClass": "m1"
+        "resourceClass": "m1-medium"
       },
       "android": {
         "resourceClass": "large"
