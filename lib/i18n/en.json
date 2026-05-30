@@ -94,6 +94,22 @@
       "feature6": "Voice journaling with AI response playback",
       "startTrial": "Start My Free Trial",
       "legal": "No card required. Cancel anytime."
+    },
+    "step7": {
+      "title": "Stay Motivated Daily",
+      "subtitle": "Get daily reminders to complete your routine, journal, and celebrate your progress.",
+      "benefit1": "Daily motivation at your chosen time",
+      "benefit2": "Gentle reminders to journal & reflect",
+      "benefit3": "Weekly insights on your progress",
+      "benefit4": "Celebrate streaks & rank-ups",
+      "quote": "Who do you want to become? Daily reminders keep you focused on becoming that version of yourself.",
+      "enableNotifications": "Enable Notifications",
+      "skipForNow": "Skip for now",
+      "requesting": "Requesting...",
+      "enabled": "✓ Notifications Enabled",
+      "permissionGranted": "Notifications enabled! You'll receive daily motivation at 7:00 AM.",
+      "permissionDenied": "Notifications disabled. You can enable them later in Settings.",
+      "progress": "Step 7 of 8"
     }
   },
   "paywall": {
@@ -541,5 +557,11 @@
   },
   "journal": {
     "today": "Today"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "reminderTitle": "Time to rise, Ghost 👻",
+    "reminderBody": "Your morning routine awaits. Let's build discipline today.",
+    "permissionDenied": "Notifications disabled. You can enable them later in Settings."
   }
 }

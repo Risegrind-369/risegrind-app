@@ -953,3 +953,48 @@
 - [ ] Implement user feedback loop
 - [ ] Plan Phase 2 improvements based on feedback
 - [ ] Create roadmap for future updates
+
+
+## Sprint 21 - Daily Push Notifications & Onboarding Permissions
+
+### Phase 1: Notification Infrastructure
+- [x] Install expo-notifications package (already in dependencies)
+- [x] Create lib/motivational-messages.ts with message templates and generation
+- [x] Update lib/notifications.ts to support motivational context
+- [x] Add notification permission request logic (already in requestNotificationPermission)
+
+### Phase 2: Onboarding Permission Request
+- [x] Add notification permission screen to onboarding (step7-notifications.tsx)
+- [x] Show benefits of notifications: 4 benefit cards with icons
+- [x] Display Apple's native notification permission prompt via requestNotificationPermission
+- [x] Add skip option with gentle nudge
+- [x] Register step7-notifications in onboarding stack
+- [x] Update step6-trial-reveal to navigate to step7-notifications
+- [x] Create step8-paywall.tsx as final onboarding step
+
+### Phase 3: Motivational Message Generation
+- [x] Create motivational message templates (6 gentle, 6 tough love, 6 data-driven, 6 challenge)
+- [x] Support 4 motivation styles: gentle, tough_love, data_driven, challenge
+- [x] Include user's goals/aspirations from onboarding profile
+- [x] Add "Who do you want to become?" quote in notification screen
+- [x] Generate messages about: morning routine, journaling, stats analysis
+- [x] Add journal prompts and stats reminders
+- [x] Implement daily rotation: motivation -> journal -> stats
+
+### Phase 4: Daily Notification Scheduling
+- [x] Integrate with existing scheduleDailyReminder function
+- [x] Support motivational context for personalized messages
+- [x] Schedule daily notification at user's preferred time (default 7am)
+- [x] Add notification badge support
+- [x] Persist notification settings via AsyncStorage
+
+### Phase 5: i18n & Polish
+- [x] Add step7 notification keys to en.json
+- [x] Add notifications section to en.json
+- [ ] Add step7 keys to fr.json (French translations)
+- [ ] Add step7 keys to pt.json (Portuguese translations)
+- [ ] Test notification permission flow on iOS simulator
+- [ ] Test notification delivery at scheduled time
+- [ ] Verify TypeScript: 0 errors
+- [ ] Save checkpoint
+

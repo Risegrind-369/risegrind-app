@@ -44,6 +44,10 @@ export default function OnboardingLayout() {
       <Stack.Screen name="step6-trial-reveal" />
       {/* Trial reveal (new path) */}
       <Stack.Screen name="trial-reveal" />
+      {/* Notification permissions */}
+      <Stack.Screen name="step7-notifications" />
+      {/* Final paywall before entering app */}
+      <Stack.Screen name="step8-paywall" />
       {/* Paywall */}
       <Stack.Screen name="paywall" />
       {/* Setup (name confirmation) */}

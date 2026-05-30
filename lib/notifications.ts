@@ -1,6 +1,7 @@
 import * as Notifications from "expo-notifications";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { generateDailyNotification, type MotivationalContext } from "./motivational-messages";
 
 // ─── Storage keys ─────────────────────────────────────────────────────────────
 const NOTIF_SETTINGS_KEY = "@risegrind_notif_settings";
@@ -60,7 +61,8 @@ export async function saveNotificationSettings(settings: NotificationSettings): 
 export async function scheduleDailyReminder(
   settings: NotificationSettings,
   titleText: string,
-  bodyText: string
+  bodyText: string,
+  motivationalContext?: MotivationalContext
 ): Promise<void> {
   if (Platform.OS === "web") return;
 
@@ -72,12 +74,23 @@ export async function scheduleDailyReminder(
   const granted = await requestNotificationPermission();
   if (!granted) return;
 
+  // Use motivational context if provided, otherwise use provided title/body
+  let finalTitle = titleText;
+  let finalBody = bodyText;
+
+  if (motivationalContext) {
+    const notification = generateDailyNotification(motivationalContext);
+    finalTitle = notification.title;
+    finalBody = notification.body;
+  }
+
   await Notifications.scheduleNotificationAsync({
     identifier: "daily_reminder",
     content: {
-      title: titleText,
-      body: bodyText,
+      title: finalTitle,
+      body: finalBody,
       sound: true,
+      badge: 1,
     },
     trigger: {
       type: Notifications.SchedulableTriggerInputTypes.DAILY,

@@ -41,7 +41,8 @@ export default function Step6TrialRevealScreen() {
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setShowPaywall(true);
+    // Navigate to notification permission screen
+    router.push("/onboarding/step7-notifications");
   };
 
   return (
@@ -114,7 +115,6 @@ export default function Step6TrialRevealScreen() {
         </View>
       </ScrollView>
     </ScreenContainer>
-    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="onboarding" />
     </>
   );
 }
