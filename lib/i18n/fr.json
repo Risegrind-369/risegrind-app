@@ -94,6 +94,22 @@
       "feature6": "Journal vocal avec lecture de réponse IA",
       "startTrial": "Commencer mon Essai Gratuit",
       "legal": "Aucune carte requise. Annulez à tout moment."
+    },
+    "step7": {
+      "title": "Restez Motivé Chaque Jour",
+      "subtitle": "Recevez des rappels quotidiens pour compléter votre routine, journaliser et célébrer votre progression.",
+      "benefit1": "Motivation quotidienne à l'heure de votre choix",
+      "benefit2": "Rappels doux pour journaliser et réfléchir",
+      "benefit3": "Aperçus hebdomadaires de votre progression",
+      "benefit4": "Célébrez les séries et les montées de rang",
+      "quote": "Qui voulez-vous devenir? Les rappels quotidiens vous gardent concentré sur devenir cette version de vous-même.",
+      "enableNotifications": "Activer les Notifications",
+      "skipForNow": "Ignorer pour l'instant",
+      "requesting": "Demande en cours...",
+      "enabled": "✓ Notifications Activées",
+      "permissionGranted": "Notifications activées! Vous recevrez une motivation quotidienne à 7h00.",
+      "permissionDenied": "Notifications désactivées. Vous pouvez les activer plus tard dans les Paramètres.",
+      "progress": "Étape 7 sur 8"
     }
   },
   "paywall": {

@@ -94,6 +94,22 @@
       "feature6": "Diário vocal com reprodução de resposta IA",
       "startTrial": "Comece Meu Teste Grátis",
       "legal": "Nenhum cartão necessário. Cancele a qualquer momento."
+    },
+    "step7": {
+      "title": "Mantenha-se Motivado Diariamente",
+      "subtitle": "Receba lembretes diários para completar sua rotina, escrever no diário e celebrar seu progresso.",
+      "benefit1": "Motivação diária na hora que você escolher",
+      "benefit2": "Lembretes suaves para escrever no diário e refletir",
+      "benefit3": "Insights semanais sobre seu progresso",
+      "benefit4": "Celebre sequências e promoções de rank",
+      "quote": "Quem você quer se tornar? Lembretes diários mantêm você focado em se tornar essa versão de si mesmo.",
+      "enableNotifications": "Ativar Notificações",
+      "skipForNow": "Pular por enquanto",
+      "requesting": "Solicitando...",
+      "enabled": "✓ Notificações Ativadas",
+      "permissionGranted": "Notificações ativadas! Você receberá motivação diária às 7h00.",
+      "permissionDenied": "Notificações desativadas. Você pode ativá-las mais tarde nas Configurações.",
+      "progress": "Etapa 7 de 8"
     }
   },
   "paywall": {

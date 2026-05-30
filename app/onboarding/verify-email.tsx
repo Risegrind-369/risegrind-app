@@ -267,30 +267,7 @@ export default function VerifyEmailScreen() {
             </Pressable>
           </Animated.View>
 
-          {/* Skip email verification button */}
-          <Animated.View
-            entering={FadeInDown.delay(400).duration(600)}
-            style={styles.buttonGroup}
-          >
-            <TouchableOpacity
-              activeOpacity={0.7}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                router.push({
-                  pathname: "/onboarding/step2-empathy",
-                  params: { name: params.name, age: params.age },
-                } as never);
-              }}
-              style={[
-                styles.button,
-                { backgroundColor: colors.surface, borderWidth: 1, borderColor: colors.border },
-              ]}
-            >
-              <Text style={{ fontSize: 14, fontWeight: "500", color: colors.foreground }}>
-                Skip for now
-              </Text>
-            </TouchableOpacity>
-          </Animated.View>
+
 
           {/* Help Text */}
           <Animated.View
