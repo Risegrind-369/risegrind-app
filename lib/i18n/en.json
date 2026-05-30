@@ -563,5 +563,10 @@
     "reminderTitle": "Time to rise, Ghost 👻",
     "reminderBody": "Your morning routine awaits. Let's build discipline today.",
     "permissionDenied": "Notifications disabled. You can enable them later in Settings."
+  },
+  "paywall": {
+    "messageLimitTitle": "Message Limit Reached",
+    "messageLimitBody": "You've reached your 5 monthly AI mentor messages. Upgrade to PRO for unlimited access.",
+    "upgrade": "Upgrade to PRO"
   }
 }

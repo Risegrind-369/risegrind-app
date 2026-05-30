@@ -998,3 +998,43 @@
 - [ ] Verify TypeScript: 0 errors
 - [ ] Save checkpoint
 
+
+
+## Sprint 22 - Message Limit Logic (FREE: 5/month, PRO: Unlimited)
+
+### Phase 1: Supabase Schema
+- [x] Add monthly_message_count column to users table
+- [x] Add message_limit_reset_date column to track month reset
+- [x] Updated schema via SQL ALTER TABLE
+
+### Phase 2: Message Limit Utilities
+- [x] Create lib/message-limits.ts with utility functions
+- [x] Implement checkUserEntitlement() → checks RevenueCat "pro"
+- [x] Implement getMonthlyMessageCount() → fetch from Supabase
+- [x] Implement canSendMessage() → combines both checks
+- [x] Implement incrementMessageCount() → increment counter + reset if needed
+- [x] Add monthly reset logic (check if 1st of month)
+- [x] Implement attemptSendMessage() → main entry point
+
+### Phase 3: Journal AI Mentor Integration
+- [x] Update journal entry analysis flow to check message limits
+- [x] Call attemptSendMessage() before sending AI mentor request
+- [x] If limit reached → show alert with paywall CTA
+- [x] If limit OK → send message + increment counter
+- [x] Added user authentication check
+
+### Phase 4: Paywall Trigger
+- [x] Show alert when message limit reached
+- [x] Display message: "You've reached your 5 monthly AI mentor messages"
+- [x] Add "Upgrade to PRO" button
+- [x] Cancel button → return to journal entry
+
+### Phase 5: i18n & Testing
+- [x] Add paywall message limit keys to en.json
+- [x] TypeScript: 0 errors
+- [ ] Add message limit keys to fr.json (French translations)
+- [ ] Add message limit keys to pt.json (Portuguese translations)
+- [ ] Test message limit on device (5 message cap)
+- [ ] Test PRO entitlement bypass
+- [ ] Test monthly reset on 1st of month
+- [ ] Save checkpoint

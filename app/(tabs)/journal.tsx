@@ -20,6 +20,8 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp, MOOD_EMOJIS, type JournalEntry } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
+import { attemptSendMessage } from "@/lib/message-limits";
+import { useAuth } from "@/hooks/use-auth";
 import * as Haptics from "expo-haptics";
 import {
   useAudioRecorder,
@@ -162,6 +164,39 @@ export default function JournalScreen() {
     setIsAnalyzing(true);
 
     try {
+      // Check message limit before sending
+      const { user } = useAuth();
+      if (!user?.id) {
+        Alert.alert(t("common.error", { defaultValue: "Error" }), "User not authenticated");
+        setIsAnalyzing(false);
+        return;
+      }
+
+      const messageResult = await attemptSendMessage(String(user.id));
+      if (!messageResult.success) {
+        if (messageResult.reason === "limit_reached") {
+          Alert.alert(
+            t("paywall.messageLimitTitle", { defaultValue: "Message Limit Reached" }),
+            t("paywall.messageLimitBody", {
+              defaultValue: "You've reached your 5 monthly AI mentor messages. Upgrade to PRO for unlimited access.",
+            }),
+            [
+              { text: t("common.cancel", { defaultValue: "Cancel" }), style: "cancel" },
+              {
+                text: t("paywall.upgrade", { defaultValue: "Upgrade to PRO" }),
+                onPress: () => {
+                  // TODO: Trigger paywall modal - implement in app context
+                },
+              },
+            ]
+          );
+        } else {
+          Alert.alert(t("common.error", { defaultValue: "Error" }), "Could not check message limit");
+        }
+        setIsAnalyzing(false);
+        return;
+      }
+
       const recentExcerpts = state.journalEntries
         .slice(0, 3)
         .map((e) => e.content.slice(0, 120));

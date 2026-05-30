@@ -27,6 +27,8 @@ function createAuthContext(): { ctx: TrpcContext; clearedCookies: CookieCall[] }
     friendCode: null,
     displayName: null,
     avatar: null,
+    monthly_message_count: 0,
+    message_limit_reset_date: null,
   };
   
   const ctx: TrpcContext = {

@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE users ADD COLUMN monthly_message_count INT DEFAULT 0 NOT NULL; ALTER TABLE users ADD COLUMN message_limit_reset_date DATE;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute ALTER TABLE users ADD COLUMN monthly_message_count INT DEFAULT 0 NOT NULL; ALTER TABLE users ADD COLUMN message_limit_reset_date DATE;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 1718
+}

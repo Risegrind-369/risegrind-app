@@ -25,6 +25,9 @@ export const users = mysqlTable("users", {
   friendCode: varchar("friendCode", { length: 6 }).unique(), // 6-char code for adding friends (e.g., K3NZ9X)
   displayName: varchar("displayName", { length: 255 }), // Name shown to friends in Ghost Crew
   avatar: varchar("avatar", { length: 255 }), // Emoji or URL for friend display
+  // Message limit tracking for FREE tier (5 messages/month)
+  monthly_message_count: int("monthly_message_count").default(0).notNull(), // Count of AI mentor messages sent this month
+  message_limit_reset_date: date("message_limit_reset_date"), // Date when monthly counter was last reset (1st of month)
 });
 
 export type User = typeof users.$inferSelect;
