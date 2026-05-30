@@ -22,6 +22,7 @@ import { useApp, MOOD_EMOJIS, type JournalEntry } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
 import { attemptSendMessage } from "@/lib/message-limits";
 import { useAuth } from "@/hooks/use-auth";
+import { PaywallModal } from "@/app/onboarding/paywall-modal";
 import * as Haptics from "expo-haptics";
 import {
   useAudioRecorder,
@@ -145,6 +146,7 @@ export default function JournalScreen() {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const audioRecorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const transcribeMutation = trpc.voice.transcribe.useMutation();
@@ -185,7 +187,7 @@ export default function JournalScreen() {
               {
                 text: t("paywall.upgrade", { defaultValue: "Upgrade to PRO" }),
                 onPress: () => {
-                  // TODO: Trigger paywall modal - implement in app context
+                  setShowPaywall(true);
                 },
               },
             ]
@@ -315,6 +317,7 @@ export default function JournalScreen() {
   };
 
   return (
+    <>
     <ScreenContainer containerClassName="bg-background">
       {/* Header */}
       <View style={[styles.header, { borderBottomColor: colors.border }]}>
@@ -374,22 +377,24 @@ export default function JournalScreen() {
         />
       )}
 
-      {/* Editor Modal */}
-      <Modal
-        visible={showEditor}
-        animationType="slide"
-        presentationStyle="pageSheet"
-        onRequestClose={handleCloseEditor}
+    </ScreenContainer>
+
+    {/* Editor Modal */}
+    <Modal
+      visible={showEditor}
+      animationType="slide"
+      presentationStyle="pageSheet"
+      onRequestClose={handleCloseEditor}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
       >
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          style={{ flex: 1 }}
-        >
-          <View style={[styles.editorContainer, { backgroundColor: colors.background }]}>
-            {/* Editor Header — Cancel (left), Title (center), Save (right) */}
-            <View style={[styles.editorHeader, { borderBottomColor: colors.border }]}>
-              <Pressable
-                onPress={handleCloseEditor}
+        <View style={[styles.editorContainer, { backgroundColor: colors.background }]}>
+          {/* Editor Header — Cancel (left), Title (center), Save (right) */}
+          <View style={[styles.editorHeader, { borderBottomColor: colors.border }]}>
+            <Pressable
+              onPress={handleCloseEditor}
                 style={({ pressed }) => ({ opacity: pressed ? 0.6 : 1 })}
               >
                 <Text style={[styles.editorCancel, { color: colors.foreground }]}>
@@ -548,10 +553,12 @@ export default function JournalScreen() {
                 </View>
               )}
             </ScrollView>
-          </View>
-        </KeyboardAvoidingView>
-      </Modal>
-    </ScreenContainer>
+        </View>
+      </KeyboardAvoidingView>
+    </Modal>
+
+    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" />
+    </>
   );
 }
 
