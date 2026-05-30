@@ -192,6 +192,9 @@ export default function PaywallScreen() {
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perYear", { defaultValue: "/year" })} · ~$3.33/mo
             </Text>
+            <Text style={[styles.planTrial, { color: "#22C55E", marginTop: 8, fontSize: 12, fontWeight: "600" }]}>
+              {t("paywall.sevenDayTrial", { defaultValue: "7-day free trial" })}
+            </Text>
           </Pressable>
 
           {/* Monthly */}
@@ -220,6 +223,9 @@ export default function PaywallScreen() {
             <Text style={[styles.planPrice, { color: "#E8A87C" }]}>{monthlyPrice}</Text>
             <Text style={[styles.planNote, { color: colors.muted }]}>
               {t("paywall.perMonth", { defaultValue: "/month" })}
+            </Text>
+            <Text style={[styles.planTrial, { color: "#22C55E", marginTop: 8, fontSize: 12, fontWeight: "600" }]}>
+              {t("paywall.threeDayTrial", { defaultValue: "3-day free trial" })}
             </Text>
           </Pressable>
         </Animated.View>
@@ -386,6 +392,10 @@ const styles = StyleSheet.create({
   },
   planNote: {
     fontSize: 12,
+  },
+  planTrial: {
+    fontSize: 12,
+    fontWeight: "600",
   },
   ctaSection: {
     gap: 12,

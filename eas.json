@@ -30,48 +30,6 @@
       "android": {
         "resourceClass": "large"
       }
-    },
-    "en": {
-      "appBuildVersion": "1",
-      "env": {
-        "APP_VARIANT": "en"
-      },
-      "ios": {
-        "buildConfiguration": "Release",
-        "resourceClass": "m1"
-      },
-      "android": {
-        "buildType": "release",
-        "resourceClass": "large"
-      }
-    },
-    "fr": {
-      "appBuildVersion": "1",
-      "env": {
-        "APP_VARIANT": "fr"
-      },
-      "ios": {
-        "buildConfiguration": "Release",
-        "resourceClass": "m1"
-      },
-      "android": {
-        "buildType": "release",
-        "resourceClass": "large"
-      }
-    },
-    "pt": {
-      "appBuildVersion": "1",
-      "env": {
-        "APP_VARIANT": "pt"
-      },
-      "ios": {
-        "buildConfiguration": "Release",
-        "resourceClass": "m1"
-      },
-      "android": {
-        "buildType": "release",
-        "resourceClass": "large"
-      }
     }
   },
   "submit": {

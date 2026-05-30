@@ -40,7 +40,7 @@ const PLANS: Record<PlanType, Plan> = {
     name: 'Weekly',
     price: '$9.99',
     period: '/week',
-    productId: 'risegrind.weekly',
+    productId: 'com.risegrind.weekly',
   },
   annual: {
     id: 'annual',
@@ -49,7 +49,7 @@ const PLANS: Record<PlanType, Plan> = {
     period: '/year',
     badge: 'BEST VALUE',
     description: 'Just $1.15/week',
-    productId: 'risegrind.annual',
+    productId: 'com.risegrind.annual',
   },
   lifetime: {
     id: 'lifetime',
@@ -96,9 +96,13 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
     setLoading(true);
     try {
       const plan = PLANS[selectedPlan];
-      const selectedPackage = packages.find((pkg) =>
-        pkg.product.identifier === plan.productId
-      );
+      const selectedPackage = packages.find((pkg) => {
+        // Match both old and new product ID formats
+        const pkgId = pkg.product.identifier;
+        return pkgId === plan.productId || 
+               pkgId === plan.productId.replace('com.', '') ||
+               pkgId === 'com.' + plan.productId;
+      });
 
       if (!selectedPackage) {
         Alert.alert('Payment coming soon', 'Payment coming soon. Stay tuned 🔒');
@@ -108,7 +112,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
 
       const purchaseResult = await Purchases.purchasePackage(selectedPackage);
 
-      if (purchaseResult?.customerInfo?.entitlements?.active?.['pro']) {
+      if (purchaseResult?.customerInfo?.entitlements?.active?.['pro'] || purchaseResult?.customerInfo?.entitlements?.active?.['premium']) {
         // Purchase successful
         dispatch({ type: 'SET_PREMIUM', payload: true });
         onClose();
