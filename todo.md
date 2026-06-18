@@ -441,10 +441,19 @@
 
 ## Sprint 19 - Critical Bug Fixes
 
-- [ ] Fix LineGraph render error: lowercase <line> → capitalized <Line> from react-native-svg
-- [ ] Fix trial logic: ensure 100% access during 3-day free trial, only block after trial ends
-- [ ] Add web search capability to AI mutations for fact-checking and real-time info
-- [ ] Verify TypeScript: 0 errors
+- [x] Fix LineGraph render error: lowercase <line> → capitalized <Line> from react-native-svg
+- [x] Fix trial logic: ensure 100% access during 3-day free trial, only block after trial ends
+- [x] Add web search capability to AI mutations for fact-checking and real-time info
+- [x] Verify TypeScript: 0 errors
+
+## Sprint 28 - Provider Cleanup & Theme Fix
+
+- [x] Remove redundant PurchasesProvider (purchases-context.tsx) — old RevenueCat implementation
+- [x] Confirm RevenueCatProvider is the only active provider
+- [x] Fix black screen issue: Add missing `accent` color token to RuntimePalette type
+- [x] Map `accent: base.primary` in buildRuntimePalette() function
+- [x] Verify TypeScript: 0 errors
+- [x] Verify Dev Server: Running without errors
 
 
 ## Sprint 21 - Premium Features (Ghost Streak, AI Coach, Apple Health)
