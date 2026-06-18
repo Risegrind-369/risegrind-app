@@ -70,3 +70,6 @@ Thumbs.db
 
 # Webdev artifacts (checkpoint zips, migrations, etc.)
 .webdev/
+
+# Utility scripts with potential secrets
+scripts/
