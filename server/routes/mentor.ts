@@ -136,7 +136,7 @@ router.post('/chat', async (req: Request, res: Response) => {
     const systemPrompt = personality.systemPrompt(language) + userContext;
     
     const response = await client.messages.create({
-      model: 'claude-3-5-sonnet-20241022',
+      model: 'claude-sonnet-4-6',
       max_tokens: 300,
       system: systemPrompt,
       messages: conversationHistory

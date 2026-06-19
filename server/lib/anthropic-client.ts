@@ -6,7 +6,7 @@ export const anthropic = new Anthropic({
 
 export const MODELS = {
   HAIKU: 'claude-haiku-4-5-20251001',
-  SONNET: 'claude-sonnet-4-20250514',
+  SONNET: 'claude-sonnet-4-6',
 } as const;
 
 export const MAX_TOKENS = {
