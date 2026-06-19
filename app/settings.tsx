@@ -10,7 +10,7 @@ import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
 import { useThemeContext } from "@/lib/theme-provider";
 import * as Haptics from "expo-haptics";
-import { showSuperwallPaywall } from "@/lib/superwall-provider";
+
 import { useRevenueCat } from "@/lib/revenuecat-provider";
 import { completeLogout } from "@/lib/supabase/auth";
 
@@ -217,15 +217,9 @@ export default function SettingsScreen() {
             )}
             {/* Manage Subscription — shows Superwall paywall immediately, even during trial */}
             <Pressable
-              onPress={async () => {
+              onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                // On native: Superwall handles the beautiful paywall UI
-                // On web/Expo Go: fall back to in-app paywall screen
-                try {
-                  await showSuperwallPaywall("manage_subscription");
-                } catch {
-                  router.push("/onboarding/paywall" as never);
-                }
+                router.push("/settings/manage-subscription" as never);
               }}
               style={({ pressed }) => [
                 styles.settingButton,
