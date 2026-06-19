@@ -565,7 +565,7 @@ export default function JournalScreen() {
       </KeyboardAvoidingView>
     </Modal>
 
-    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" />
+    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" showBackButton={true} />
     </>
   );
 }

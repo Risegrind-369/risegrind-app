@@ -44,6 +44,7 @@ import { useSessionRestoration } from "@/lib/use-session-restoration";
 import * as Linking from "expo-linking";
 import { supabase } from "@/lib/supabase/client";
 import { SupabaseAuthProvider } from "@/lib/supabase/auth-context";
+import { ErrorBoundary } from "@/components/error-boundary";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -327,26 +328,30 @@ export default function RootLayout() {
 
   if (shouldOverrideSafeArea) {
     return (
-      <ThemeProvider>
-        {/*
-          Pass the stable module-level constant as initialMetrics so
-          SafeAreaProvider never sees a new object reference and never
-          triggers an internal state update on re-render.
-        */}
-        <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>
-          <SafeAreaFrameContext.Provider value={frame}>
-            <SafeAreaInsetsContext.Provider value={insets}>
-              {content}
-            </SafeAreaInsetsContext.Provider>
-          </SafeAreaFrameContext.Provider>
-        </SafeAreaProvider>
-      </ThemeProvider>
+      <ErrorBoundary>
+        <ThemeProvider>
+          {/*
+            Pass the stable module-level constant as initialMetrics so
+            SafeAreaProvider never sees a new object reference and never
+            triggers an internal state update on re-render.
+          */}
+          <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>
+            <SafeAreaFrameContext.Provider value={frame}>
+              <SafeAreaInsetsContext.Provider value={insets}>
+                {content}
+              </SafeAreaInsetsContext.Provider>
+            </SafeAreaFrameContext.Provider>
+          </SafeAreaProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
     );
   }
 
   return (
-    <ThemeProvider>
-      <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>{content}</SafeAreaProvider>
-    </ThemeProvider>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <SafeAreaProvider initialMetrics={STABLE_INITIAL_METRICS}>{content}</SafeAreaProvider>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }

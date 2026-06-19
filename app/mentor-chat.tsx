@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, TextInput, TouchableOpacity, ActivityIndicator, Alert } from 'react-native';
 import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import PaywallModal from '@/app/onboarding/paywall-modal';
+import { attemptSendMessage } from '@/lib/message-limits';
+import { useAuth } from '@/hooks/use-auth';
 
 interface ChatMessage {
   id: string;
@@ -16,12 +18,12 @@ interface ChatMessage {
 
 export default function MentorChatScreen() {
   const colors = useColors();
+  const { user } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
   const [loading, setLoading] = useState(false);
   const [mentorPersonality, setMentorPersonality] = useState('supportive');
   const [showPaywall, setShowPaywall] = useState(false);
-  const [userMessageCount, setUserMessageCount] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
   const personalities = [
@@ -38,8 +40,8 @@ export default function MentorChatScreen() {
 
   const loadChatHistory = async () => {
     try {
-      const userId = '1'; // TODO: Get from auth context
-      const response = await fetch(`/api/mentor/chat-history?userId=${userId}&limit=20`);
+      if (!user?.id) return;
+      const response = await fetch(`/api/mentor/chat-history?userId=${user.id}&limit=20`);
       const data = await response.json();
       setMessages(data.map((msg: any, idx: number) => ({
         id: `${idx}`,
@@ -55,9 +57,14 @@ export default function MentorChatScreen() {
 
   const sendMessage = async () => {
     if (!inputText.trim()) return;
+    if (!user?.id) {
+      Alert.alert('Error', 'User not authenticated');
+      return;
+    }
 
-    // Check if user has hit 5-message limit
-    if (userMessageCount >= 5) {
+    // Check server-side message limit (5 per month during trial)
+    const messageResult = await attemptSendMessage(String(user.id));
+    if (!messageResult.success) {
       setShowPaywall(true);
       return;
     }
@@ -70,17 +77,16 @@ export default function MentorChatScreen() {
     };
 
     setMessages(prev => [...prev, userMessage]);
-    setUserMessageCount(prev => prev + 1);
     setInputText('');
     setLoading(true);
 
     try {
-      const userId = '1'; // TODO: Get from auth context
+      if (!user?.id) return;
       const response = await fetch('/api/mentor/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          userId,
+          userId: user.id,
           message: inputText,
           mentorPersonality
         })
@@ -237,7 +243,7 @@ export default function MentorChatScreen() {
         </View>
       </View>
     </ScreenContainer>
-    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" />
+    <PaywallModal visible={showPaywall} onClose={() => setShowPaywall(false)} source="mentor_limit" showBackButton={true} />
     </>
   );
 }

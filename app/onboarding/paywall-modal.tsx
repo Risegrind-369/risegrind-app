@@ -18,11 +18,12 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useApp } from '@/lib/app-context';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
+import { useRevenueCat } from '@/lib/revenuecat-provider';
 
 interface PaywallModalProps {
   visible: boolean;
   onClose: () => void;
-  source: 'onboarding' | 'mentor_limit';
+  source: 'onboarding' | 'mentor_limit' | 'trial_expired';
   allowTrial?: boolean;
   showBackButton?: boolean;
 }
@@ -71,9 +72,15 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   const { dispatch } = useApp();
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { isTrialActive, isPremium } = useRevenueCat();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  
+  // Hard-wall logic: if trial expired AND user has no active subscription, hide back button
+  // This applies regardless of where paywall is triggered from (onboarding, mentor_limit, etc.)
+  const shouldHardWall = !isTrialActive && !isPremium;
+  const effectiveShowBackButton = showBackButton && !shouldHardWall;
   
   // Dev-only paywall bypass (3-tap gesture on Annual plan)
   const annualTapCountRef = useRef(0);
@@ -222,8 +229,9 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Back Button - only shown when showBackButton is true */}
-          {showBackButton && (
+          {/* Back Button - only shown when showBackButton is true AND trial is active/user is premium */}
+          {/* Hard-wall: hidden when trial expired AND no active subscription (Lifetime users exempt) */}
+          {effectiveShowBackButton && (
             <Pressable
               onPress={handleClose}
               style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, paddingTop: insets.top + 12 }]}

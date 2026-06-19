@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, ScrollView, Pressable } from "react-native";
+import { View, Text, ScrollView, Pressable, Linking } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -85,6 +85,23 @@ export default function PrivacyPolicyScreen() {
                 • To gather analysis or valuable information to improve the Service
                 • To monitor the usage of the Service
                 • To detect, prevent and address technical issues
+              </Text>
+            </View>
+
+            {/* Third-Party AI Processing */}
+            <View className="gap-2">
+              <Text className="text-lg font-bold text-foreground" style={{ color: colors.foreground }}>
+                Third-Party AI Processing
+              </Text>
+              <Text className="text-sm text-muted leading-relaxed" style={{ color: colors.muted }}>
+                RiseGrind uses Anthropic's Claude API to provide AI-powered features including journal entry analysis and AI mentor chat. When you use these features, your journal entries and chat messages are sent to Anthropic for processing. Anthropic processes this data according to their privacy policy. For more information, visit{" "}
+                <Text
+                  style={{ color: colors.accent, textDecorationLine: "underline" }}
+                  onPress={() => Linking.openURL("https://www.anthropic.com/privacy")}
+                >
+                  Anthropic's Privacy Policy
+                </Text>
+                .{"\n\n"}You can choose not to use AI features to avoid sending data to Anthropic. Your journal entries remain stored securely in RiseGrind's database.
               </Text>
             </View>
 

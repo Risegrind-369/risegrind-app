@@ -1,13 +1,13 @@
 /**
  * Message Limit Logic
  *
- * FREE tier: 5 AI mentor messages per month
- * PRO tier: Unlimited messages (via RevenueCat "pro" entitlement)
+ * TRIAL users: 5 AI mentor messages per month
+ * PAID users (Weekly/Annual/Lifetime): Unlimited messages
  *
  * Logic:
- * 1. Check RevenueCat → does user have "pro" entitlement?
- * 2. If YES → no limit, send message
- * 3. If NO → check monthly_message_count in Supabase
+ * 1. Check RevenueCat → is user in trial (periodType === 'TRIAL')?
+ * 2. If NO (paid or no subscription) → unlimited, send message
+ * 3. If YES (trial active) → check monthly_message_count in Supabase
  * 4. If count < 5 → send message, increment count
  * 5. If count >= 5 → block message, show paywall
  */
@@ -17,21 +17,22 @@ import { supabase } from "@/lib/supabase/client";
 const MESSAGE_LIMIT = 5;
 
 /**
- * Check if user has PRO entitlement via RevenueCat
+ * Check if user is in trial period via RevenueCat
  */
-export async function checkUserHasProEntitlement(): Promise<boolean> {
+export async function checkUserIsInTrial(): Promise<boolean> {
   try {
     const Purchases = await import("react-native-purchases").then((m) => m.default);
     const customerInfo = await Purchases.getCustomerInfo();
 
     if (!customerInfo) return false;
 
-    // Check if user has "pro" entitlement
-    const hasProEntitlement = !!customerInfo.entitlements.active["pro"];
-    return hasProEntitlement;
+    // Check if user has "premium" entitlement AND it's in trial period
+    const hasPremium = !!customerInfo.entitlements.active["premium"];
+    const isTrialPeriod = hasPremium && customerInfo.entitlements.active["premium"]?.periodType === "TRIAL";
+    return isTrialPeriod;
   } catch (error) {
-    console.warn("[MessageLimits] Error checking RevenueCat entitlement:", error);
-    // Default to FREE tier if check fails
+    console.warn("[MessageLimits] Error checking RevenueCat trial status:", error);
+    // Default to no trial if check fails
     return false;
   }
 }
@@ -137,14 +138,14 @@ export async function canSendMessage(userId: string): Promise<{
   messagesRemaining?: number;
 }> {
   try {
-    // Check if user has PRO entitlement
-    const hasPro = await checkUserHasProEntitlement();
-    if (hasPro) {
-      // PRO users have unlimited messages
+    // Check if user is in trial period
+    const isInTrial = await checkUserIsInTrial();
+    if (!isInTrial) {
+      // Paid users (Weekly/Annual/Lifetime) have unlimited messages
       return { allowed: true };
     }
 
-    // Check FREE tier message count
+    // Trial users have 5-message limit per month
     const messageCount = await getMonthlyMessageCount(userId);
 
     if (messageCount >= MESSAGE_LIMIT) {
