@@ -123,6 +123,7 @@ export default function JournalScreen() {
   // Use userLanguage from context (source of truth) instead of i18n.language which can lag
   const locale = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
+  const { user } = useAuth(); // ✅ Moved to component level (was incorrectly inside handleAnalyzeAI)
 
   const localizedPrompts = useMemo(() => {
     // Use AI-generated personalized prompts if available
@@ -160,6 +161,7 @@ export default function JournalScreen() {
   };
 
   const handleAnalyzeAI = async () => {
+    console.log("[Journal] handleAnalyzeAI triggered", { userId: user?.id, contentLength: content.length });
     if (!content.trim()) return;
     
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -167,7 +169,6 @@ export default function JournalScreen() {
 
     try {
       // Check message limit before sending
-      const { user } = useAuth();
       if (!user?.id) {
         Alert.alert(t("common.error", { defaultValue: "Error" }), "User not authenticated");
         setIsAnalyzing(false);
