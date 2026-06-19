@@ -75,7 +75,13 @@ export default function Step7NotificationsScreen() {
           t("onboarding.step7.permissionGranted", {
             defaultValue:
               "Notifications enabled! You'll receive daily motivation at 7:00 AM.",
-          })
+          }),
+          [
+            {
+              text: "Continue",
+              onPress: handleContinue,
+            },
+          ]
         );
       } else {
         Alert.alert(

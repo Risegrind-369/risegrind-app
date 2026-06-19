@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text, Pressable, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useState, useRef } from "react";
 import { clearSyncedFlag } from "@/lib/sync";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
@@ -11,6 +12,7 @@ import { useThemeContext } from "@/lib/theme-provider";
 import * as Haptics from "expo-haptics";
 import { showSuperwallPaywall } from "@/lib/superwall-provider";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
+import { completeLogout } from "@/lib/supabase/auth";
 
 export default function SettingsScreen() {
   const colors = useColors();
@@ -106,6 +108,8 @@ export default function SettingsScreen() {
     );
   };
 
+  const isLoggingOutRef = useRef(false);
+
   const handleLogout = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     Alert.alert(
@@ -113,13 +117,21 @@ export default function SettingsScreen() {
       t("settings.logoutMessage", { defaultValue: "Are you sure?" }),
       [
         { text: t("common.cancel", { defaultValue: "Cancel" }), style: "cancel" },
-          {
-            text: t("common.logout", { defaultValue: "Logout" }),
-            style: "destructive",
-            onPress: () => {
+        {
+          text: t("common.logout", { defaultValue: "Logout" }),
+          style: "destructive",
+          onPress: async () => {
+            try {
+              // Call completeLogout to properly sign out and clear all auth state
+              await completeLogout(dispatch, isLoggingOutRef, true);
+              // Navigate to onboarding after logout is complete
               router.replace("/onboarding/language" as never);
-            },
+            } catch (error) {
+              console.error("[Settings] Logout error:", error);
+              Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
+            }
           },
+        },
       ]
     );
   };

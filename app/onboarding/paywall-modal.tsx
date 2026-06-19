@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
   Text,
@@ -40,6 +41,7 @@ const PLANS: Record<PlanType, Plan> = {
     name: 'Weekly',
     price: '$9.99',
     period: '/week',
+    description: '3-day free trial',
     productId: 'com.risegrind.weekly',
   },
   annual: {
@@ -48,7 +50,7 @@ const PLANS: Record<PlanType, Plan> = {
     price: '$59.99',
     period: '/year',
     badge: 'BEST VALUE',
-    description: 'Just $1.15/week',
+    description: '7-day free trial • Just $1.15/week',
     productId: 'com.risegrind.annual',
   },
   lifetime: {
@@ -67,6 +69,11 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  
+  // Dev-only paywall bypass (7-tap gesture on logo)
+  const tapCountRef = useRef(0);
+  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDevEnabled = __DEV__ || process.env.EXPO_PUBLIC_DEBUG_BYPASS === 'true';
 
   // Fetch available packages from RevenueCat
   useEffect(() => {
@@ -86,7 +93,40 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
     fetchPackages();
   }, [visible]);
 
-  const handlePlanSelect = (plan: PlanType) => {
+  const handleLogoTap = async () => {
+    if (!isDevEnabled) return;
+    
+    tapCountRef.current += 1;
+    
+    // Reset counter if more than 3 seconds between taps
+    if (tapTimerRef.current) {
+      clearTimeout(tapTimerRef.current);
+    }
+    
+    tapTimerRef.current = setTimeout(() => {
+      tapCountRef.current = 0;
+    }, 3000);
+    
+    if (tapCountRef.current === 7) {
+      tapCountRef.current = 0;
+      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+      
+      // Grant temporary pro access
+      (async () => {
+        try {
+          await AsyncStorage.setItem('debug_pro_override', 'true');
+          Alert.alert('🔓 Debug Mode', 'Pro access granted for testing. Restart the app to apply.');
+          dispatch({ type: 'SET_PREMIUM', payload: true });
+          onClose();
+          router.replace('/(tabs)');
+        } catch (err) {
+          console.error('[Paywall] Debug bypass error:', err);
+        }
+      })();
+    }
+  };
+
+    const handlePlanSelect = (plan: PlanType) => {
     setSelectedPlan(plan);
   };
 
@@ -165,8 +205,8 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
       onRequestClose={handleClose}
     >
       <ScreenContainer
-        className="bg-black"
-        containerClassName="bg-black"
+        className="bg-background"
+        containerClassName="bg-background"
         edges={['top', 'left', 'right', 'bottom']}
       >
         <ScrollView
@@ -176,17 +216,19 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
           {/* No Close Button - users must select a plan */}
 
           {/* Title */}
-          <View className="px-6 py-4">
-            <Text className="text-4xl font-bold text-white text-center">
-              Unlock Your Full Potential
-            </Text>
-          </View>
+          <Pressable onPress={handleLogoTap}>
+            <View className="px-6 py-4">
+              <Text className="text-4xl font-bold text-foreground text-center">
+                Unlock Your Full Potential
+              </Text>
+            </View>
+          </Pressable>
 
           {/* Removed timeline - direct paywall, no trial */}
 
           {/* Feature Checklist - 8 features */}
-          <View className="px-6 py-6 bg-gray-900 rounded-2xl mx-6 mb-8">
-            <Text className="text-white font-bold text-lg mb-4">WHAT YOU GET:</Text>
+          <View className="px-6 py-6 bg-surface rounded-2xl mx-6 mb-8" style={{ borderColor: colors.border, borderWidth: 1 }}>
+            <Text className="text-foreground font-bold text-lg mb-4">WHAT YOU GET:</Text>
             <View className="gap-3">
               {[
                 { text: 'Unlimited AI mentor conversations', icon: '🔒' },
@@ -200,7 +242,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
               ].map((feature, idx) => (
                 <View key={idx} className="flex-row gap-3 items-flex-start">
                   <Text className="text-lg mt-0.5">{feature.icon}</Text>
-                  <Text className={cn('text-base flex-1', feature.isOrange ? 'text-orange-500 font-semibold' : 'text-white')}>
+                  <Text className={cn('text-base flex-1', feature.isOrange ? 'text-accent font-semibold' : 'text-foreground')}>
                     {feature.text}
                   </Text>
                 </View>
@@ -224,8 +266,8 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                   className={cn(
                     'p-4 rounded-xl border-2 flex-row items-center justify-between',
                     selectedPlan === plan.id
-                      ? 'border-purple-500 bg-purple-500/10'
-                      : 'border-gray-700 bg-gray-900'
+                      ? 'border-primary bg-primary/10'
+                      : 'border-border bg-surface'
                   )}
                 >
                   <View className="flex-row items-center gap-3 flex-1">
@@ -233,29 +275,29 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                       className={cn(
                         'w-5 h-5 rounded-full border-2',
                         selectedPlan === plan.id
-                          ? 'border-purple-500 bg-purple-500'
-                          : 'border-gray-600'
+                          ? 'border-primary bg-primary'
+                          : 'border-border'
                       )}
                     />
                     <View className="flex-1">
-                      <Text className="text-white font-semibold">
+                      <Text className="text-foreground font-semibold">
                         {plan.name}
                       </Text>
                       {plan.description && (
-                        <Text className="text-xs text-gray-400">
+                        <Text className="text-xs text-muted">
                           {plan.description}
                         </Text>
                       )}
                     </View>
                   </View>
                   <View className="items-end">
-                    <Text className="text-white font-bold">{plan.price}</Text>
-                    <Text className="text-xs text-gray-400">{plan.period}</Text>
+                    <Text className="text-foreground font-bold">{plan.price}</Text>
+                    <Text className="text-xs text-muted">{plan.period}</Text>
                   </View>
                 </View>
                 {plan.badge && selectedPlan === plan.id && (
-                  <View className="absolute top-2 right-2 bg-purple-500 px-3 py-1 rounded-full">
-                    <Text className="text-white text-xs font-bold">
+                  <View className="absolute top-2 right-2 bg-primary px-3 py-1 rounded-full">
+                    <Text className="text-background text-xs font-bold">
                       {plan.badge}
                     </Text>
                   </View>
@@ -275,11 +317,11 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                 },
               ]}
             >
-              <View className="bg-purple-500 py-4 rounded-xl items-center justify-center">
+              <View className="bg-primary py-4 rounded-xl items-center justify-center">
                 {loading ? (
-                  <ActivityIndicator color="white" />
+                  <ActivityIndicator color={colors.background} />
                 ) : (
-                  <Text className="text-white text-lg font-bold">
+                  <Text className="text-background text-lg font-bold">
                     Start Subscription
                   </Text>
                 )}
@@ -287,34 +329,34 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
             </Pressable>
 
             {/* Compliance Text */}
-            <Text className="text-xs text-gray-500 text-center leading-relaxed">
+            <Text className="text-xs text-muted text-center leading-relaxed">
               $59.99/year or $9.99/week. Auto-renews unless cancelled 24 hours before period ends.
             </Text>
 
             {/* Links */}
             <View className="flex-row justify-center gap-4 pt-2">
               <Pressable onPress={handleRestorePurchases}>
-                <Text className="text-xs text-purple-400 underline">
+                <Text className="text-xs text-primary underline">
                   Restore Purchases
                 </Text>
               </Pressable>
-              <Text className="text-xs text-gray-600">·</Text>
+              <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
                   // Navigate to terms
                   console.log('Navigate to terms');
                 }}
               >
-                <Text className="text-xs text-purple-400 underline">Terms</Text>
+                <Text className="text-xs text-primary underline">Terms</Text>
               </Pressable>
-              <Text className="text-xs text-gray-600">·</Text>
+              <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
                   // Navigate to privacy
                   console.log('Navigate to privacy');
                 }}
               >
-                <Text className="text-xs text-purple-400 underline">Privacy</Text>
+                <Text className="text-xs text-primary underline">Privacy</Text>
               </Pressable>
             </View>
           </View>

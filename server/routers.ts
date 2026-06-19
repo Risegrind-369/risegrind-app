@@ -234,8 +234,26 @@ Generate their personalized morning routine and journal prompts.`;
             }
           }
           return { ...fallbackRoutine, createdAt: Date.now() };
-        } catch (e) {
-          console.error('[Anthropic] generateRoutine error:', e);
+        } catch (e: any) {
+          // Log detailed error information for debugging
+          const errorDetails = {
+            message: e?.message || 'Unknown error',
+            status: e?.status,
+            type: e?.type,
+            error: e?.error,
+            stack: e?.stack,
+          };
+          console.error('[generateRoutine] Anthropic API error:', JSON.stringify(errorDetails, null, 2));
+          
+          // Log specific error types for better diagnostics
+          if (e?.status === 401 || e?.status === 403) {
+            console.error('[generateRoutine] Auth error - check ANTHROPIC_API_KEY is set and valid');
+          } else if (e?.status === 429) {
+            console.error('[generateRoutine] Rate limit error - too many requests');
+          } else if (e?.message?.includes('JSON')) {
+            console.error('[generateRoutine] JSON parsing error - Anthropic response was not valid JSON');
+          }
+          
           return { ...fallbackRoutine, createdAt: Date.now() };
         }
       }),

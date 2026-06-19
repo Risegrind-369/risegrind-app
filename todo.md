@@ -1047,3 +1047,15 @@
 - [ ] Test PRO entitlement bypass
 - [ ] Test monthly reset on 1st of month
 - [ ] Save checkpoint
+
+## Sprint 29 - Critical Onboarding & Paywall Fixes
+
+- [ ] Fix 1: Paywall colors and trial copy — match Ghost Mode theme, add trial terms
+- [ ] Fix 2: Delete redundant trial-reveal screen (step6-trial-reveal.tsx)
+- [ ] Fix 3: Fix notifications screen advancement — "Notifications Enabled" button stuck
+- [ ] Fix 4: Investigate and fix AI routine Claude connection — currently showing fallback
+- [ ] Fix 5: Fix logout button — not actually logging user out
+- [ ] Fix 6: Add dev-only paywall bypass for testing (7-tap gesture, __DEV__ gated)
+- [ ] Verify: TypeScript 0 errors
+- [ ] Verify: All files changed documented
+- [ ] Commit and push to GitHub
