@@ -417,11 +417,12 @@ export default function HomeScreen() {
                     borderColor: selectedMood === level ? colors.primary : colors.border,
                     backgroundColor: selectedMood === level ? colors.primary + "15" : colors.surface,
                     transform: [{ scale: pressed ? 0.92 : selectedMood === level ? 1.05 : 1 }],
+                    marginBottom: 8,
                   },
                 ]}
               >
                 <Text style={styles.moodEmoji}>{MOOD_EMOJIS[level]}</Text>
-                <Text style={[styles.moodLevelLabel, { color: colors.muted }]}>
+                <Text style={[styles.moodLevelLabel, { color: colors.muted }]} numberOfLines={2}>
                   {getMoodLabel(level, lang)}
                 </Text>
               </Pressable>
@@ -669,24 +670,26 @@ const styles = StyleSheet.create({
   },
   moodGrid: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    flexWrap: "wrap",
+    justifyContent: "center",
     gap: 12,
   },
   moodOption: {
-    flex: 1,
+    width: "30%",
     borderRadius: 16,
     borderWidth: 2,
-    padding: 16,
+    padding: 12,
     alignItems: "center",
-    gap: 8,
+    gap: 6,
   },
   moodEmoji: {
-    fontSize: 40,
+    fontSize: 44,
   },
   moodLevelLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: "700",
     textAlign: "center",
+    lineHeight: 14,
   },
   saveMoodButton: {
     paddingVertical: 16,

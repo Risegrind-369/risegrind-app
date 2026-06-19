@@ -20,20 +20,24 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Initialize auth state
-    const initializeAuth = async () => {
-      try {
-        if (!supabase) {
-          setIsLoading(false);
-          return;
-        }
+        // Initialize auth state
+      const initializeAuth = async () => {
+        try {
+          if (!supabase) {
+            setIsLoading(false);
+            return;
+          }
 
-        // Try to restore session from storage
-        const restoredSession = await restoreSessionFromStorage();
-        if (restoredSession) {
-          setSession(restoredSession);
-          setUser(restoredSession.user);
-        }
+          // Try to restore session from storage
+          const restoredSession = await restoreSessionFromStorage();
+          if (restoredSession && restoredSession.user) {
+            setSession(restoredSession);
+            setUser(restoredSession.user);
+          } else {
+            console.log("[Auth] No valid session to restore");
+            setSession(null);
+            setUser(null);
+          }
 
         // Listen for auth state changes
         const {
@@ -44,8 +48,13 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
           if (newSession) {
             setSession(newSession);
             setUser(newSession.user);
-            // Store tokens when session changes
-            await storeAuthTokens(newSession.access_token, newSession.refresh_token);
+            // Store tokens when session changes (with null checks)
+            if (newSession.access_token && newSession.refresh_token) {
+              await storeAuthTokens(newSession.access_token, newSession.refresh_token);
+            } else {
+              console.warn("[Auth] Session exists but tokens are missing");
+              await clearAuthTokens();
+            }
           } else {
             setSession(null);
             setUser(null);

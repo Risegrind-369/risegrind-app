@@ -10,6 +10,8 @@ import {
   Alert,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import * as Linking from 'expo-linking';
 import Purchases, { PurchasesPackage, CustomerInfo } from 'react-native-purchases';
 import { useRouter } from 'expo-router';
 import { ScreenContainer } from '@/components/screen-container';
@@ -68,6 +70,7 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   const router = useRouter();
   const { dispatch } = useApp();
   const colors = useColors();
+  const insets = useSafeAreaInsets();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
@@ -223,7 +226,7 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
           {showBackButton && (
             <Pressable
               onPress={handleClose}
-              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, paddingTop: insets.top + 12 }]}
               className="px-6 py-3"
             >
               <Text className="text-accent font-semibold">← Back</Text>
@@ -356,8 +359,9 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
               <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
-                  // Navigate to terms
-                  console.log('Navigate to terms');
+                  Linking.openURL('https://risegrind-app.lovable.app/terms').catch(() => {
+                    Alert.alert('Error', 'Could not open Terms of Service');
+                  });
                 }}
               >
                 <Text className="text-xs text-primary underline">Terms</Text>
@@ -365,8 +369,9 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
               <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
-                  // Navigate to privacy
-                  console.log('Navigate to privacy');
+                  Linking.openURL('https://risegrind-app.lovable.app/privacy').catch(() => {
+                    Alert.alert('Error', 'Could not open Privacy Policy');
+                  });
                 }}
               >
                 <Text className="text-xs text-primary underline">Privacy</Text>
