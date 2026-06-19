@@ -45,6 +45,7 @@ import * as Linking from "expo-linking";
 import { supabase } from "@/lib/supabase/client";
 import { SupabaseAuthProvider } from "@/lib/supabase/auth-context";
 import { ErrorBoundary } from "@/components/error-boundary";
+import { EntitlementGuard } from "@/lib/entitlement-guard";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -300,18 +301,20 @@ export default function RootLayout() {
                 <HealthProvider>
                 {/* Shows time-based paywall after 1-2 days of usage */}
                 <PaywallTriggerProvider>
-                  <OnboardingGuard>
-                    <DebugOverlay />
-                    <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="(tabs)" />
-                      <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
-                      <Stack.Screen name="auth" options={{ animation: "slide_from_right" }} />
-                      <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
-                      <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
-                      <Stack.Screen name="oauth/callback" />
-                    </Stack>
-                    <StatusBar style="auto" />
-                  </OnboardingGuard>
+                  <EntitlementGuard>
+                    <OnboardingGuard>
+                      <DebugOverlay />
+                      <Stack screenOptions={{ headerShown: false }}>
+                        <Stack.Screen name="(tabs)" />
+                        <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
+                        <Stack.Screen name="auth" options={{ animation: "slide_from_right" }} />
+                        <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
+                        <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
+                        <Stack.Screen name="oauth/callback" />
+                      </Stack>
+                      <StatusBar style="auto" />
+                    </OnboardingGuard>
+                  </EntitlementGuard>
                 </PaywallTriggerProvider>
                 </HealthProvider>
               </AppProvider>
