@@ -76,6 +76,8 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('annual');
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
+  const [packagesLoading, setPackagesLoading] = useState(true);
+  const [packagesError, setPackagesError] = useState<string | null>(null);
   
   // Hard-wall logic: if trial expired AND user has no active subscription, hide back button
   // This applies regardless of where paywall is triggered from (onboarding, mentor_limit, etc.)
@@ -87,18 +89,49 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   const annualTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const isDevEnabled = process.env.EXPO_PUBLIC_DEBUG_BYPASS === 'true';
 
-  // Fetch available packages from RevenueCat
+  // Fetch available packages from RevenueCat with retry logic
   useEffect(() => {
     if (!visible) return;
 
-    const fetchPackages = async () => {
+    const fetchPackages = async (retryCount = 0) => {
+      const MAX_RETRIES = 2;
+      const RETRY_DELAY_MS = 2000;
+
       try {
+        setPackagesLoading(true);
+        setPackagesError(null);
+        
         const offerings = await Purchases.getOfferings();
-        if (offerings?.current?.availablePackages) {
+        if (offerings?.current?.availablePackages && offerings.current.availablePackages.length > 0) {
           setPackages(offerings.current.availablePackages);
+          setPackagesLoading(false);
+          return;
         }
+        
+        // No packages returned, retry if we haven't exceeded max retries
+        if (retryCount < MAX_RETRIES) {
+          console.warn(`[Paywall] No packages found, retrying (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+          return fetchPackages(retryCount + 1);
+        }
+        
+        // All retries exhausted
+        console.error('[Paywall] Failed to fetch packages after retries');
+        setPackagesError('Unable to load subscription options. Check your connection and try again.');
+        setPackagesLoading(false);
       } catch (error) {
-        console.error('[Paywall] Failed to fetch packages:', error);
+        console.error('[Paywall] Error fetching packages:', error);
+        
+        // Retry on network error if we haven't exceeded max retries
+        if (retryCount < MAX_RETRIES) {
+          console.warn(`[Paywall] Network error, retrying (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+          return fetchPackages(retryCount + 1);
+        }
+        
+        // All retries exhausted
+        setPackagesError('Unable to load subscription options. Check your connection and try again.');
+        setPackagesLoading(false);
       }
     };
 
@@ -147,7 +180,7 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   };
 
   const handleStartTrial = async () => {
-    if (loading) return;
+    if (loading || packagesLoading || packages.length === 0) return;
 
     setLoading(true);
     try {
@@ -161,7 +194,7 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
       });
 
       if (!selectedPackage) {
-        Alert.alert('Payment coming soon', 'Payment coming soon. Stay tuned 🔒');
+        Alert.alert('Error', 'Selected plan not available. Please try again.');
         setLoading(false);
         return;
       }
@@ -180,7 +213,7 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
         return;
       }
       console.error('[Paywall] Purchase error:', error);
-      Alert.alert('Payment coming soon', 'Payment coming soon. Stay tuned 🔒');
+      Alert.alert('Error', 'Purchase failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -229,9 +262,9 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* Back Button - only shown when showBackButton is true AND trial is active/user is premium */}
-          {/* Hard-wall: hidden when trial expired AND no active subscription (Lifetime users exempt) */}
-          {effectiveShowBackButton && (
+          {/* Back Button - always available during loading/error, or when not subject to hard-wall */}
+          {/* Hard-wall: only hides back button once packages load successfully AND trial expired AND no premium */}
+          {(effectiveShowBackButton || packagesLoading || packagesError) && (
             <Pressable
               onPress={handleClose}
               style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, paddingTop: insets.top + 12 }]}
@@ -241,6 +274,61 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
             </Pressable>
           )}
 
+          {/* Loading State */}
+          {packagesLoading && (
+            <View className="flex-1 items-center justify-center">
+              <ActivityIndicator size="large" color={colors.accent} />
+              <Text className="mt-4 text-sm text-muted">Loading subscription options...</Text>
+            </View>
+          )}
+
+          {/* Error State with Retry */}
+          {packagesError && !packagesLoading && (
+            <View className="flex-1 items-center justify-center px-6 gap-4">
+              <Text className="text-center text-base font-semibold text-error">{packagesError}</Text>
+              <Pressable
+                onPress={async () => {
+                  setPackagesError(null);
+                  setPackagesLoading(true);
+                  // Retrigger fetch
+                  const retryFetch = async (retryCount = 0) => {
+                    const MAX_RETRIES = 2;
+                    const RETRY_DELAY_MS = 2000;
+                    try {
+                      const offerings = await Purchases.getOfferings();
+                      if (offerings?.current?.availablePackages && offerings.current.availablePackages.length > 0) {
+                        setPackages(offerings.current.availablePackages);
+                        setPackagesLoading(false);
+                        return;
+                      }
+                      if (retryCount < MAX_RETRIES) {
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                        return retryFetch(retryCount + 1);
+                      }
+                      setPackagesError('Unable to load subscription options. Check your connection and try again.');
+                      setPackagesLoading(false);
+                    } catch (error) {
+                      console.error('[Paywall] Error during retry:', error);
+                      if (retryCount < MAX_RETRIES) {
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                        return retryFetch(retryCount + 1);
+                      }
+                      setPackagesError('Unable to load subscription options. Check your connection and try again.');
+                      setPackagesLoading(false);
+                    }
+                  };
+                  retryFetch();
+                }}
+                className="rounded-lg bg-accent px-6 py-3"
+              >
+                <Text className="font-semibold text-background">Try Again</Text>
+              </Pressable>
+            </View>
+          )}
+
+          {/* Normal Content - only show when packages loaded successfully */}
+          {!packagesLoading && !packagesError && (
+            <>
           {/* Title with top padding */}
           <View className="px-6 py-8">
             <Text className="text-4xl font-bold text-foreground text-center leading-tight">
@@ -386,6 +474,8 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
               </Pressable>
             </View>
           </View>
+            </>
+          )}
         </ScrollView>
       </ScreenContainer>
     </Modal>
