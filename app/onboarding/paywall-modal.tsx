@@ -70,10 +70,10 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
   const [loading, setLoading] = useState(false);
   const [packages, setPackages] = useState<PurchasesPackage[]>([]);
   
-  // Dev-only paywall bypass (7-tap gesture on logo)
-  const tapCountRef = useRef(0);
-  const tapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isDevEnabled = __DEV__ || process.env.EXPO_PUBLIC_DEBUG_BYPASS === 'true';
+  // Dev-only paywall bypass (3-tap gesture on Annual plan)
+  const annualTapCountRef = useRef(0);
+  const annualTapTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isDevEnabled = process.env.EXPO_PUBLIC_DEBUG_BYPASS === 'true';
 
   // Fetch available packages from RevenueCat
   useEffect(() => {
@@ -93,23 +93,27 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
     fetchPackages();
   }, [visible]);
 
-  const handleLogoTap = async () => {
+  const handleAnnualPlanTap = async () => {
+    // First, always select the Annual plan (normal behavior)
+    handlePlanSelect('annual');
+    
+    // Then check for dev bypass (3-tap in 3 seconds)
     if (!isDevEnabled) return;
     
-    tapCountRef.current += 1;
+    annualTapCountRef.current += 1;
     
     // Reset counter if more than 3 seconds between taps
-    if (tapTimerRef.current) {
-      clearTimeout(tapTimerRef.current);
+    if (annualTapTimerRef.current) {
+      clearTimeout(annualTapTimerRef.current);
     }
     
-    tapTimerRef.current = setTimeout(() => {
-      tapCountRef.current = 0;
+    annualTapTimerRef.current = setTimeout(() => {
+      annualTapCountRef.current = 0;
     }, 3000);
     
-    if (tapCountRef.current === 7) {
-      tapCountRef.current = 0;
-      if (tapTimerRef.current) clearTimeout(tapTimerRef.current);
+    if (annualTapCountRef.current === 3) {
+      annualTapCountRef.current = 0;
+      if (annualTapTimerRef.current) clearTimeout(annualTapTimerRef.current);
       
       // Grant temporary pro access
       (async () => {
@@ -216,13 +220,11 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
           {/* No Close Button - users must select a plan */}
 
           {/* Title */}
-          <Pressable onPress={handleLogoTap}>
-            <View className="px-6 py-4">
-              <Text className="text-4xl font-bold text-foreground text-center">
-                Unlock Your Full Potential
-              </Text>
-            </View>
-          </Pressable>
+          <View className="px-6 py-4">
+            <Text className="text-4xl font-bold text-foreground text-center">
+              Unlock Your Full Potential
+            </Text>
+          </View>
 
           {/* Removed timeline - direct paywall, no trial */}
 
@@ -255,18 +257,18 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
             {Object.values(PLANS).map((plan) => (
               <Pressable
                 key={plan.id}
-                onPress={() => handlePlanSelect(plan.id)}
+                onPress={() => plan.id === 'annual' ? handleAnnualPlanTap() : handlePlanSelect(plan.id)}
                 style={({ pressed }) => [
                   {
                     opacity: pressed ? 0.8 : 1,
                   },
                 ]}
               >
-                <View
+                  <View
                   className={cn(
                     'p-4 rounded-xl border-2 flex-row items-center justify-between',
                     selectedPlan === plan.id
-                      ? 'border-primary bg-primary/10'
+                      ? 'border-accent bg-accent/10'
                       : 'border-border bg-surface'
                   )}
                 >
@@ -275,7 +277,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                       className={cn(
                         'w-5 h-5 rounded-full border-2',
                         selectedPlan === plan.id
-                          ? 'border-primary bg-primary'
+                          ? 'border-accent bg-accent'
                           : 'border-border'
                       )}
                     />
