@@ -4,7 +4,7 @@ const path = require("path");
 
 const config = getDefaultConfig(__dirname);
 
-// ── Web resolver: stub out native-only packages on web ──────────────────────
+// Web resolver: stub out native-only packages on web
 // These packages use native modules that cannot run in a browser.
 const NATIVE_ONLY_STUBS = {
   "@superwall/react-native-superwall": path.resolve(__dirname, "lib/stubs/superwall-stub.js"),
