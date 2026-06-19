@@ -24,6 +24,8 @@
     },
     "production": {
       "distribution": "store",
+      "autoIncrement": true,
+      "node": "20.19.4",
       "ios": {
         "resourceClass": "m1-medium"
       },
@@ -35,9 +37,9 @@
   "submit": {
     "production": {
       "ios": {
-        "appleId": "your-apple-id@example.com",
-        "ascAppId": "1234567890",
-        "appleTeamId": "XXXXXXXXXX"
+        "appleId": "webagency.kenzo@gmail.com",
+        "ascAppId": "6774216641",
+        "appleTeamId": "SX74MYV6T2"
       },
       "android": {
         "serviceAccountKeyPath": "./android-key.json",
