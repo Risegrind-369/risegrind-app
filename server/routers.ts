@@ -8,7 +8,8 @@ import { anthropic, MODELS, MAX_TOKENS } from './lib/anthropic-client';
 import { logAiUsage } from './lib/ai-logger';
 import { transcribeAudio } from "./_core/voiceTranscription";
 import { storagePut } from "./storage";
-import { getSearchContextForEntry } from "./web-search";
+// Web search removed: Manus Forge API no longer available
+// import { getSearchContextForEntry } from "./web-search";
 import { accountRouter } from "./routes/account";
 import { webhooksRouter } from "./routes/webhooks";
 import { authMigrationRouter } from "./routes/auth-migration";
@@ -283,13 +284,8 @@ Generate their personalized morning routine and journal prompts.`;
           ? `Recent journal context: ${input.recentEntries.slice(0, 3).join(" | ")}`
           : "No previous journal entries.";
         
-        // Fetch web search context for health/habit-related topics
-        let searchContext = "";
-        try {
-          searchContext = await getSearchContextForEntry(input.entryContent);
-        } catch (err) {
-          console.warn("[analyzeEntry] Web search failed, continuing without it:", err);
-        }
+        // Web search disabled: Manus Forge API no longer available
+        const searchContext = "";
         
         const systemPrompt = `You are a Ghost Mode AI mentor — an elite discipline coach who understands the human mind deeply. ${langInstruction}\n\nYour job:\n1. Acknowledge what they shared with empathy and precision\n2. Identify a key insight or pattern from their words\n3. Give ONE specific, actionable next step\n4. End with a powerful 1-sentence motivational push in Ghost Mode style\n\nRules:\n- Be concise: 3-5 sentences total\n- Be intelligent: reference specific things they wrote\n- Zero generic advice. Be specific to THEIR situation.\n- Ghost Mode tone: calm confidence, zero fluff, maximum signal\n- Never be preachy. Be like a coach who respects the athlete's time.\n- When discussing health or habits, cite reliable sources when available or indicate uncertainty.`;
         const userMessage = `My journal entry today:\n"${input.entryContent}"\n\nMy mood today: ${moodDesc}\nMy current streak: ${input.streak} days\n${recentContext}${searchContext}\n\nGive me your honest, sharp analysis and one clear action step.`;
