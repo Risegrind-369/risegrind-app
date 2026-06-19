@@ -36,7 +36,7 @@ export default function SignInAppleScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       // Navigate to home screen
-      router.back();
+      router.replace("/(tabs)" as never);
     } catch (error: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
 
@@ -167,7 +167,7 @@ export default function SignInAppleScreen() {
                 className="font-semibold text-base"
                 style={{ color: colors.primary }}
               >
-                Use Email Instead
+                Back to Sign In Options
               </Text>
             </Pressable>
           </View>

@@ -1,0 +1,8 @@
+{
+  "query": "ALTER TABLE `users` ADD `monthly_message_count` int DEFAULT 0 NOT NULL;\nALTER TABLE `users` ADD `message_limit_reset_date` date;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway05.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 3zMqi49qKHLWbAw.ee619867af3a --database FX74FzCVEe6tC4xxrVKhws --execute ALTER TABLE `users` ADD `monthly_message_count` int DEFAULT 0 NOT NULL;\nALTER TABLE `users` ADD `message_limit_reset_date` date;",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1060 (42S21) at line 1: Duplicate column name 'monthly_message_count'"
+  ]
+}

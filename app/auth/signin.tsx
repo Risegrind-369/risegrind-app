@@ -114,6 +114,11 @@ export default function SignInScreen() {
     router.push("/onboarding/create-account" as never);
   };
 
+  const handleBackToChoice = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   if (isCheckingSession) {
     return (
       <ScreenContainer containerClassName="bg-background">
@@ -257,8 +262,18 @@ export default function SignInScreen() {
             )}
           </Pressable>
 
+          {/* Back to Sign In Choice */}
+          <Pressable onPress={handleBackToChoice} disabled={isLoading} className="mt-2">
+            <Text
+              className="text-base font-semibold text-center"
+              style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
+            >
+              ← Back to Sign In Options
+            </Text>
+          </Pressable>
+
           {/* Sign Up Link */}
-          <View className="flex-row justify-center gap-1">
+          <View className="flex-row justify-center gap-1 mt-4">
             <Text
               className="text-base text-muted"
               style={{ color: colors.muted }}

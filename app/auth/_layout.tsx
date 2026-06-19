@@ -14,6 +14,7 @@ export default function AuthLayout() {
         animation: "slide_from_right",
       }}
     >
+      <Stack.Screen name="signin-choice" />
       <Stack.Screen name="signin" />
       <Stack.Screen name="signup" />
       <Stack.Screen name="forgot-password" />

@@ -96,8 +96,8 @@ export default function CreateAccountScreen() {
 
   const handleSignIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Navigate to sign-in screen
-    router.push("/auth/signin" as never);
+    // Navigate to sign-in choice screen (unified entry for existing users)
+    router.push("/auth/signin-choice" as never);
   };
 
   const handleBack = () => {
