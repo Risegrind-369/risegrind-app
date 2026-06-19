@@ -22,7 +22,7 @@ import { useApp, MOOD_EMOJIS, type JournalEntry } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
 import { attemptSendMessage } from "@/lib/message-limits";
 import { useAuth } from "@/hooks/use-auth";
-import { PaywallModal } from "@/app/onboarding/paywall-modal";
+import PaywallModal from "@/app/onboarding/paywall-modal";
 import * as Haptics from "expo-haptics";
 import {
   useAudioRecorder,

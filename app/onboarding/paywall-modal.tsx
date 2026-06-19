@@ -21,6 +21,8 @@ interface PaywallModalProps {
   visible: boolean;
   onClose: () => void;
   source: 'onboarding' | 'mentor_limit';
+  allowTrial?: boolean;
+  showBackButton?: boolean;
 }
 
 type PlanType = 'weekly' | 'annual' | 'lifetime';
@@ -62,7 +64,7 @@ const PLANS: Record<PlanType, Plan> = {
   },
 };
 
-export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
+function PaywallModal({ visible, onClose, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
   const router = useRouter();
   const { dispatch } = useApp();
   const colors = useColors();
@@ -217,11 +219,20 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
           contentContainerStyle={{ flexGrow: 1 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* No Close Button - users must select a plan */}
+          {/* Back Button - only shown when showBackButton is true */}
+          {showBackButton && (
+            <Pressable
+              onPress={handleClose}
+              style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              className="px-6 py-3"
+            >
+              <Text className="text-accent font-semibold">← Back</Text>
+            </Pressable>
+          )}
 
-          {/* Title */}
-          <View className="px-6 py-4">
-            <Text className="text-4xl font-bold text-foreground text-center">
+          {/* Title with top padding */}
+          <View className="px-6 py-8">
+            <Text className="text-4xl font-bold text-foreground text-center leading-tight">
               Unlock Your Full Potential
             </Text>
           </View>
@@ -285,7 +296,7 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
                       <Text className="text-foreground font-semibold">
                         {plan.name}
                       </Text>
-                      {plan.description && (
+                      {plan.description && allowTrial !== false && (
                         <Text className="text-xs text-muted">
                           {plan.description}
                         </Text>
@@ -367,3 +378,5 @@ export function PaywallModal({ visible, onClose, source }: PaywallModalProps) {
     </Modal>
   );
 }
+
+export default PaywallModal;

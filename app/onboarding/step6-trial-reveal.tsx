@@ -19,7 +19,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
-import { PaywallModal } from "./paywall-modal";
+import PaywallModal from "./paywall-modal";
 
 const ICON_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663533327081/FX74FzCVEe6tC4xxrVKhws/risegrind-icon-v2-fGbAHYbpaF4huMRJsUSWRR.png";

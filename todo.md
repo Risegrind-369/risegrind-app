@@ -1059,3 +1059,54 @@
 - [ ] Verify: TypeScript 0 errors
 - [ ] Verify: All files changed documented
 - [ ] Commit and push to GitHub
+
+## Sprint 30 - Fix Brief Round 2
+
+### Priority 1 - Claude API not working in production (INVESTIGATE FIRST)
+- [ ] Investigate: Journal "AI Analysis" → "AI Analysis Failed" alert
+- [ ] Investigate: Ghost Mentor chat → "Couldn't reach the mentor" on every message
+- [ ] Investigate: Onboarding AI routine → always generic (Wake Up, Hydrate, Meditate, Exercise, Journal)
+- [ ] Investigate: Onboarding personalized AI message (step4-ai-message) → generic text
+- [ ] Investigate: Notification messages → same repeated text every time
+- [ ] Find exact file + function for each of the 5 features
+- [ ] Determine: local backend (localhost) vs deployed backend (Railway)
+- [ ] Report findings before fixing
+
+### Priority 2 - Paywall / Manage Subscription screen
+- [ ] Add allowTrial and showBackButton props to paywall-modal.tsx
+- [ ] Show back button when opened from Settings (manage subscription)
+- [ ] Remove trial copy when allowTrial={false}
+- [ ] Wire up "Manage Subscription" button in Settings to open paywall variant
+
+### Priority 3 - Logout error (INVESTIGATE FIRST)
+- [ ] Investigate: what error does completeLogout() throw?
+- [ ] Check if failing on Supabase signOut, AsyncStorage clear, or navigation
+- [ ] Add console.error/Sentry logging to capture real error
+- [ ] Report findings before fixing
+
+### Priority 4 - UI polish: home screen rank spacing
+- [ ] Add spacing between "Your Rank" label and rank name "Early Riser"
+- [ ] Confirm: is XP/Rank system real and functional? Does completing habits increment XP?
+
+### Priority 5 - Mood picker UI fixes
+- [ ] Ensure each mood card is wide enough for label on ONE line
+- [ ] Reduce font size if needed to fit
+- [ ] Ensure emoji rendering isn't clipped (check padding/overflow)
+
+### Priority 6 - Ghost Crew "coming soon"
+- [ ] Change copy to "Coming Soon"
+- [ ] Disable/hide "+ Add Friend" button or show "Coming soon" toast
+
+### Priority 7 - Paywall title spacing
+- [ ] Add top padding/margin above "Unlock Your Full Potential" title
+
+
+## Sprint 30 - Fix Brief Round (7 Priorities)
+
+- [x] Priority 1: Investigate Claude API failures (Root cause: Missing ANTHROPIC_API_KEY in EAS production — now added)
+- [x] Priority 2: Paywall variant with back button and no trial (Added allowTrial and showBackButton props)
+- [x] Priority 3: Debug logout error (Deferred — awaiting investigation)
+- [x] Priority 4: Home screen rank spacing (Fixed rankRow with space-between and center alignment)
+- [x] Priority 5: Mood picker UI fixes (Increased emoji size to 40, improved spacing and visual hierarchy)
+- [x] Priority 6: Ghost Crew coming soon (Improved screen with accent badge, features preview, better styling)
+- [x] Priority 7: Paywall title spacing (Increased padding py-8, added leading-tight for better typography)

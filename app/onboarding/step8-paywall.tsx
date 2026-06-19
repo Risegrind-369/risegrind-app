@@ -6,7 +6,7 @@
 import React, { useState, useEffect } from "react";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { useApp } from "@/lib/app-context";
-import { PaywallModal } from "./paywall-modal";
+import PaywallModal from "./paywall-modal";
 import { View } from "react-native";
 
 export default function Step8PaywallScreen() {

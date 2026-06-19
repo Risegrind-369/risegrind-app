@@ -533,7 +533,7 @@ const styles = StyleSheet.create({
   },
   ghostIcon: { fontSize: 20 },
   sloganText: { flex: 1, fontSize: 13, fontWeight: "700", letterSpacing: 0.1, lineHeight: 18 },
-  rankRow: { flexDirection: "row" },
+  rankRow: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   rankBadge: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: 20 },
   rankText: { fontSize: 13, fontWeight: "700" },
   ghostBlock: { borderRadius: 16, padding: 18, borderWidth: 1, gap: 8 },
@@ -600,7 +600,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   moodBannerEmoji: {
-    fontSize: 28,
+    fontSize: 32,
   },
   moodBannerText: {
     flex: 1,
@@ -669,23 +669,23 @@ const styles = StyleSheet.create({
   },
   moodGrid: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    gap: 8,
+    justifyContent: "space-between",
+    gap: 12,
   },
   moodOption: {
     flex: 1,
-    borderRadius: 14,
+    borderRadius: 16,
     borderWidth: 2,
-    padding: 12,
+    padding: 16,
     alignItems: "center",
-    gap: 6,
+    gap: 8,
   },
   moodEmoji: {
-    fontSize: 32,
+    fontSize: 40,
   },
   moodLevelLabel: {
-    fontSize: 11,
-    fontWeight: "600",
+    fontSize: 12,
+    fontWeight: "700",
     textAlign: "center",
   },
   saveMoodButton: {

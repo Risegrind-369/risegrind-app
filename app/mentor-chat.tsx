@@ -4,7 +4,7 @@ import { ScreenContainer } from '@/components/screen-container';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
-import { PaywallModal } from '@/app/onboarding/paywall-modal';
+import PaywallModal from '@/app/onboarding/paywall-modal';
 
 interface ChatMessage {
   id: string;
