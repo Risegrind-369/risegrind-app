@@ -1,5 +1,6 @@
 import { supabase } from "./client";
 import * as SecureStore from "expo-secure-store";
+import Purchases from "react-native-purchases";
 
 const TOKEN_STORAGE_KEY = "supabase_auth_token";
 const REFRESH_TOKEN_STORAGE_KEY = "supabase_refresh_token";
@@ -18,6 +19,15 @@ export async function signUpWithEmail(email: string, password: string) {
   });
   if (error) {
     throw error;
+  }
+  // Log in to RevenueCat with the new user ID
+  if (data.user?.id) {
+    try {
+      await Purchases.logIn(data.user.id);
+      console.log("[Auth] RevenueCat logIn successful for new user:", data.user.id);
+    } catch (err) {
+      console.warn("[Auth] RevenueCat logIn failed:", err);
+    }
   }
   return data;
 }
@@ -39,6 +49,15 @@ export async function signInWithEmail(email: string, password: string) {
   // Store tokens securely
   if (data.session) {
     await storeAuthTokens(data.session.access_token, data.session.refresh_token);
+  }
+  // Log in to RevenueCat with the user ID
+  if (data.user?.id) {
+    try {
+      await Purchases.logIn(data.user.id);
+      console.log("[Auth] RevenueCat logIn successful for user:", data.user.id);
+    } catch (err) {
+      console.warn("[Auth] RevenueCat logIn failed:", err);
+    }
   }
   return data;
 }
@@ -189,7 +208,15 @@ export async function completeLogout(
       console.log("[LOGOUT] STEP 1b: isLoggingOutRef.current = true — AsyncStorage reload is now blocked");
     }
 
-    // 1. Sign out from Supabase
+    // 1. Sign out from RevenueCat (must be before Supabase signOut)
+    try {
+      await Purchases.logOut();
+      console.log("[LOGOUT] STEP 1c: RevenueCat logged out successfully");
+    } catch (err) {
+      console.warn("[Auth] RevenueCat logOut failed (non-fatal):", err);
+    }
+
+    // 2. Sign out from Supabase
     if (supabase) {
       const { error } = await supabase.auth.signOut();
       if (error) {
