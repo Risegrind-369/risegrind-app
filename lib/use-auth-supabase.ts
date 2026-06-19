@@ -27,7 +27,7 @@ export function useAuth() {
       : null,
     isLoading,
     isSignedIn,
-    session: session
+    session: session && session.access_token
       ? {
           access_token: session.access_token,
           refresh_token: session.refresh_token,
