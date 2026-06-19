@@ -127,8 +127,16 @@ export default function SettingsScreen() {
               // Navigate to onboarding after logout is complete
               router.replace("/onboarding/language" as never);
             } catch (error) {
-              console.error("[Settings] Logout error:", error);
-              Alert.alert("Logout Failed", "An error occurred while logging out. Please try again.");
+              const errorMessage = error instanceof Error ? error.message : String(error);
+              console.error("[Settings] Logout error details:", {
+                message: errorMessage,
+                error,
+                stack: error instanceof Error ? error.stack : undefined,
+              });
+              Alert.alert(
+                "Logout Failed",
+                errorMessage || "An error occurred while logging out. Please try again."
+              );
             }
           },
         },
