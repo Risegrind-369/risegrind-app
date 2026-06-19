@@ -123,7 +123,7 @@ export default function JournalScreen() {
   // Use userLanguage from context (source of truth) instead of i18n.language which can lag
   const locale = (userLanguage || i18n.language || "en") as "en" | "fr" | "pt";
   const displayLocale = locale === "fr" ? "fr-FR" : locale === "pt" ? "pt-BR" : "en-US";
-  const { user } = useAuth(); // ✅ Moved to component level (was incorrectly inside handleAnalyzeAI)
+  const { user, loading: authLoading } = useAuth(); // ✅ Moved to component level (was incorrectly inside handleAnalyzeAI)
 
   const localizedPrompts = useMemo(() => {
     // Use AI-generated personalized prompts if available
@@ -161,8 +161,15 @@ export default function JournalScreen() {
   };
 
   const handleAnalyzeAI = async () => {
-    console.log("[Journal] handleAnalyzeAI triggered", { userId: user?.id, contentLength: content.length });
+    console.log("[Journal] handleAnalyzeAI triggered", { userId: user?.id, authLoading, contentLength: content.length });
     if (!content.trim()) return;
+    
+    // Wait for auth to finish loading before proceeding
+    if (authLoading) {
+      console.log("[Journal] Auth still loading, deferring AI analysis");
+      Alert.alert(t("common.error", { defaultValue: "Error" }), "Please wait while we load your session...");
+      return;
+    }
     
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setIsAnalyzing(true);
@@ -514,12 +521,12 @@ export default function JournalScreen() {
               {/* AI Analysis Button — prominent, below text editor */}
               <Pressable
                 onPress={handleAnalyzeAI}
-                disabled={!content.trim() || isAnalyzing}
+                disabled={!content.trim() || isAnalyzing || authLoading}
                 style={({ pressed }) => [
                   styles.aiAnalysisButton,
                   {
                     backgroundColor: colors.accent,
-                    opacity: pressed ? 0.85 : content.trim() && !isAnalyzing ? 1 : 0.5,
+                    opacity: pressed ? 0.85 : content.trim() && !isAnalyzing && !authLoading ? 1 : 0.5,
                   },
                 ]}
               >
