@@ -98,6 +98,19 @@ export interface GhostFriend {
 export interface AppState {
   // Onboarding
   isOnboarded: boolean;
+  // ISSUE 1+5: Track current onboarding step for resume on force-quit
+  currentOnboardingStep: string | null; // e.g. "step1-name-age", "step2-empathy", etc.
+  // ISSUE 5: Store onboarding answers in context for routine personalization (instead of route params)
+  onboardingAnswers: {
+    name?: string;
+    age?: string;
+    empathyAnswer?: string;
+    goalAnswer?: string;
+    selectedGoals?: string[];
+    selectedProblems?: string[];
+    wakeTime?: string;
+    motivationStyle?: string;
+  };
   // BUG 4 FIX (Part 1): isLoggingOut flag prevents AsyncStorage reload during logout.
   // Set to true at the very start of completeLogout(), before any async operations.
   // Reset to false in the LOGOUT reducer case (via clean INITIAL_STATE return).
@@ -136,6 +149,9 @@ export interface AppState {
 
 export type AppAction =
   | { type: "SET_ONBOARDED"; payload: { userName: string } }
+  | { type: "SET_ONBOARDING_STEP"; payload: string | null }
+  | { type: "SET_ONBOARDING_ANSWERS"; payload: Partial<AppState["onboardingAnswers"]> }
+  | { type: "CLEAR_ONBOARDING_STATE" }
   | { type: "SET_LANGUAGE"; payload: { language: "en" | "fr" | "pt"; lock: boolean } }
   | { type: "SET_PREMIUM"; payload: boolean }
   | { type: "SET_USER_PROFILE"; payload: UserProfile }
@@ -319,6 +335,8 @@ function generateGhostCode(): string {
 
 const INITIAL_STATE: AppState = {
   isOnboarded: false,
+  currentOnboardingStep: null, // ISSUE 1+5: Track step for resume
+  onboardingAnswers: {}, // ISSUE 5: Store answers in context
   isLoggingOut: false, // BUG 4 FIX (Part 1): default false
   userName: "",
   isPremium: false,
@@ -356,7 +374,16 @@ function appReducer(state: AppState, action: AppAction): AppState {
         languageLocked: action.payload.lock,
       };
     case "SET_ONBOARDED":
-      return { ...state, isOnboarded: true, userName: action.payload.userName };
+      return { ...state, isOnboarded: true, userName: action.payload.userName, currentOnboardingStep: null, onboardingAnswers: {} };
+
+    case "SET_ONBOARDING_STEP":
+      return { ...state, currentOnboardingStep: action.payload };
+
+    case "SET_ONBOARDING_ANSWERS":
+      return { ...state, onboardingAnswers: { ...state.onboardingAnswers, ...action.payload } };
+
+    case "CLEAR_ONBOARDING_STATE":
+      return { ...state, currentOnboardingStep: null, onboardingAnswers: {} };
 
     case "SET_PREMIUM":
       return { ...state, isPremium: action.payload };

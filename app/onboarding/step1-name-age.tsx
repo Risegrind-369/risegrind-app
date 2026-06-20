@@ -20,12 +20,14 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
 export default function Step1NameAgeScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const isValid = name.trim().length > 0 && age.trim().length > 0;
@@ -33,6 +35,9 @@ export default function Step1NameAgeScreen() {
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // ISSUE 1+5: Save step and answers to context for resume and personalization
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step1-name-age" });
+    dispatch({ type: "SET_ONBOARDING_ANSWERS", payload: { name: name.trim(), age: age.trim() } });
     // Navigate to account creation step
     router.push({
       pathname: "/onboarding/create-account",

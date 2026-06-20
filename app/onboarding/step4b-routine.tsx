@@ -38,17 +38,9 @@ export default function Step4bRoutineScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { language: userLanguage } = useLanguage();
-  const { dispatch } = useApp();
-  const params = useLocalSearchParams<{
-    name?: string;
-    age?: string;
-    empathyAnswer?: string;
-    goalAnswer?: string;
-    selectedGoals?: string;
-    selectedProblems?: string;
-    wakeTime?: string;
-    motivationStyle?: string;
-  }>();
+  const { dispatch, state } = useApp();
+  // ISSUE 5: Read answers from context instead of route params (more reliable)
+  const answers = state.onboardingAnswers;
 
   const [phase, setPhase] = useState<"loading" | "reveal">("loading");
   const [routine, setRoutine] = useState<{
@@ -79,14 +71,14 @@ export default function Step4bRoutineScreen() {
     // Trigger routine generation
     generateRoutine.mutate(
       {
-        name: params.name || "Ghost",
-        age: params.age || "20",
-        selectedGoals: params.selectedGoals || "",
-        selectedProblems: params.selectedProblems || "",
-        wakeTime: params.wakeTime || "6am",
-        motivationStyle: params.motivationStyle || "tough_love",
-        empathyAnswer: params.empathyAnswer || "I want to be better",
-        goalAnswer: params.goalAnswer || "Build discipline",
+        name: answers.name || "Ghost",
+        age: answers.age || "20",
+        selectedGoals: (answers.selectedGoals || []).join(",") || "",
+        selectedProblems: (answers.selectedProblems || []).join(",") || "",
+        wakeTime: answers.wakeTime || "6am",
+        motivationStyle: answers.motivationStyle || "tough_love",
+        empathyAnswer: answers.empathyAnswer || "I want to be better",
+        goalAnswer: answers.goalAnswer || "Build discipline",
         language: (userLanguage || i18n.language?.slice(0, 2) as "en" | "fr" | "pt" || "en"),
       },
       {
@@ -97,15 +89,17 @@ export default function Step4bRoutineScreen() {
 
           // Save to app context
           dispatch({ type: "SET_USER_PROFILE", payload: {
-            goals: (params.selectedGoals || "").split(",").filter(Boolean),
-            problems: (params.selectedProblems || "").split(",").filter(Boolean),
-            wakeTime: params.wakeTime || "6am",
-            motivationStyle: params.motivationStyle || "tough_love",
-            empathyAnswer: params.empathyAnswer || "",
-            goalAnswer: params.goalAnswer || "",
-            age: params.age || "",
+            goals: (answers.selectedGoals || []).filter(Boolean),
+            problems: (answers.selectedProblems || []).filter(Boolean),
+            wakeTime: answers.wakeTime || "6am",
+            motivationStyle: answers.motivationStyle || "tough_love",
+            empathyAnswer: answers.empathyAnswer || "",
+            goalAnswer: answers.goalAnswer || "",
+            age: answers.age || "",
           }});
           dispatch({ type: "SET_GENERATED_ROUTINE", payload: data as typeof routine & { createdAt: number } });
+          // ISSUE 1+5: Mark onboarding complete and clear temp state
+          dispatch({ type: "SET_ONBOARDED", payload: { userName: answers.name || "Ghost" } });
         },
         onError: () => {
           // Use fallback and proceed
@@ -130,13 +124,13 @@ export default function Step4bRoutineScreen() {
           setRoutine(fallback);
           setPhase("reveal");
           dispatch({ type: "SET_USER_PROFILE", payload: {
-            goals: (params.selectedGoals || "").split(",").filter(Boolean),
-            problems: (params.selectedProblems || "").split(",").filter(Boolean),
-            wakeTime: params.wakeTime || "6am",
-            motivationStyle: params.motivationStyle || "tough_love",
-            empathyAnswer: params.empathyAnswer || "",
-            goalAnswer: params.goalAnswer || "",
-            age: params.age || "",
+            goals: (answers.selectedGoals || []).filter(Boolean),
+            problems: (answers.selectedProblems || []).filter(Boolean),
+            wakeTime: answers.wakeTime || "6am",
+            motivationStyle: answers.motivationStyle || "tough_love",
+            empathyAnswer: answers.empathyAnswer || "",
+            goalAnswer: answers.goalAnswer || "",
+            age: answers.age || "",
           }});
           dispatch({ type: "SET_GENERATED_ROUTINE", payload: fallback });
         },
