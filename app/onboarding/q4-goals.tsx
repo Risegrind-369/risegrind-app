@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
 const GOALS = [
@@ -34,6 +35,7 @@ export default function Q4GoalsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const params = useLocalSearchParams<{
     name?: string;
     age?: string;
@@ -59,6 +61,9 @@ export default function Q4GoalsScreen() {
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // ISSUE 1+5: Save step and selected goals to context
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "q4-goals" });
+    dispatch({ type: "SET_ONBOARDING_ANSWERS", payload: { selectedGoals: selected } });
     router.push({
       pathname: "/onboarding/q5-problems",
       params: {

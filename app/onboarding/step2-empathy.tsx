@@ -20,12 +20,14 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
 export default function Step2EmpathyScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const params = useLocalSearchParams<{ name?: string; age?: string }>();
   const [answer, setAnswer] = useState("");
   const isValid = answer.trim().length > 20; // At least 20 chars for meaningful response
@@ -38,6 +40,9 @@ export default function Step2EmpathyScreen() {
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // ISSUE 1+5: Save step and answer to context
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step2-empathy" });
+    dispatch({ type: "SET_ONBOARDING_ANSWERS", payload: { empathyAnswer: answer.trim() } });
     router.push({
       pathname: "/onboarding/step3-goal",
       params: {

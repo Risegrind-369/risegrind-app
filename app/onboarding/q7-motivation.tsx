@@ -17,6 +17,7 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
 const MOTIVATION_STYLES = [
@@ -58,6 +59,7 @@ export default function Q7MotivationScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const params = useLocalSearchParams<{
     name?: string;
     age?: string;
@@ -78,6 +80,9 @@ export default function Q7MotivationScreen() {
   const handleContinue = () => {
     if (!selected) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    // ISSUE 1+5: Save step and motivation style to context
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "q7-motivation" });
+    dispatch({ type: "SET_ONBOARDING_ANSWERS", payload: { motivationStyle: selected } });
     // Navigate to AI message screen with all collected data
     router.push({
       pathname: "/onboarding/step4-ai-message",
