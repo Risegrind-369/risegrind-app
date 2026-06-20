@@ -34,6 +34,7 @@ export default function Step8PaywallScreen() {
         onClose={handlePaywallClose}
         onBack={handleBack}
         source="onboarding"
+        showBackButton={true}
       />
     </View>
   );
