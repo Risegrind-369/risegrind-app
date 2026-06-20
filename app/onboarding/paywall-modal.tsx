@@ -23,6 +23,7 @@ import { useRevenueCat } from '@/lib/revenuecat-provider';
 interface PaywallModalProps {
   visible: boolean;
   onClose: () => void;
+  onBack?: () => void;
   source: 'onboarding' | 'mentor_limit' | 'trial_expired';
   allowTrial?: boolean;
   showBackButton?: boolean;
@@ -67,7 +68,7 @@ const PLANS: Record<PlanType, Plan> = {
   },
 };
 
-function PaywallModal({ visible, onClose, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
+function PaywallModal({ visible, onClose, onBack, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
   const router = useRouter();
   const { dispatch } = useApp();
   const colors = useColors();
@@ -239,6 +240,12 @@ function PaywallModal({ visible, onClose, source, allowTrial = true, showBackBut
   };
 
   const handleClose = () => {
+    // If onBack callback provided (from step8-paywall), use it to go back
+    if (onBack) {
+      onBack();
+      return;
+    }
+    
     onClose();
     // If from onboarding, navigate to home; if from mentor limit, just close
     if (source === 'onboarding') {

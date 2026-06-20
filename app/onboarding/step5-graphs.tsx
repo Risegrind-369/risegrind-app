@@ -114,6 +114,11 @@ export default function Step5Graphs() {
     opacity: steepPathLength.value,
   }));
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   // Generate smooth bezier paths
   const flatPathD = generateSmoothPath(flatLinePoints);
   const steepPathD = generateSmoothPath(steepLinePoints);
@@ -122,6 +127,11 @@ export default function Step5Graphs() {
     <ScreenContainer className="p-6">
       <ScrollView contentContainerStyle={{ flexGrow: 1 }} showsVerticalScrollIndicator={false}>
         <View className="gap-8 flex-1">
+          {/* Back Button */}
+          <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 8 }]}>
+            <Text style={{ fontSize: 24 }}>← Back</Text>
+          </Pressable>
+
           {/* Header */}
           <View className="items-center gap-2">
             <Text className="text-3xl font-bold text-foreground">

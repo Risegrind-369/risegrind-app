@@ -8,6 +8,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { useApp } from "@/lib/app-context";
 import PaywallModal from "./paywall-modal";
 import { View } from "react-native";
+import * as Haptics from "expo-haptics";
 
 export default function Step8PaywallScreen() {
   const router = useRouter();
@@ -21,11 +22,17 @@ export default function Step8PaywallScreen() {
     router.replace("/(tabs)" as never);
   };
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   return (
     <View style={{ flex: 1 }}>
       <PaywallModal
         visible={showPaywall}
         onClose={handlePaywallClose}
+        onBack={handleBack}
         source="onboarding"
       />
     </View>
