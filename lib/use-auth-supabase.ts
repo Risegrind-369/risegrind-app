@@ -25,7 +25,9 @@ export function useAuth() {
           // Add any other fields from old Manus OAuth user object here
         }
       : null,
+    loading: isLoading,  // Alias for backward compatibility with legacy hook
     isLoading,
+    isAuthenticated: !!user,  // For screens that check this property
     isSignedIn,
     session: session && session.access_token
       ? {

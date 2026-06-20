@@ -113,11 +113,38 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
 
       console.log('[RevenueCat] ✅ Configured successfully');
 
-      // Fetch customer info and offerings in parallel
-      const [customerInfo, offerings] = await Promise.all([
-        Purchases.getCustomerInfo(),
-        Purchases.getOfferings(),
-      ]);
+      // Fetch customer info and offerings with detailed error logging
+      console.log('[RevenueCat] Fetching customer info and offerings...');
+      let customerInfo: any;
+      let offerings: any;
+
+      try {
+        customerInfo = await Purchases.getCustomerInfo();
+        console.log('[RevenueCat] ✅ getCustomerInfo() succeeded');
+      } catch (err: any) {
+        console.error('[RevenueCat] ❌ getCustomerInfo() failed:', {
+          message: err?.message,
+          code: err?.code,
+          userInfo: err?.userInfo,
+          toString: err?.toString?.(),
+        });
+        throw err;
+      }
+
+      try {
+        offerings = await Purchases.getOfferings();
+        const packageCount = offerings?.current?.availablePackages?.length ?? 0;
+        console.log(`[RevenueCat] ✅ getOfferings() succeeded, packages: ${packageCount}`);
+      } catch (err: any) {
+        console.error('[RevenueCat] ❌ getOfferings() FAILED with exact error:', {
+          message: err?.message,
+          code: err?.code,
+          userInfo: err?.userInfo,
+          toString: err?.toString?.(),
+          fullError: JSON.stringify(err, null, 2),
+        });
+        throw err;
+      }
 
       let isPremium = !!customerInfo.entitlements.active['premium'];
       let isTrialActive = isPremium &&
@@ -149,7 +176,13 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       
       const allPackages: any[] = offerings.current?.availablePackages ?? [];
 
-      console.log(`[RevenueCat] isPremium=${isPremium}, isTrialActive=${isTrialActive}, packages=${allPackages.length}`);
+      console.log(`[RevenueCat] ✅ Init complete: isPremium=${isPremium}, isTrialActive=${isTrialActive}, packages=${allPackages.length}`);
+      if (allPackages.length === 0) {
+        console.warn('[RevenueCat] ⚠️  WARNING: No packages found in offerings. Check RevenueCat config.');
+      }
+      allPackages.forEach((pkg, idx) => {
+        console.log(`[RevenueCat]   Package ${idx}: ${pkg.packageType} - ${pkg.product?.title}`);
+      });
 
       setState({
         isLoading: false,
@@ -194,10 +227,15 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
           customerInfo: newCustomerInfo,
         }));
       });
-    } catch (error) {
+    } catch (error: any) {
       const message =
         error instanceof Error ? error.message : 'Failed to initialize RevenueCat';
-      console.error('[RevenueCat] ❌ Init error:', error);
+      console.error('[RevenueCat] ❌ Init error with details:', {
+        message,
+        code: error?.code,
+        userInfo: error?.userInfo,
+        fullError: JSON.stringify(error, null, 2),
+      });
       setState((prev) => ({ ...prev, isLoading: false, error: message }));
     }
   };
@@ -248,11 +286,11 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       return isPremium;
     } catch (error: any) {
       if (error?.userCancelled) {
-        console.log('[RevenueCat] Purchase cancelled by user');
+        console.log('[RevenueCat] User cancelled purchase');
         return false;
       }
       const message = error instanceof Error ? error.message : 'Purchase failed';
-      console.error('[RevenueCat] ❌ Purchase error:', error);
+      console.error('[RevenueCat] Purchase error:', error);
       setState((prev) => ({ ...prev, error: message }));
       return false;
     }
@@ -337,8 +375,7 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
   );
 }
 
-// ─── Hook ─────────────────────────────────────────────────────────────────────
-export function useRevenueCat() {
+export function useRevenueCat(): RevenueCatContextType {
   const context = useContext(RevenueCatContext);
   if (!context) {
     throw new Error('useRevenueCat must be used within RevenueCatProvider');

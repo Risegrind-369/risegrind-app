@@ -12,7 +12,7 @@
 import { useEffect, useRef } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/use-auth-supabase";
 
 export function EntitlementGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();

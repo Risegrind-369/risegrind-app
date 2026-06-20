@@ -6,7 +6,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
 import * as AppleHealthKit from "react-native-health";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/lib/use-auth-supabase";
 
 // Type AppleHealthKit as any to avoid type issues with the library
 const HealthKit = AppleHealthKit as any;

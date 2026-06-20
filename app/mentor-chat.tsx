@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import PaywallModal from '@/app/onboarding/paywall-modal';
 import { attemptSendMessage } from '@/lib/message-limits';
-import { useAuth } from '@/hooks/use-auth';
+import { useAuth } from '@/lib/use-auth-supabase';
 
 interface ChatMessage {
   id: string;
