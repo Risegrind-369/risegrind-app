@@ -44,6 +44,10 @@ export default function Step6TrialRevealScreen() {
     // Navigate to notification permission screen
     router.push("/onboarding/step7-notifications");
   };
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
 
   return (
     <>

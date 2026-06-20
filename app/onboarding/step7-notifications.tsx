@@ -104,6 +104,10 @@ export default function Step7NotificationsScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     handleContinue();
   };
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
 
   const handleContinue = () => {
     router.push({

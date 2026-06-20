@@ -73,6 +73,11 @@ export default function Step4AIMessageScreen() {
     fetchMessage();
   }, []);
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   const handleContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Navigate to routine generation screen with all collected data

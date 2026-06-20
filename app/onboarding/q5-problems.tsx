@@ -59,6 +59,11 @@ export default function Q5ProblemsScreen() {
 
   const isValid = selected.length >= 1;
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);

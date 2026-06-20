@@ -21,11 +21,14 @@ import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { signInWithEmail, retrieveAuthTokens } from "@/lib/supabase/auth";
+import { trpc } from "@/lib/trpc";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
 
 export default function SignInScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { dispatch } = useApp();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -81,6 +84,22 @@ export default function SignInScreen() {
       await signInWithEmail(email, password);
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+
+      // Issue 4: Query server for onboarding status to restore isOnboarded flag
+      // even if AsyncStorage was wiped
+      try {
+        const onboardingStatus = await trpc.account.getOnboardingStatus.query();
+        console.log("[SignIn] Onboarding status from server:", onboardingStatus);
+        
+        if (onboardingStatus.isOnboarded) {
+          // User completed onboarding before, restore the flag
+          dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
+          console.log("[SignIn] Restored isOnboarded=true from server");
+        }
+      } catch (statusError) {
+        console.warn("[SignIn] Failed to fetch onboarding status:", statusError);
+        // Continue anyway - user will be prompted to onboard if needed
+      }
 
       // Navigate to home screen (skip rest of onboarding since they're returning)
       router.replace("/(tabs)" as never);

@@ -47,6 +47,10 @@ export default function Q6WakeTimeScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelected(id);
   };
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
 
   const handleContinue = () => {
     if (!selected) return;

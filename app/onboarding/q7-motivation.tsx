@@ -76,6 +76,10 @@ export default function Q7MotivationScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setSelected(id);
   };
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
 
   const handleContinue = () => {
     if (!selected) return;

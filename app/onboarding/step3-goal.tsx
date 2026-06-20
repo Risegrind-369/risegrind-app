@@ -53,6 +53,11 @@ export default function Step3GoalScreen() {
     } as never);
   };
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   return (
     <ScreenContainer containerClassName="bg-background">
       <KeyboardAvoidingView
@@ -64,6 +69,11 @@ export default function Step3GoalScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* Back Button */}
+          <Pressable onPress={handleBack} style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1, marginBottom: 16 }]}>
+            <Text style={{ fontSize: 24 }}>← Back</Text>
+          </Pressable>
+
           {/* Progress Indicator */}
           <Animated.View
             entering={FadeInDown.delay(100)}

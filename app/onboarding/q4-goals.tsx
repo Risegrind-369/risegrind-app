@@ -58,6 +58,11 @@ export default function Q4GoalsScreen() {
 
   const isValid = selected.length >= 1;
 
+  const handleBack = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    router.back();
+  };
+
   const handleContinue = () => {
     if (!isValid) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
