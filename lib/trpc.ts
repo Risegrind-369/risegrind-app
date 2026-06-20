@@ -3,7 +3,7 @@ import { httpBatchLink } from "@trpc/client";
 import superjson from "superjson";
 import type { AppRouter } from "@/server/routers";
 import { getApiBaseUrl } from "@/constants/oauth";
-import * as Auth from "@/lib/_core/auth";
+import { retrieveAuthTokens } from "@/lib/supabase/auth";
 
 /**
  * tRPC React client for type-safe API calls.
@@ -26,8 +26,14 @@ export function createTRPCClient() {
         // tRPC v11: transformer MUST be inside httpBatchLink, not at root
         transformer: superjson,
         async headers() {
-          const token = await Auth.getSessionToken();
-          return token ? { Authorization: `Bearer ${token}` } : {};
+          // Use Supabase access token for protected routes (not legacy Manus session token)
+          const { accessToken } = await retrieveAuthTokens();
+          if (accessToken) {
+            console.log("[tRPC] Adding Supabase Authorization header");
+            return { Authorization: `Bearer ${accessToken}` };
+          }
+          console.log("[tRPC] No Supabase access token available for Authorization header");
+          return {};
         },
         // Custom fetch to include credentials for cookie-based auth
         fetch(url, options) {
