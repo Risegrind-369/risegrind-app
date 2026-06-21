@@ -6,6 +6,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
+import PaywallModal from "./paywall-modal";
 import * as Haptics from "expo-haptics";
 
 export default function TrialRevealScreen() {
@@ -15,6 +16,7 @@ export default function TrialRevealScreen() {
   const { state, dispatch } = useApp();
   const { packages, purchasePackage, isNativeBuild } = useRevenueCat();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   // Find the trial package
   const trialPackage = packages?.find(
@@ -26,19 +28,32 @@ export default function TrialRevealScreen() {
       setIsLoading(true);
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
       
-      // Navigate to paywall to show pricing options
-      // User can choose to start trial or purchase a plan
-      router.push("/onboarding/paywall" as never);
+      // Show paywall modal to let user choose trial or purchase
+      setShowPaywall(true);
+      setIsLoading(false);
     } catch (error) {
-      console.error('[TrialReveal] Error navigating to paywall:', error);
+      console.error('[TrialReveal] Error showing paywall:', error);
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
       setIsLoading(false);
     }
   };
 
+  const handlePaywallClose = () => {
+    setShowPaywall(false);
+    // User completed purchase or closed modal, return to app
+    router.replace('/(tabs)');
+  };
+
   return (
-    <ScreenContainer containerClassName="bg-background">
-      <View style={styles.container}>
+    <>
+      <PaywallModal
+        visible={showPaywall}
+        onClose={handlePaywallClose}
+        source="trial_expired"
+        allowTrial={true}
+      />
+      <ScreenContainer containerClassName="bg-background">
+        <View style={styles.container}>
         {/* Icon */}
         <Text style={styles.icon}>🎁</Text>
 
@@ -111,6 +126,7 @@ export default function TrialRevealScreen() {
         </Text>
       </View>
     </ScreenContainer>
+    </>
   );
 }
 
