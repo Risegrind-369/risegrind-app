@@ -158,18 +158,17 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       annualTapCountRef.current = 0;
     }, 3000);
     
-    if (annualTapCountRef.current === 3) {
-      annualTapCountRef.current = 0;
-      if (annualTapTimerRef.current) clearTimeout(annualTapTimerRef.current);
-      
-      // Grant temporary pro access
-      (async () => {
-        try {
-          await AsyncStorage.setItem('debug_pro_override', 'true');
-          Alert.alert('🔓 Debug Mode', 'Pro access granted for testing. Restart the app to apply.');
-          dispatch({ type: 'SET_PREMIUM', payload: true });
-          onClose();
-          router.replace('/(tabs)');
+      if (annualTapCountRef.current === 3) {
+        annualTapCountRef.current = 0;
+        if (annualTapTimerRef.current) clearTimeout(annualTapTimerRef.current);
+        
+        // Grant temporary pro access
+        (async () => {
+          try {
+            await AsyncStorage.setItem('debug_pro_override', 'true');
+            Alert.alert('🔓 Debug Mode', 'Pro access granted for testing. Restart the app to apply.');
+            dispatch({ type: 'SET_PREMIUM', payload: true });
+            onClose();  // onClose() handles navigation
         } catch (err) {
           console.error('[Paywall] Debug bypass error:', err);
         }
@@ -206,8 +205,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       if (purchaseResult?.customerInfo?.entitlements?.active?.['pro'] || purchaseResult?.customerInfo?.entitlements?.active?.['premium']) {
         // Purchase successful
         dispatch({ type: 'SET_PREMIUM', payload: true });
-        onClose();
-        router.replace('/(tabs)');
+        onClose();  // onClose() handles navigation
       }
     } catch (error: any) {
       if (error.userCancelled) {
@@ -227,8 +225,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       const customerInfo = await Purchases.restorePurchases();
       if (customerInfo?.entitlements?.active?.['pro']) {
         dispatch({ type: 'SET_PREMIUM', payload: true });
-        onClose();
-        router.replace('/(tabs)');
+        onClose();  // onClose() handles navigation
       } else {
         Alert.alert('No Purchases Found', 'No active subscriptions found.');
       }
@@ -247,11 +244,8 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       return;
     }
     
+    // Otherwise, call onClose() which handles navigation based on source
     onClose();
-    // If from onboarding, navigate to home; if from mentor limit, just close
-    if (source === 'onboarding') {
-      router.replace('/(tabs)');
-    }
   };
 
   return (
