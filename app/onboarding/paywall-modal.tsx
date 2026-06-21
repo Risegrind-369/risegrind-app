@@ -24,6 +24,7 @@ interface PaywallModalProps {
   visible: boolean;
   onClose: () => void;
   onBack?: () => void;
+  onLogout?: () => void;
   source: 'onboarding' | 'mentor_limit' | 'trial_expired';
   allowTrial?: boolean;
   showBackButton?: boolean;
@@ -68,7 +69,7 @@ const PLANS: Record<PlanType, Plan> = {
   },
 };
 
-function PaywallModal({ visible, onClose, onBack, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
+function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
   const router = useRouter();
   const { dispatch } = useApp();
   const colors = useColors();
@@ -484,6 +485,23 @@ function PaywallModal({ visible, onClose, onBack, source, allowTrial = true, sho
             </>
           )}
         </ScrollView>
+        
+        {/* Logout Button - visible only in hard-wall mode (trial expired, no subscription) */}
+        {shouldHardWall && onLogout && (
+          <View className="px-6 py-4 border-t" style={{ borderTopColor: colors.border }}>
+            <Pressable
+              onPress={onLogout}
+              style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
+            >
+              <Text
+                className="text-center text-sm font-medium"
+                style={{ color: colors.muted, textDecorationLine: 'underline' }}
+              >
+                Log out
+              </Text>
+            </Pressable>
+          </View>
+        )}
       </ScreenContainer>
     </Modal>
   );
