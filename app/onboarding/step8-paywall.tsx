@@ -20,8 +20,19 @@ export default function Step8PaywallScreen() {
 
   const handlePaywallClose = () => {
     // Mark onboarding as complete and navigate to home
-    dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
-    router.replace("/(tabs)" as never);
+    try {
+      console.log('[Step8Paywall] handlePaywallClose called');
+      dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
+      console.log('[Step8Paywall] Dispatched SET_ONBOARDED, now routing to /(tabs)');
+      
+      const routePath = "/(tabs)" as never;
+      console.log('[Step8Paywall] Calling router.replace with path:', routePath);
+      router.replace(routePath);
+      console.log('[Step8Paywall] router.replace completed');
+    } catch (error) {
+      console.error('[Step8Paywall] ERROR in handlePaywallClose:', error);
+      throw error;
+    }
   };
 
   const handleBack = () => {
