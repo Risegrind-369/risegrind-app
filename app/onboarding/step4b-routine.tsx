@@ -69,20 +69,25 @@ export default function Step4bRoutineScreen() {
     );
 
     // Trigger routine generation
+    const payload = {
+      name: answers.name || "Ghost",
+      age: answers.age || "20",
+      selectedGoals: (answers.selectedGoals || []).join(",") || "",
+      selectedProblems: (answers.selectedProblems || []).join(",") || "",
+      wakeTime: answers.wakeTime || "6am",
+      motivationStyle: answers.motivationStyle || "tough_love",
+      empathyAnswer: answers.empathyAnswer || "I want to be better",
+      goalAnswer: answers.goalAnswer || "Build discipline",
+      language: (userLanguage || i18n.language?.slice(0, 2) as "en" | "fr" | "pt" || "en"),
+    };
+    
+    console.log('[Step4bRoutine] PAYLOAD BEING SENT TO generateRoutine:', JSON.stringify(payload, null, 2));
+    
     generateRoutine.mutate(
-      {
-        name: answers.name || "Ghost",
-        age: answers.age || "20",
-        selectedGoals: (answers.selectedGoals || []).join(",") || "",
-        selectedProblems: (answers.selectedProblems || []).join(",") || "",
-        wakeTime: answers.wakeTime || "6am",
-        motivationStyle: answers.motivationStyle || "tough_love",
-        empathyAnswer: answers.empathyAnswer || "I want to be better",
-        goalAnswer: answers.goalAnswer || "Build discipline",
-        language: (userLanguage || i18n.language?.slice(0, 2) as "en" | "fr" | "pt" || "en"),
-      },
+      payload,
       {
         onSuccess: (data) => {
+          console.log('[Step4bRoutine] RESPONSE RECEIVED from generateRoutine:', JSON.stringify(data, null, 2));
           setRoutine(data as typeof routine);
           setPhase("reveal");
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
