@@ -1,10 +1,4 @@
-/**
- * Paywall Modal Component
- *
- * Displays subscription options with RevenueCat integration.
- * Handles purchases, trial starts, and restore purchases.
- * Hard-wall mode: no back button when trial expired and no active subscription.
- */
+import React, { useState, useEffect, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {
   View,
@@ -25,7 +19,6 @@ import { useApp } from '@/lib/app-context';
 import { useColors } from '@/hooks/use-colors';
 import { cn } from '@/lib/utils';
 import { useRevenueCat } from '@/lib/revenuecat-provider';
-import { useRef, useState } from 'react';
 
 interface PaywallModalProps {
   visible: boolean;
@@ -99,38 +92,47 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
   const isDevEnabled = process.env.EXPO_PUBLIC_DEBUG_BYPASS === 'true';
 
   // Fetch available packages from RevenueCat with retry logic
-  useState(() => {
+  useEffect(() => {
     if (!visible) return;
 
     const fetchPackages = async (retryCount = 0) => {
       const MAX_RETRIES = 2;
       const RETRY_DELAY_MS = 2000;
+
       try {
         setPackagesLoading(true);
         setPackagesError(null);
+        
         const offerings = await Purchases.getOfferings();
-        const currentOffering = offerings.current;
-
-        if (!currentOffering) {
-          console.warn('[Paywall] No current offering available');
-          setPackagesError('No offerings available');
-          setPackages([]);
+        if (offerings?.current?.availablePackages && offerings.current.availablePackages.length > 0) {
+          setPackages(offerings.current.availablePackages);
+          setPackagesLoading(false);
           return;
         }
-
-        const availablePackages = currentOffering.availablePackages;
-        console.log('[Paywall] Available packages:', availablePackages.map(p => p.product.identifier));
-        setPackages(availablePackages);
-        setPackagesError(null);
-      } catch (err: any) {
-        console.error(`[Paywall] Error fetching packages (attempt ${retryCount + 1}):`, err);
+        
+        // No packages returned, retry if we haven't exceeded max retries
         if (retryCount < MAX_RETRIES) {
-          setTimeout(() => fetchPackages(retryCount + 1), RETRY_DELAY_MS);
-        } else {
-          setPackagesError('Failed to load subscription options');
-          setPackages([]);
+          console.warn(`[Paywall] No packages found, retrying (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+          return fetchPackages(retryCount + 1);
         }
-      } finally {
+        
+        // All retries exhausted
+        console.error('[Paywall] Failed to fetch packages after retries');
+        setPackagesError('Unable to load subscription options. Check your connection and try again.');
+        setPackagesLoading(false);
+      } catch (error) {
+        console.error('[Paywall] Error fetching packages:', error);
+        
+        // Retry on network error if we haven't exceeded max retries
+        if (retryCount < MAX_RETRIES) {
+          console.warn(`[Paywall] Network error, retrying (attempt ${retryCount + 1}/${MAX_RETRIES})...`);
+          await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+          return fetchPackages(retryCount + 1);
+        }
+        
+        // All retries exhausted
+        setPackagesError('Unable to load subscription options. Check your connection and try again.');
         setPackagesLoading(false);
       }
     };
@@ -138,24 +140,28 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
     fetchPackages();
   }, [visible]);
 
-  const handleAnnualTap = () => {
+  const handleAnnualPlanTap = async () => {
+    // First, always select the Annual plan (normal behavior)
+    handlePlanSelect('annual');
+    
+    // Then check for dev bypass (3-tap in 3 seconds)
     if (!isDevEnabled) return;
-
+    
     annualTapCountRef.current += 1;
-
+    
     // Reset counter if more than 3 seconds between taps
     if (annualTapTimerRef.current) {
       clearTimeout(annualTapTimerRef.current);
     }
-
+    
     annualTapTimerRef.current = setTimeout(() => {
       annualTapCountRef.current = 0;
     }, 3000);
-
+    
     if (annualTapCountRef.current === 3) {
       annualTapCountRef.current = 0;
       if (annualTapTimerRef.current) clearTimeout(annualTapTimerRef.current);
-
+      
       // Grant temporary pro access
       (async () => {
         try {
@@ -170,7 +176,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
     }
   };
 
-  const handlePlanSelect = (plan: PlanType) => {
+    const handlePlanSelect = (plan: PlanType) => {
     setSelectedPlan(plan);
   };
 
@@ -185,12 +191,12 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
     try {
       const plan = PLANS[selectedPlan];
       console.log('[Paywall] Starting purchase for plan:', plan.id);
-
+      
       const selectedPackage = packages.find((pkg) => {
         // Match both old and new product ID formats
         const pkgId = pkg.product.identifier;
         console.log('[Paywall] Checking package:', pkgId, 'against plan productId:', plan.productId);
-        return pkgId === plan.productId ||
+        return pkgId === plan.productId || 
                pkgId === plan.productId.replace('com.', '') ||
                pkgId === 'com.' + plan.productId;
       });
@@ -204,7 +210,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
 
       console.log('[Paywall] Calling Purchases.purchasePackage for:', selectedPackage.product.identifier);
       const purchaseResult = await Purchases.purchasePackage(selectedPackage);
-
+      
       console.log('[Paywall] Purchase result received:', {
         hasProEntitlement: !!purchaseResult?.customerInfo?.entitlements?.active?.['pro'],
         hasPremiumEntitlement: !!purchaseResult?.customerInfo?.entitlements?.active?.['premium'],
@@ -215,7 +221,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
         // Purchase successful
         console.log('[Paywall] Purchase confirmed, calling onClose()');
         dispatch({ type: 'SET_PREMIUM', payload: true });
-
+        
         try {
           onClose();  // onClose() handles navigation
           console.log('[Paywall] onClose() completed successfully');
@@ -251,8 +257,8 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
         Alert.alert('No Purchases Found', 'No active subscriptions found.');
       }
     } catch (error) {
-      console.error('[Paywall] Restore purchases error:', error);
-      Alert.alert('Error', 'Failed to restore purchases. Please try again.');
+      console.error('[Paywall] Restore error:', error);
+      Alert.alert('Restore Failed', 'Please try again.');
     } finally {
       setLoading(false);
     }
@@ -264,9 +270,12 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       onBack();
       return;
     }
-
-    // Otherwise, call onClose() which handles navigation based on source
+    
     onClose();
+    // If from onboarding, navigate to home; if from mentor limit, just close
+    if (source === 'onboarding') {
+      router.replace('/(tabs)');
+    }
   };
 
   return (
@@ -305,131 +314,198 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
             </View>
           )}
 
-          {/* Error State */}
-          {packagesError && (
-            <View className="flex-1 items-center justify-center p-6">
-              <Text className="text-center text-sm text-error mb-4">{packagesError}</Text>
+          {/* Error State with Retry */}
+          {packagesError && !packagesLoading && (
+            <View className="flex-1 items-center justify-center px-6 gap-4">
+              <Text className="text-center text-base font-semibold text-error">{packagesError}</Text>
               <Pressable
-                onPress={() => setPackagesLoading(true)}
-                className="px-6 py-3 bg-primary rounded-lg"
+                onPress={async () => {
+                  setPackagesError(null);
+                  setPackagesLoading(true);
+                  // Retrigger fetch
+                  const retryFetch = async (retryCount = 0) => {
+                    const MAX_RETRIES = 2;
+                    const RETRY_DELAY_MS = 2000;
+                    try {
+                      const offerings = await Purchases.getOfferings();
+                      if (offerings?.current?.availablePackages && offerings.current.availablePackages.length > 0) {
+                        setPackages(offerings.current.availablePackages);
+                        setPackagesLoading(false);
+                        return;
+                      }
+                      if (retryCount < MAX_RETRIES) {
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                        return retryFetch(retryCount + 1);
+                      }
+                      setPackagesError('Unable to load subscription options. Check your connection and try again.');
+                      setPackagesLoading(false);
+                    } catch (error) {
+                      console.error('[Paywall] Error during retry:', error);
+                      if (retryCount < MAX_RETRIES) {
+                        await new Promise(resolve => setTimeout(resolve, RETRY_DELAY_MS));
+                        return retryFetch(retryCount + 1);
+                      }
+                      setPackagesError('Unable to load subscription options. Check your connection and try again.');
+                      setPackagesLoading(false);
+                    }
+                  };
+                  retryFetch();
+                }}
+                className="rounded-lg bg-accent px-6 py-3"
               >
-                <Text className="text-background font-semibold">Retry</Text>
+                <Text className="font-semibold text-background">Try Again</Text>
               </Pressable>
             </View>
           )}
 
-          {/* Content */}
+          {/* Normal Content - only show when packages loaded successfully */}
           {!packagesLoading && !packagesError && (
             <>
-              {/* Header */}
-              <View className="px-6 py-8 items-center">
-                <Text className="text-3xl font-bold text-foreground mb-2">Unlock Premium</Text>
-                <Text className="text-base text-muted text-center">
-                  Get unlimited mentors, advanced analytics, and more.
-                </Text>
-              </View>
+          {/* Title with top padding */}
+          <View className="px-6 py-8">
+            <Text className="text-4xl font-bold text-foreground text-center leading-tight">
+              Unlock Your Full Potential
+            </Text>
+          </View>
 
-              {/* Plans */}
-              <View className="px-6 gap-4 mb-8">
-                {Object.values(PLANS).map((plan) => (
-                  <Pressable
-                    key={plan.id}
-                    onPress={() => handlePlanSelect(plan.id as PlanType)}
-                    onLongPress={() => handleAnnualTap()}
-                    style={({ pressed }) => [
-                      {
-                        opacity: pressed ? 0.7 : 1,
-                        borderColor: selectedPlan === plan.id ? colors.primary : colors.border,
-                        borderWidth: 2,
-                        borderRadius: 12,
-                        padding: 16,
-                        backgroundColor: selectedPlan === plan.id ? colors.surface : 'transparent',
-                      },
-                    ]}
-                  >
-                    <View className="flex-row items-start justify-between">
-                      <View className="flex-1">
-                        <Text className="text-lg font-bold text-foreground">{plan.name}</Text>
-                        {plan.description && (
-                          <Text className="text-xs text-muted mt-1">{plan.description}</Text>
-                        )}
-                      </View>
-                      <View className="items-end">
-                        <Text className="text-xl font-bold text-primary">{plan.price}</Text>
-                        <Text className="text-xs text-muted">{plan.period}</Text>
-                      </View>
-                    </View>
-                    {plan.badge && (
-                      <View className="mt-3 bg-primary px-3 py-1 rounded-full self-start">
-                        <Text className="text-xs font-bold text-background">{plan.badge}</Text>
-                      </View>
-                    )}
-                  </Pressable>
-                ))}
-              </View>
+          {/* Removed timeline - direct paywall, no trial */}
 
-              {/* CTA Button */}
-              <View className="px-6 gap-3 mb-8">
-                <Pressable
-                  onPress={handleStartTrial}
-                  disabled={loading}
-                  style={({ pressed }) => [
-                    {
-                      opacity: loading ? 0.5 : pressed ? 0.9 : 1,
-                      backgroundColor: colors.primary,
-                      paddingVertical: 16,
-                      borderRadius: 12,
-                      alignItems: 'center',
-                    },
-                  ]}
-                >
-                  {loading ? (
-                    <ActivityIndicator size="small" color={colors.background} />
-                  ) : (
-                    <Text className="text-lg font-bold text-background">
-                      {allowTrial ? 'Start Free Trial' : 'Subscribe Now'}
-                    </Text>
-                  )}
-                </Pressable>
-
-                <Pressable
-                  onPress={handleRestorePurchases}
-                  disabled={loading}
-                  style={({ pressed }) => [{ opacity: pressed ? 0.7 : 1 }]}
-                >
-                  <Text className="text-center text-sm text-primary font-semibold">
-                    Restore Purchase
+          {/* Feature Checklist - 8 features */}
+          <View className="px-6 py-6 bg-surface rounded-2xl mx-6 mb-8" style={{ borderColor: colors.border, borderWidth: 1 }}>
+            <Text className="text-foreground font-bold text-lg mb-4">WHAT YOU GET:</Text>
+            <View className="gap-3">
+              {[
+                { text: 'Unlimited AI mentor conversations', icon: '🔒' },
+                { text: 'Claude-powered mentor (the most advanced AI)', icon: '🟠', isOrange: true },
+                { text: 'XP system + level progression', icon: '⚡' },
+                { text: 'Ghost Crew leaderboard', icon: '👻' },
+                { text: 'Unlimited habit streaks', icon: '🔥' },
+                { text: 'Weekly performance insights', icon: '📊' },
+                { text: 'AI-powered journal analysis', icon: '📓' },
+                { text: 'Side Quests + achievements', icon: '🏆' },
+              ].map((feature, idx) => (
+                <View key={idx} className="flex-row gap-3 items-flex-start">
+                  <Text className="text-lg mt-0.5">{feature.icon}</Text>
+                  <Text className={cn('text-base flex-1', feature.isOrange ? 'text-accent font-semibold' : 'text-foreground')}>
+                    {feature.text}
                   </Text>
-                </Pressable>
-              </View>
-
-              {/* Footer */}
-              <View className="px-6 py-4 items-center gap-2">
-                <Text className="text-xs text-muted text-center">
-                  By subscribing, you agree to our
-                </Text>
-                <View className="flex-row gap-2 justify-center">
-                  <Pressable
-                    onPress={() => {
-                      Linking.openURL('https://risegrind-app.lovable.app/terms').catch(() => {
-                        Alert.alert('Error', 'Could not open Terms of Service');
-                      });
-                    }}
-                  >
-                    <Text className="text-xs text-primary underline">Terms</Text>
-                  </Pressable>
-                  <Text className="text-xs text-border">·</Text>
-                  <Pressable
-                    onPress={() => {
-                      Linking.openURL('https://risegrind-app.lovable.app/privacy').catch(() => {
-                        Alert.alert('Error', 'Could not open Privacy Policy');
-                      });
-                    }}
-                  >
-                    <Text className="text-xs text-primary underline">Privacy</Text>
-                  </Pressable>
                 </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Plan Selector */}
+          <View className="px-6 py-6 gap-3">
+            {Object.values(PLANS).map((plan) => (
+              <Pressable
+                key={plan.id}
+                onPress={() => plan.id === 'annual' ? handleAnnualPlanTap() : handlePlanSelect(plan.id)}
+                style={({ pressed }) => [
+                  {
+                    opacity: pressed ? 0.8 : 1,
+                  },
+                ]}
+              >
+                  <View
+                  className={cn(
+                    'p-4 rounded-xl border-2 flex-row items-center justify-between',
+                    selectedPlan === plan.id
+                      ? 'border-accent bg-accent/10'
+                      : 'border-border bg-surface'
+                  )}
+                >
+                  <View className="flex-row items-center gap-3 flex-1">
+                    <View
+                      className={cn(
+                        'w-5 h-5 rounded-full border-2',
+                        selectedPlan === plan.id
+                          ? 'border-accent bg-accent'
+                          : 'border-border'
+                      )}
+                    />
+                    <View className="flex-1">
+                      <Text className="text-foreground font-semibold">
+                        {plan.name}
+                      </Text>
+                      {plan.description && allowTrial !== false && (
+                        <Text className="text-xs text-muted">
+                          {plan.description}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+                  <View className="items-end">
+                    <Text className="text-foreground font-bold">{plan.price}</Text>
+                    <Text className="text-xs text-muted">{plan.period}</Text>
+                  </View>
+                </View>
+                {plan.badge && selectedPlan === plan.id && (
+                  <View className="absolute top-2 right-2 bg-primary px-3 py-1 rounded-full">
+                    <Text className="text-background text-xs font-bold">
+                      {plan.badge}
+                    </Text>
+                  </View>
+                )}
+              </Pressable>
+            ))}
+          </View>
+
+          {/* CTA Button */}
+          <View className="px-6 py-6 gap-3">
+            <Pressable
+              onPress={handleStartTrial}
+              disabled={loading}
+              style={({ pressed }) => [
+                {
+                  opacity: pressed ? 0.8 : 1,
+                },
+              ]}
+            >
+              <View className="bg-primary py-4 rounded-xl items-center justify-center">
+                {loading ? (
+                  <ActivityIndicator color={colors.background} />
+                ) : (
+                  <Text className="text-background text-lg font-bold">
+                    Start Subscription
+                  </Text>
+                )}
               </View>
+            </Pressable>
+
+            {/* Compliance Text */}
+            <Text className="text-xs text-muted text-center leading-relaxed">
+              $59.99/year or $9.99/week. Auto-renews unless cancelled 24 hours before period ends.
+            </Text>
+
+            {/* Links */}
+            <View className="flex-row justify-center gap-4 pt-2">
+              <Pressable onPress={handleRestorePurchases}>
+                <Text className="text-xs text-primary underline">
+                  Restore Purchases
+                </Text>
+              </Pressable>
+              <Text className="text-xs text-border">·</Text>
+              <Pressable
+                onPress={() => {
+                  Linking.openURL('https://risegrind-app.lovable.app/terms').catch(() => {
+                    Alert.alert('Error', 'Could not open Terms of Service');
+                  });
+                }}
+              >
+                <Text className="text-xs text-primary underline">Terms</Text>
+              </Pressable>
+              <Text className="text-xs text-border">·</Text>
+              <Pressable
+                onPress={() => {
+                  Linking.openURL('https://risegrind-app.lovable.app/privacy').catch(() => {
+                    Alert.alert('Error', 'Could not open Privacy Policy');
+                  });
+                }}
+              >
+                <Text className="text-xs text-primary underline">Privacy</Text>
+              </Pressable>
+            </View>
+          </View>
             </>
           )}
         </ScrollView>
