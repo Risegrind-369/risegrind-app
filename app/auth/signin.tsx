@@ -20,15 +20,17 @@ import {
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
-import { signInWithEmail, retrieveAuthTokens } from "@/lib/supabase/auth";
+import { signInWithEmail, retrieveAuthTokens, signOut } from "@/lib/supabase/auth";
 import { trpc } from "@/lib/trpc";
 import { useApp } from "@/lib/app-context";
+import { useRevenueCat } from "@/lib/revenuecat-provider";
 import * as Haptics from "expo-haptics";
 
 export default function SignInScreen() {
   const colors = useColors();
   const router = useRouter();
   const { dispatch } = useApp();
+  const { isPremium, isTrialActive, checkEntitlement } = useRevenueCat();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -85,6 +87,23 @@ export default function SignInScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
+      // Check entitlement status after sign-in
+      try {
+        // Force refresh entitlement from RevenueCat
+        const hasEntitlement = await checkEntitlement();
+        console.log("[SignIn] Entitlement check after sign-in:", hasEntitlement);
+        
+        if (!hasEntitlement) {
+          // No active trial or subscription - show hard-wall paywall
+          console.log("[SignIn] No entitlement, showing hard-wall paywall");
+          router.replace("/auth/signin-paywall" as never);
+          return;
+        }
+      } catch (entitlementError) {
+        console.warn("[SignIn] Failed to check entitlement:", entitlementError);
+        // Continue to app - RevenueCat may not be initialized
+      }
+
       // Issue 4: Query server for onboarding status to restore isOnboarded flag
       // even if AsyncStorage was wiped
       try {
@@ -101,7 +120,7 @@ export default function SignInScreen() {
         // Continue anyway - user will be prompted to onboard if needed
       }
 
-      // Navigate to home screen (skip rest of onboarding since they're returning)
+      // User has entitlement, navigate to app
       router.replace("/(tabs)" as never);
     } catch (error: any) {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
