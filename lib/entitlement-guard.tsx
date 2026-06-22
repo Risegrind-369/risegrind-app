@@ -51,7 +51,7 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const inPaywall = (segments[0] as string) === "onboarding" && (segments[1] as string) === "paywall";
+    const inPaywall = (segments[0] as string) === "onboarding" && (segments[1] as string) === "step8-paywall";
     const inOnboarding = (segments[0] as string) === "onboarding";
     const inAuth = (segments[0] as string) === "auth";
 

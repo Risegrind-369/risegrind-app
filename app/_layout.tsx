@@ -121,8 +121,9 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
       console.log("========== [ONBOARDING GUARD] EFFECT END (onboarding redirect) ==========\n");
-    } else if (state.isOnboarded && inOnboarding) {
-      console.log("[LOGOUT] GUARD DECISION: isOnboarded=true AND inOnboarding=true → redirecting to home (THIS IS THE BUG!)");
+    } else if (state.isOnboarded && inOnboarding && (segments[1] as string) !== "step8-paywall") {
+      // Skip redirect if on paywall — EntitlementGuard handles paywall navigation
+      console.log("[LOGOUT] GUARD DECISION: isOnboarded=true AND inOnboarding=true (not paywall) → redirecting to home");
       isNavigating.current = true;
       router.replace("/(tabs)" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
