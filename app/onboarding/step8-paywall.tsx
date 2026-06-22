@@ -21,16 +21,19 @@ export default function Step8PaywallScreen() {
   const handlePaywallClose = () => {
     // Mark onboarding as complete and navigate to home
     try {
-      console.log('[Step8Paywall] handlePaywallClose called');
+      console.log('[Step8Paywall] handlePaywallClose called - ENTRY POINT');
+      console.log('[Step8Paywall] About to dispatch SET_ONBOARDED');
       dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
-      console.log('[Step8Paywall] Dispatched SET_ONBOARDED, now routing to /(tabs)');
+      console.log('[Step8Paywall] SET_ONBOARDED dispatched successfully');
       
       const routePath = "/(tabs)" as never;
-      console.log('[Step8Paywall] Calling router.replace with path:', routePath);
+      console.log('[Step8Paywall] Route path prepared:', routePath);
+      console.log('[Step8Paywall] Calling router.replace NOW');
       router.replace(routePath);
-      console.log('[Step8Paywall] router.replace completed');
+      console.log('[Step8Paywall] router.replace returned - navigation should be in progress');
     } catch (error) {
-      console.error('[Step8Paywall] ERROR in handlePaywallClose:', error);
+      console.error('[Step8Paywall] CRITICAL ERROR in handlePaywallClose:', error);
+      console.error('[Step8Paywall] Stack:', (error as any)?.stack);
       throw error;
     }
   };
