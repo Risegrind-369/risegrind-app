@@ -26,9 +26,9 @@ export async function checkUserIsInTrial(): Promise<boolean> {
 
     if (!customerInfo) return false;
 
-    // Check if user has "premium" entitlement AND it's in trial period
-    const hasPremium = !!customerInfo.entitlements.active["premium"];
-    const isTrialPeriod = hasPremium && customerInfo.entitlements.active["premium"]?.periodType === "TRIAL";
+    // Check if user has "pro" entitlement AND it's in trial period
+    const hasPremium = !!customerInfo.entitlements.active["pro"];
+    const isTrialPeriod = hasPremium && customerInfo.entitlements.active["pro"]?.periodType === "TRIAL";
     return isTrialPeriod;
   } catch (error) {
     console.warn("[MessageLimits] Error checking RevenueCat trial status:", error);

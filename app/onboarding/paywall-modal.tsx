@@ -213,14 +213,14 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       
       const purchaseLogData = {
         hasProEntitlement: !!purchaseResult?.customerInfo?.entitlements?.active?.['pro'],
-        hasPremiumEntitlement: !!purchaseResult?.customerInfo?.entitlements?.active?.['premium'],
+        hasPremiumEntitlement: !!purchaseResult?.customerInfo?.entitlements?.active?.['pro'],
         activeEntitlements: Object.keys(purchaseResult?.customerInfo?.entitlements?.active || {}),
       };
       console.log('[Paywall] Purchase result received:', purchaseLogData);
       
 
 
-      if (purchaseResult?.customerInfo?.entitlements?.active?.['pro'] || purchaseResult?.customerInfo?.entitlements?.active?.['premium']) {
+      if (purchaseResult?.customerInfo?.entitlements?.active?.['pro']) {
         // Purchase successful
         console.log('[Paywall] Purchase confirmed, calling onClose()');
         

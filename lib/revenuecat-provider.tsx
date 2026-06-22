@@ -146,9 +146,9 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
         throw err;
       }
 
-      let isPremium = !!customerInfo.entitlements.active['premium'];
+      let isPremium = !!customerInfo.entitlements.active['pro'];
       let isTrialActive = isPremium &&
-        customerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+        customerInfo.entitlements.active['pro']?.periodType === 'TRIAL';
       
       // Check for local trial start time (set when user taps "Start Trial" in trial-reveal.tsx)
       if (!isPremium) {
@@ -196,9 +196,9 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
 
       // Real-time listener: updates state instantly after purchase, trial activation, or cancellation
       Purchases.addCustomerInfoUpdateListener(async (newCustomerInfo) => {
-        let newIsPremium = !!newCustomerInfo.entitlements.active['premium'];
+        let newIsPremium = !!newCustomerInfo.entitlements.active['pro'];
         let newIsTrialActive = newIsPremium &&
-          newCustomerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+          newCustomerInfo.entitlements.active['pro']?.periodType === 'TRIAL';
         
         // Also check local trial timer
         if (!newIsPremium) {
@@ -247,9 +247,9 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       const { default: Purchases } = await import('react-native-purchases');
       console.log('[RevenueCat] Restoring purchases...');
       const customerInfo = await Purchases.restorePurchases();
-      const isPremium = !!customerInfo.entitlements.active['premium'];
+      const isPremium = !!customerInfo.entitlements.active['pro'];
       const isTrialActive = isPremium &&
-        customerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+        customerInfo.entitlements.active['pro']?.periodType === 'TRIAL';
       console.log(`[RevenueCat] Restore complete: isPremium=${isPremium}`);
       setState((prev) => ({ ...prev, isPremium, isTrialActive, customerInfo, error: null }));
     } catch (error) {
@@ -278,9 +278,9 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
       const { default: Purchases } = await import('react-native-purchases');
       console.log(`[RevenueCat] Purchasing package: ${pkg?.packageType}`);
       const { customerInfo } = await Purchases.purchasePackage(pkg);
-      const isPremium = !!customerInfo.entitlements.active['premium'];
+      const isPremium = !!customerInfo.entitlements.active['pro'];
       const isTrialActive = isPremium &&
-        customerInfo.entitlements.active['premium']?.periodType === 'TRIAL';
+        customerInfo.entitlements.active['pro']?.periodType === 'TRIAL';
       console.log(`[RevenueCat] ✅ Purchase complete: isPremium=${isPremium}, isTrialActive=${isTrialActive}`);
       setState((prev) => ({ ...prev, isPremium, isTrialActive, customerInfo, error: null }));
       return isPremium;
@@ -302,7 +302,7 @@ export function RevenueCatProvider({ children }: { children: React.ReactNode }) 
     try {
       const { default: Purchases } = await import('react-native-purchases');
       const customerInfo = await Purchases.getCustomerInfo();
-      let isPremium = !!customerInfo.entitlements.active['premium'];
+      let isPremium = !!customerInfo.entitlements.active['pro'];
       
       // Also check local trial timer
       if (!isPremium) {
