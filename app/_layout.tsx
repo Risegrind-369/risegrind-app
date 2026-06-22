@@ -154,6 +154,12 @@ export default function RootLayout() {
 
       console.log("[DeepLink] Parsed path:", path, "queryParams:", queryParams);
 
+      // GUARD: Ignore empty or invalid paths (prevents risegrind:/// crash)
+      if (!path || path === "/" || path.trim() === "") {
+        console.log("[DeepLink] Ignoring empty path:", path);
+        return;
+      }
+
       // Extract token_hash from URL string directly (fallback for truncated URLs)
       let tokenHash: string | undefined = queryParams ? (queryParams.token_hash as string) : undefined;
       let emailType: string | undefined = queryParams ? (queryParams.type as string) : undefined;
