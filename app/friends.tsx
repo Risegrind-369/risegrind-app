@@ -179,18 +179,18 @@ export default function FriendsScreen() {
           )}
         </View>
 
-        {/* Add Friend Button */}
+        {/* Add Friend Button - Disabled for v1 (server sync not ready) */}
         <Pressable
-          onPress={() => setShowAddFriend(true)}
+          disabled={true}
           style={({ pressed }) => [
             styles.addButton,
             {
-              backgroundColor: colors.accent,
-              opacity: pressed ? 0.8 : 1,
+              backgroundColor: colors.muted,
+              opacity: 0.5,
             },
           ]}
         >
-          <Text style={styles.addButtonText}>+ {t("friends.addFriend", { defaultValue: "Add Friend" })}</Text>
+          <Text style={styles.addButtonText}>+ {t("friends.addFriend", { defaultValue: "Add Friend" })} (Coming Soon)</Text>
         </Pressable>
       </ScrollView>
 
