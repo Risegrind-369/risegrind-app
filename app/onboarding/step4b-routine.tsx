@@ -83,14 +83,7 @@ export default function Step4bRoutineScreen() {
     
     console.log('[Step4bRoutine] PAYLOAD BEING SENT TO generateRoutine:', JSON.stringify(payload, null, 2));
     
-    // DEBUG: Send to backend for Railway logs
-    try {
-      fetch('https://api.risegrind.com/api/debug-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source: 'Step4bRoutine-Payload', data: payload }),
-      }).catch(() => {});
-    } catch (e) {}
+
     
     generateRoutine.mutate(
       payload,
@@ -98,14 +91,7 @@ export default function Step4bRoutineScreen() {
         onSuccess: (data) => {
           console.log('[Step4bRoutine] RESPONSE RECEIVED from generateRoutine:', JSON.stringify(data, null, 2));
           
-          // DEBUG: Send response to backend
-          try {
-            fetch('https://api.risegrind.com/api/debug-log', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ source: 'Step4bRoutine-Response', data: data }),
-            }).catch(() => {});
-          } catch (e) {}
+
           setRoutine(data as typeof routine);
           setPhase("reveal");
           Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);

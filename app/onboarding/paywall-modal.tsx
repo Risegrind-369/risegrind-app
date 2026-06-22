@@ -218,27 +218,13 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       };
       console.log('[Paywall] Purchase result received:', purchaseLogData);
       
-      // DEBUG: Send to backend for Railway logs
-      try {
-        await fetch('https://api.risegrind.com/api/debug-log', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ source: 'Paywall-PurchaseResult', data: purchaseLogData }),
-        }).catch(() => {}); // Silently fail if debug endpoint unavailable
-      } catch (e) {}
+
 
       if (purchaseResult?.customerInfo?.entitlements?.active?.['pro'] || purchaseResult?.customerInfo?.entitlements?.active?.['premium']) {
         // Purchase successful
         console.log('[Paywall] Purchase confirmed, calling onClose()');
         
-        // DEBUG: Send success to backend
-        try {
-          await fetch('https://api.risegrind.com/api/debug-log', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ source: 'Paywall-PurchaseSuccess', data: { status: 'success', entitlements: purchaseLogData.activeEntitlements } }),
-          }).catch(() => {});
-        } catch (e) {}
+
         dispatch({ type: 'SET_PREMIUM', payload: true });
         
         try {
