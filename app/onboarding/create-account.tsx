@@ -308,30 +308,7 @@ export default function CreateAccountScreen() {
               </Pressable>
             </Animated.View>
             */}
-
-            {/* Sign In Link */}
-            <Animated.View
-              entering={FadeInDown.delay(650).duration(600)}
-              style={styles.signInLinkGroup}
-            >
-              <Text style={[styles.signInLinkText, { color: colors.muted }]}>
-                {t("onboarding.createAccount.haveAccount", {
-                  defaultValue: "Already have an account?",
-                })}{" "}
-              </Text>
-              <Pressable onPress={handleSignIn} disabled={loading}>
-                <Text
-                  style={[
-                    styles.signInLink,
-                    { color: "#0a7ea4", opacity: loading ? 0.5 : 1 },
-                  ]}
-                >
-                  {t("onboarding.createAccount.signInLink", {
-                    defaultValue: "Sign in",
-                  })}
-                </Text>
-              </Pressable>
-            </Animated.View>
+            {/* Sign In Link - Hidden for v1 (sign-up only) */}
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
