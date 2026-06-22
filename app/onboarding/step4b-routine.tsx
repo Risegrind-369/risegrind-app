@@ -107,8 +107,6 @@ export default function Step4bRoutineScreen() {
             age: answers.age || "",
           }});
           dispatch({ type: "SET_GENERATED_ROUTINE", payload: data as typeof routine & { createdAt: number } });
-          // ISSUE 1+5: Mark onboarding complete and clear temp state
-          dispatch({ type: "SET_ONBOARDED", payload: { userName: answers.name || "Ghost" } });
         },
         onError: () => {
           // Use fallback and proceed
