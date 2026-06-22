@@ -230,10 +230,6 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
         try {
           onClose();  // onClose() handles navigation
           console.log('[Paywall] onClose() completed successfully');
-          // Safety net: ensure we navigate to home if onClose routes to unmatched path
-          setTimeout(() => {
-            router.replace('/(tabs)' as never);
-          }, 100);
         } catch (closeError) {
           console.error('[Paywall] ERROR in onClose():', closeError);
           throw closeError;
