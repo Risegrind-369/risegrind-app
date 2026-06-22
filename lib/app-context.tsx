@@ -405,7 +405,8 @@ function appReducer(state: AppState, action: AppAction): AppState {
         ...state,
         generatedRoutine: action.payload,
         // Only replace habits if they haven't been customized yet (still all defaults)
-        habits: state.habits.every((h) => h.isDefault) ? newHabits : state.habits,
+        // Guard with (state.habits || []) in case LOAD_STATE hydrated partial/corrupted state
+        habits: (state.habits || []).every((h) => h.isDefault) ? newHabits : (state.habits || []),
       };
     }
 
@@ -504,8 +505,26 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return { ...state, sideQuests: quests };
     }
 
-    case "LOAD_STATE":
-      return { ...state, ...action.payload, isLoading: false };
+    case "LOAD_STATE": {
+      // CRITICAL: Defensively merge state to prevent undefined arrays from AsyncStorage corruption.
+      // If AsyncStorage was partially saved or corrupted, action.payload might have undefined arrays.
+      // We must ensure all array fields default to empty arrays, not undefined.
+      // Triple fallback: loadedState.x ?? state.x ?? [] ensures no undefined arrays can survive.
+      const loadedState = action.payload;
+      return {
+        ...state,
+        ...loadedState,
+        // Ensure all array fields are never undefined after hydration (triple fallback)
+        habits: loadedState.habits ?? state.habits ?? [],
+        completions: loadedState.completions ?? state.completions ?? [],
+        moodEntries: loadedState.moodEntries ?? state.moodEntries ?? [],
+        journalEntries: loadedState.journalEntries ?? state.journalEntries ?? [],
+        achievements: loadedState.achievements ?? state.achievements ?? [],
+        sideQuests: loadedState.sideQuests ?? state.sideQuests ?? [],
+        friends: loadedState.friends ?? state.friends ?? [],
+        isLoading: false,
+      };
+    }
 
     case "SET_LOADING":
       return { ...state, isLoading: action.payload };
