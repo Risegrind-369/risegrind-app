@@ -317,6 +317,7 @@ export default function RootLayout() {
                         <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
                         <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
                         <Stack.Screen name="oauth/callback" />
+                        <Stack.Screen name="+not-found" />
                       </Stack>
                       <StatusBar style="auto" />
                     </OnboardingGuard>
