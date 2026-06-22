@@ -19,18 +19,14 @@ export default function Step8PaywallScreen() {
   const [showPaywall, setShowPaywall] = useState(true);
 
   const handlePaywallClose = () => {
-    // Mark onboarding as complete and navigate to home
+    // Mark onboarding as complete
+    // EntitlementGuard will handle navigation to /(tabs) when isPremium flips to true
     try {
       console.log('[Step8Paywall] handlePaywallClose called - ENTRY POINT');
       console.log('[Step8Paywall] About to dispatch SET_ONBOARDED');
       dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
       console.log('[Step8Paywall] SET_ONBOARDED dispatched successfully');
-      
-      const routePath = "/(tabs)" as never;
-      console.log('[Step8Paywall] Route path prepared:', routePath);
-      console.log('[Step8Paywall] Calling router.replace NOW');
-      router.replace(routePath);
-      console.log('[Step8Paywall] router.replace returned - navigation should be in progress');
+      console.log('[Step8Paywall] EntitlementGuard will handle navigation after isPremium updates');
     } catch (error) {
       console.error('[Step8Paywall] CRITICAL ERROR in handlePaywallClose:', error);
       console.error('[Step8Paywall] Stack:', (error as any)?.stack);
