@@ -322,6 +322,7 @@ export default function Step5Graphs() {
           {/* CTA */}
           <Pressable
             onPress={() => {
+              dispatch({ type: "SET_ONBOARDING_STEP", payload: "step5-graphs" });
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push("/onboarding/step7-notifications");
             }}

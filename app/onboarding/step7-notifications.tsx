@@ -112,6 +112,7 @@ export default function Step7NotificationsScreen() {
   };
 
   const handleContinue = () => {
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step7-notifications" });
     debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", {});
     router.push("/onboarding/step8-paywall" as never);
   };
