@@ -11,6 +11,7 @@ import PaywallModal from "./paywall-modal";
 import { View, Alert } from "react-native";
 import { signOut } from "@/lib/supabase/auth";
 import * as Haptics from "expo-haptics";
+import { OnboardingDebugOverlay } from "@/components/onboarding-debug-overlay";
 
 export default function Step8PaywallScreen() {
   const router = useRouter();
@@ -52,6 +53,7 @@ export default function Step8PaywallScreen() {
 
   return (
     <View style={{ flex: 1 }}>
+      <OnboardingDebugOverlay />
       <PaywallModal
         visible={showPaywall}
         onClose={handlePaywallClose}
