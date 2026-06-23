@@ -94,7 +94,7 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       debugLog("ENTITLEMENT_GUARD_UNCERTAIN_FORCE_PAYWALL", { segments: segments.join("/"), inPaywall, inOnboarding });
       console.log("[ENTITLEMENT] Uncertain state, not in safe zone → forcing to paywall (conservative)");
       isNavigating.current = true;
-      router.replace("/onboarding/paywall" as never);
+      router.replace("/onboarding/step8-paywall" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
       console.log("========== [ENTITLEMENT GUARD] EFFECT END (uncertain, forcing to paywall) ==========\n");
       return;
@@ -141,7 +141,7 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
     debugLog("ENTITLEMENT_GUARD_NO_ENTITLEMENT_FORCE_PAYWALL", { segments: segments.join("/") });
     console.log("[ENTITLEMENT] No entitlement, onboarding complete → forcing to paywall (hard-wall)");
     isNavigating.current = true;
-    router.replace("/onboarding/paywall" as never);
+    router.replace("/onboarding/step8-paywall" as never);
     setTimeout(() => { isNavigating.current = false; }, 500);
     console.log("========== [ENTITLEMENT GUARD] EFFECT END (forcing to paywall) ==========\n");
 
