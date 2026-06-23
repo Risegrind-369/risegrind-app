@@ -14,6 +14,7 @@ import { useEffect, useRef } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
 import { useAuth } from "@/lib/use-auth-supabase";
+import { debugLog } from "@/lib/debug-logger";
 
 export function EntitlementGuard({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -64,6 +65,7 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
 
     if (!isAuthenticated) {
       // User not authenticated yet, allow onboarding/auth
+      debugLog("ENTITLEMENT_GUARD_NOT_AUTHENTICATED", { segments: segments.join("/") });
       console.log("[ENTITLEMENT] Not authenticated → allowing onboarding/auth");
       console.log("========== [ENTITLEMENT GUARD] EFFECT END (not authenticated) ==========\n");
       return;
@@ -82,12 +84,14 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
 
       // Safe zones during uncertain state: allow if in paywall or onboarding
       if (inPaywall || inOnboarding) {
+        debugLog("ENTITLEMENT_GUARD_UNCERTAIN_SAFE_ZONE", { segments: segments.join("/"), inPaywall, inOnboarding });
         console.log("[ENTITLEMENT] Uncertain state but in safe zone (paywall/onboarding) → allowing");
         console.log("========== [ENTITLEMENT GUARD] EFFECT END (uncertain, safe zone) ==========\n");
         return;
       }
 
       // Trying to access app during uncertain state → force to paywall (conservative)
+      debugLog("ENTITLEMENT_GUARD_UNCERTAIN_FORCE_PAYWALL", { segments: segments.join("/"), inPaywall, inOnboarding });
       console.log("[ENTITLEMENT] Uncertain state, not in safe zone → forcing to paywall (conservative)");
       isNavigating.current = true;
       router.replace("/onboarding/paywall" as never);
@@ -102,12 +106,14 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
     if (hasEntitlement) {
       // User has active trial or premium subscription
       if (inPaywall) {
+        debugLog("ENTITLEMENT_GUARD_HAS_ENTITLEMENT_LEAVING_PAYWALL", { segments: segments.join("/"), isPremium, isTrialActive });
         console.log("[ENTITLEMENT] Has entitlement but in paywall → redirecting to home");
         isNavigating.current = true;
         router.replace("/(tabs)" as never);
         setTimeout(() => { isNavigating.current = false; }, 500);
         console.log("========== [ENTITLEMENT GUARD] EFFECT END (has entitlement, leaving paywall) ==========\n");
       } else {
+        debugLog("ENTITLEMENT_GUARD_HAS_ENTITLEMENT_ALLOW", { segments: segments.join("/"), isPremium, isTrialActive });
         console.log("[ENTITLEMENT] Has entitlement → allowing app access");
         console.log("========== [ENTITLEMENT GUARD] EFFECT END (has entitlement) ==========\n");
       }
@@ -117,6 +123,7 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
     // User is authenticated but has NO entitlement (definitive)
     if (inPaywall) {
       // Already in paywall, stay there
+      debugLog("ENTITLEMENT_GUARD_NO_ENTITLEMENT_IN_PAYWALL", { segments: segments.join("/") });
       console.log("[ENTITLEMENT] No entitlement, already in paywall → staying");
       console.log("========== [ENTITLEMENT GUARD] EFFECT END (no entitlement, in paywall) ==========\n");
       return;
@@ -124,12 +131,14 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
 
     // If still in onboarding (but not paywall), allow passage to complete onboarding
     if (inOnboarding) {
+      debugLog("ENTITLEMENT_GUARD_NO_ENTITLEMENT_IN_ONBOARDING", { segments: segments.join("/") });
       console.log("[ENTITLEMENT] No entitlement but in onboarding → allowing to continue");
       console.log("========== [ENTITLEMENT GUARD] EFFECT END (no entitlement, in onboarding) ==========\n");
       return;
     }
 
     // User is authenticated, NO entitlement (definitive), onboarding complete, NOT in paywall → FORCE TO PAYWALL
+    debugLog("ENTITLEMENT_GUARD_NO_ENTITLEMENT_FORCE_PAYWALL", { segments: segments.join("/") });
     console.log("[ENTITLEMENT] No entitlement, onboarding complete → forcing to paywall (hard-wall)");
     isNavigating.current = true;
     router.replace("/onboarding/paywall" as never);

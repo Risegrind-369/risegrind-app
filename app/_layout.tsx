@@ -46,6 +46,7 @@ import { supabase } from "@/lib/supabase/client";
 import { SupabaseAuthProvider } from "@/lib/supabase/auth-context";
 import { ErrorBoundary } from "@/components/error-boundary";
 import { EntitlementGuard } from "@/lib/entitlement-guard";
+import { debugLog } from "@/lib/debug-logger";
 
 const DEFAULT_WEB_INSETS: EdgeInsets = { top: 0, right: 0, bottom: 0, left: 0 };
 const DEFAULT_WEB_FRAME: Rect = { x: 0, y: 0, width: 0, height: 0 };
@@ -79,6 +80,12 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     console.log("\n========== [ONBOARDING GUARD] EFFECT RUNNING ==========");
+    debugLog("ONBOARDING_GUARD_EFFECT_START", {
+      isLoading: state.isLoading,
+      isLanguageLoaded,
+      isOnboarded: state.isOnboarded,
+      segments: segments.join("/"),
+    });
     console.log("[GUARD] Current state:", {
       isLoading: state.isLoading,
       isLanguageLoaded,
@@ -108,6 +115,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
     if (!language && !inOnboarding) {
       console.log("[LOGOUT] GUARD DECISION: No language → redirecting to language selection");
+      debugLog("ONBOARDING_GUARD_REDIRECT_LANGUAGE", { segments: segments.join("/") });
       isNavigating.current = true;
       router.replace("/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
@@ -117,6 +125,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
 
     if (!state.isOnboarded && !inOnboarding) {
       console.log("[LOGOUT] GUARD DECISION: Not onboarded → starting onboarding flow");
+      debugLog("ONBOARDING_GUARD_REDIRECT_START_ONBOARDING", { segments: segments.join("/"), language });
       isNavigating.current = true;
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
@@ -124,10 +133,13 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     } else if (state.isOnboarded && inOnboarding && (segments[1] as string) !== "step8-paywall") {
       // Skip redirect if on paywall — EntitlementGuard handles paywall navigation
       console.log("[LOGOUT] GUARD DECISION: isOnboarded=true AND inOnboarding=true (not paywall) → redirecting to home");
+      debugLog("ONBOARDING_GUARD_REDIRECT_HOME", { segments: segments.join("/"), isOnboarded: state.isOnboarded, inOnboarding });
       isNavigating.current = true;
       router.replace("/(tabs)" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
       console.log("========== [ONBOARDING GUARD] EFFECT END (home redirect) ==========\n");
+    } else {
+      debugLog("ONBOARDING_GUARD_NO_ACTION", { segments: segments.join("/"), isOnboarded: state.isOnboarded, inOnboarding });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isOnboarded, state.isLoading, segmentsKey, language, isLanguageLoaded]);

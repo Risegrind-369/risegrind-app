@@ -19,6 +19,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
+import { debugLog } from "@/lib/debug-logger";
 
 const MOTIVATION_STYLES = [
   {

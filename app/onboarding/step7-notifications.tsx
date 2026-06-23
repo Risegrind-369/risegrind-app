@@ -22,6 +22,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
+import { debugLog } from "@/lib/debug-logger";
 import {
   requestNotificationPermission,
   loadNotificationSettings,
@@ -45,6 +46,7 @@ export default function Step7NotificationsScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
 
   const handleRequestPermission = async () => {
+    debugLog("STEP7_NOTIFICATIONS_REQUEST_PERMISSION", {});
     if (Platform.OS === "web") {
       // Skip on web
       handleContinue();
@@ -110,6 +112,7 @@ export default function Step7NotificationsScreen() {
   };
 
   const handleContinue = () => {
+    debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", { params });
     router.push({
       pathname: "/onboarding/step8-paywall",
       params: {
