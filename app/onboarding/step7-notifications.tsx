@@ -16,7 +16,7 @@ import {
   Platform,
   Alert,
 } from "react-native";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
@@ -41,7 +41,6 @@ export default function Step7NotificationsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
-  const params = useLocalSearchParams();
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
@@ -112,20 +111,8 @@ export default function Step7NotificationsScreen() {
   };
 
   const handleContinue = () => {
-    debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", { params });
-    router.push({
-      pathname: "/onboarding/step8-paywall",
-      params: {
-        name: params.name || "",
-        age: params.age || "",
-        empathyAnswer: params.empathyAnswer || "",
-        goalAnswer: params.goalAnswer || "",
-        selectedGoals: params.selectedGoals || "",
-        selectedProblems: params.selectedProblems || "",
-        wakeTime: params.wakeTime || "",
-        motivationStyle: params.motivationStyle || "",
-      },
-    } as never);
+    debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", {});
+    router.push("/onboarding/step8-paywall" as never);
   };
 
   return (

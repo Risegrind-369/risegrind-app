@@ -5,7 +5,7 @@
  * Also used as hard-wall paywall when user has no active entitlement (e.g., after sign-in).
  */
 import React, { useState, useEffect } from "react";
-import { useRouter, useLocalSearchParams } from "expo-router";
+import { useRouter } from "expo-router";
 import { useApp } from "@/lib/app-context";
 import PaywallModal from "./paywall-modal";
 import { View, Alert } from "react-native";
@@ -15,7 +15,6 @@ import * as Haptics from "expo-haptics";
 export default function Step8PaywallScreen() {
   const router = useRouter();
   const { dispatch } = useApp();
-  const params = useLocalSearchParams();
   const [showPaywall, setShowPaywall] = useState(true);
 
   const handlePaywallClose = () => {
