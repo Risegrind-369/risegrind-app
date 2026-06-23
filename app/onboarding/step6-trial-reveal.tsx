@@ -21,6 +21,7 @@ import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 import PaywallModal from "./paywall-modal";
 import { OnboardingDebugOverlay } from "@/components/onboarding-debug-overlay";
+import { useApp } from "@/lib/app-context";
 
 const ICON_URL =
   "https://d2xsxph8kpxj0f.cloudfront.net/310519663533327081/FX74FzCVEe6tC4xxrVKhws/risegrind-icon-v2-fGbAHYbpaF4huMRJsUSWRR.png";
@@ -38,6 +39,7 @@ export default function Step6TrialRevealScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const [showPaywall, setShowPaywall] = useState(false);
 
   const handleStart = () => {

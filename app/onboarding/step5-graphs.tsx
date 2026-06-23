@@ -32,6 +32,7 @@ import { Svg, Line, Path, Circle, Text as SvgText } from "react-native-svg";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
+import { useApp } from "@/lib/app-context";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 const GRAPH_WIDTH = SCREEN_WIDTH - 48; // Full width with padding
@@ -88,6 +89,7 @@ export default function Step5Graphs() {
   const router = useRouter();
   const { t } = useTranslation();
   const colors = useColors();
+  const { dispatch } = useApp();
 
   const flatPathLength = useSharedValue(0);
   const steepPathLength = useSharedValue(0);
