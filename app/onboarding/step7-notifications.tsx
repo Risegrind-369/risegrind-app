@@ -27,7 +27,6 @@ import { debugLog } from "@/lib/debug-logger";
 import {
   requestNotificationPermission,
   loadNotificationSettings,
-  saveNotificationSettings,
   scheduleDailyReminder,
 } from "@/lib/notifications";
 
@@ -42,7 +41,7 @@ export default function Step7NotificationsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
-  const { dispatch } = useApp();
+
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
