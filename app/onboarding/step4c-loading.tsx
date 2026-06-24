@@ -62,7 +62,7 @@ export default function Step4cLoadingScreen() {
 
     // Navigate after 3 seconds
     const timer = setTimeout(() => {
-      router.replace("/onboarding/step5-graphs" as never);
+      router.replace("/onboarding/step7-notifications" as never);
     }, 3000);
 
     return () => clearTimeout(timer);
