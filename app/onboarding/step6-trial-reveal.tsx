@@ -45,7 +45,7 @@ export default function Step6TrialRevealScreen() {
   // Save current step on mount
   useEffect(() => {
     dispatch({ type: "SET_ONBOARDING_STEP", payload: "step6-trial-reveal" });
-  }, [dispatch]);
+  }, []);
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

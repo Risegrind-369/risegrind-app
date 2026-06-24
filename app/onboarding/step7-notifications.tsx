@@ -49,7 +49,7 @@ export default function Step7NotificationsScreen() {
   // Save current step on mount
   useEffect(() => {
     dispatch({ type: "SET_ONBOARDING_STEP", payload: "step7-notifications" });
-  }, [dispatch]);
+  }, []);
 
   const handleRequestPermission = async () => {
     debugLog("STEP7_NOTIFICATIONS_REQUEST_PERMISSION", {});
