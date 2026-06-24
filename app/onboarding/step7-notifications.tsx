@@ -104,19 +104,17 @@ export default function Step7NotificationsScreen() {
     }
   };
 
-  const handleSkip = () => {
+  const handleNavigateToPaywall = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    handleContinue();
-  };
-  const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.back();
-  };
-
-  const handleContinue = () => {
-    debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", {});
+    debugLog("STEP7_NOTIFICATIONS_NAVIGATE_TO_PAYWALL", {});
+    // Clear entire navigation stack and push paywall as the only screen
+    router.dismissAll();
     router.push("/onboarding/step8-paywall" as never);
   };
+
+  const handleSkip = handleNavigateToPaywall;
+  const handleContinue = handleNavigateToPaywall;
+  const handleBack = handleNavigateToPaywall;
 
   return (
     <ScreenContainer containerClassName="bg-background">
