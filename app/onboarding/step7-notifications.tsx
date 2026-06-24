@@ -23,6 +23,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 import { debugLog } from "@/lib/debug-logger";
+import { useApp } from "@/lib/app-context";
 
 import {
   requestNotificationPermission,
@@ -41,6 +42,7 @@ export default function Step7NotificationsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { state } = useApp();
 
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
@@ -120,6 +122,9 @@ export default function Step7NotificationsScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
+      <Text style={{position:'absolute', top:50, left:10, color:'red', zIndex:999, fontSize:12}}>
+        isOnboarded: {state.isOnboarded ? 'TRUE' : 'FALSE'}
+      </Text>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
