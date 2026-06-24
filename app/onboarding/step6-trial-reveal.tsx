@@ -4,7 +4,7 @@
  * Shows "Enjoy 3 full days of RiseGrind completely free – no card required right now."
  * Lists all premium features with icons.
  */
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -19,7 +19,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
-import PaywallModal from "./paywall-modal";
+
 
 
 
@@ -39,7 +39,7 @@ export default function Step6TrialRevealScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
-  const [showPaywall, setShowPaywall] = useState(false);
+
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
