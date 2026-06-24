@@ -60,7 +60,6 @@ export default function Step6TrialRevealScreen() {
   return (
     <>
       <ScreenContainer containerClassName="bg-background">
-      <OnboardingDebugOverlay />
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Icon */}
