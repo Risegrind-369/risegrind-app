@@ -38,6 +38,8 @@ export default function OnboardingLayout() {
       <Stack.Screen name="step4-ai-message" />
       {/* AI routine generation reveal */}
       <Stack.Screen name="step4b-routine" />
+      {/* Loading/transition screen */}
+      <Stack.Screen name="step4c-loading" />
       {/* Animated comparison graphs */}
       <Stack.Screen name="step5-graphs" />
 

@@ -147,7 +147,7 @@ export default function Step4bRoutineScreen() {
 
   const handleContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    router.push("/onboarding/step5-graphs" as never);
+    router.push("/onboarding/step4c-loading" as never);
   };
   const handleBack = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
