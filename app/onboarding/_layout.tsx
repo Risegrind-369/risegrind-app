@@ -40,8 +40,7 @@ export default function OnboardingLayout() {
       <Stack.Screen name="step4b-routine" />
       {/* Animated comparison graphs */}
       <Stack.Screen name="step5-graphs" />
-      {/* Free trial reveal */}
-      <Stack.Screen name="step6-trial-reveal" />
+
       {/* Notification permissions */}
       <Stack.Screen name="step7-notifications" />
       {/* Final paywall before entering app */}
