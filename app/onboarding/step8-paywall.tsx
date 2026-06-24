@@ -20,7 +20,6 @@ export default function Step8PaywallScreen() {
 
   const handlePaywallClose = () => {
     dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
-    router.replace("/(tabs)" as never);
   };
 
   const handleBack = () => {
