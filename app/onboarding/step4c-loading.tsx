@@ -5,10 +5,12 @@
  * Automatically navigates to step5-graphs after 3 seconds.
  *
  * Features:
- * - Rotating spinner above progress bar
- * - Animated progress bar (0% → 100% over 3 seconds)
- * - Cycling text phrases that fade in/out every 600ms
+ * - Pulsing ghost emoji (RiseGrind branding)
+ * - Elegant rotating arc spinner
+ * - Animated progress bar with glow effect
+ * - Cycling luxury text phrases that fade in/out
  * - Automatic navigation after completion
+ * - Dark gradient background
  */
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet } from "react-native";
@@ -28,10 +30,10 @@ import { useColors } from "@/hooks/use-colors";
 
 const LOADING_PHRASES = [
   "Analyzing your goals...",
-  "Building your routine...",
-  "Personalizing your AI mentor...",
-  "Calculating your potential...",
-  "Almost ready...",
+  "Crafting your AI mentor...",
+  "Building your discipline path...",
+  "Calculating your 30-day potential...",
+  "Your Ghost Mode is almost ready...",
 ];
 
 export default function Step4cLoadingScreen() {
@@ -43,6 +45,9 @@ export default function Step4cLoadingScreen() {
 
   // Spinner rotation
   const spinnerRotation = useSharedValue(0);
+
+  // Ghost emoji pulse
+  const ghostScale = useSharedValue(1);
 
   // Text fade
   const textOpacity = useSharedValue(1);
@@ -73,6 +78,19 @@ export default function Step4cLoadingScreen() {
       }),
       -1,
       false
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Ghost emoji pulse animation
+  useEffect(() => {
+    ghostScale.value = withRepeat(
+      withSequence(
+        withTiming(1.05, { duration: 1200 }),
+        withTiming(0.95, { duration: 1200 })
+      ),
+      -1,
+      true
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -115,35 +133,69 @@ export default function Step4cLoadingScreen() {
     opacity: textOpacity.value,
   }));
 
+  const ghostAnimatedStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: ghostScale.value }],
+  }));
+
   return (
     <ScreenContainer containerClassName="bg-background">
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        {/* Spinner */}
+      <View
+        style={[
+          styles.container,
+          {
+            backgroundColor: colors.background,
+            backgroundImage: `linear-gradient(180deg, ${colors.background} 0%, ${colors.surface} 100%)`,
+          },
+        ]}
+      >
+        {/* Ghost Emoji with Pulse */}
+        <Animated.Text
+          style={[styles.ghostEmoji, ghostAnimatedStyle]}
+        >
+          👻
+        </Animated.Text>
+
+        {/* Elegant Arc Spinner */}
         <Animated.View
           style={[
             styles.spinner,
             spinnerAnimatedStyle,
-            { borderColor: colors.primary },
+            { borderColor: colors.accent },
           ]}
         />
 
-        {/* Progress Bar Container */}
+        {/* Progress Bar Container with Glow */}
         <View
           style={[
             styles.progressContainer,
-            { backgroundColor: colors.surface, borderColor: colors.border },
+            {
+              backgroundColor: colors.surface,
+              borderColor: colors.accent,
+              shadowColor: colors.accent,
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.3,
+              shadowRadius: 12,
+              elevation: 8,
+            },
           ]}
         >
           <Animated.View
             style={[
               styles.progressBar,
               progressBarAnimatedStyle,
-              { backgroundColor: colors.primary },
+              {
+                backgroundColor: colors.accent,
+                shadowColor: colors.accent,
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.5,
+                shadowRadius: 8,
+                elevation: 6,
+              },
             ]}
           />
         </View>
 
-        {/* Cycling Text */}
+        {/* Luxury Loading Text */}
         <Animated.Text
           style={[
             styles.loadingText,
@@ -163,31 +215,38 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    gap: 40,
+    gap: 50,
+    paddingHorizontal: 24,
+  },
+  ghostEmoji: {
+    fontSize: 60,
+    marginBottom: 20,
   },
   spinner: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    borderWidth: 4,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 6,
     borderTopColor: "transparent",
     borderRightColor: "transparent",
   },
   progressContainer: {
-    width: 200,
-    height: 8,
-    borderRadius: 4,
+    width: 280,
+    height: 6,
+    borderRadius: 3,
     overflow: "hidden",
     borderWidth: 1,
   },
   progressBar: {
     height: "100%",
-    borderRadius: 4,
+    borderRadius: 3,
   },
   loadingText: {
-    fontSize: 16,
-    fontWeight: "500",
+    fontSize: 18,
+    fontWeight: "300",
+    letterSpacing: 1,
     textAlign: "center",
-    marginTop: 20,
+    marginTop: 40,
+    paddingHorizontal: 20,
   },
 });
