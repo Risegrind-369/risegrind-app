@@ -4,7 +4,7 @@
  * Shows "Enjoy 3 full days of RiseGrind completely free – no card required right now."
  * Lists all premium features with icons.
  */
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -42,8 +42,12 @@ export default function Step6TrialRevealScreen() {
   const { dispatch } = useApp();
   const [showPaywall, setShowPaywall] = useState(false);
 
-  const handleStart = () => {
+  // Save current step on mount
+  useEffect(() => {
     dispatch({ type: "SET_ONBOARDING_STEP", payload: "step6-trial-reveal" });
+  }, [dispatch]);
+
+  const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     // Navigate to notification permission screen
     router.push("/onboarding/step7-notifications");

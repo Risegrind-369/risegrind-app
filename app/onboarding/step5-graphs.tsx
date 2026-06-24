@@ -94,6 +94,12 @@ export default function Step5Graphs() {
   const flatPathLength = useSharedValue(0);
   const steepPathLength = useSharedValue(0);
 
+  // Save current step on mount
+  useEffect(() => {
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step5-graphs" });
+  }, []);
+
+  // Animate graphs
   useEffect(() => {
     flatPathLength.value = withTiming(1, {
       duration: 1000,
@@ -324,7 +330,6 @@ export default function Step5Graphs() {
           {/* CTA */}
           <Pressable
             onPress={() => {
-              dispatch({ type: "SET_ONBOARDING_STEP", payload: "step5-graphs" });
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
               router.push("/onboarding/step7-notifications");
             }}

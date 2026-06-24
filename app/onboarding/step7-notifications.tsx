@@ -42,8 +42,14 @@ export default function Step7NotificationsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
+
+  // Save current step on mount
+  useEffect(() => {
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step7-notifications" });
+  }, [dispatch]);
 
   const handleRequestPermission = async () => {
     debugLog("STEP7_NOTIFICATIONS_REQUEST_PERMISSION", {});
@@ -112,7 +118,6 @@ export default function Step7NotificationsScreen() {
   };
 
   const handleContinue = () => {
-    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step7-notifications" });
     debugLog("STEP7_NOTIFICATIONS_CONTINUE_PRESSED", {});
     router.push("/onboarding/step8-paywall" as never);
   };
