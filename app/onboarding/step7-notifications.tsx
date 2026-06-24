@@ -22,7 +22,6 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
-import { debugLog } from "@/lib/debug-logger";
 
 import {
   requestNotificationPermission,
@@ -48,7 +47,6 @@ export default function Step7NotificationsScreen() {
 
 
   const handleRequestPermission = async () => {
-    debugLog("STEP7_NOTIFICATIONS_REQUEST_PERMISSION", {});
     if (Platform.OS === "web") {
       // Skip on web
       handleContinue();
@@ -106,7 +104,6 @@ export default function Step7NotificationsScreen() {
 
   const handleNavigateToPaywall = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    debugLog("STEP7_NOTIFICATIONS_NAVIGATE_TO_PAYWALL", {});
     // Replace current screen with paywall (router.dismissAll not available in Expo Router 6)
     router.replace("/onboarding/step8-paywall" as never);
   };
