@@ -85,21 +85,9 @@ export default function SignInScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      // Issue 4: Query server for onboarding status to restore isOnboarded flag
-      // even if AsyncStorage was wiped
-      try {
-        const onboardingStatus = await trpc.account.getOnboardingStatus.query();
-        console.log("[SignIn] Onboarding status from server:", onboardingStatus);
-        
-        if (onboardingStatus.isOnboarded) {
-          // User completed onboarding before, restore the flag
-          dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
-          console.log("[SignIn] Restored isOnboarded=true from server");
-        }
-      } catch (statusError) {
-        console.warn("[SignIn] Failed to fetch onboarding status:", statusError);
-        // Continue anyway - user will be prompted to onboard if needed
-      }
+      // Note: Do NOT restore isOnboarded flag here.
+      // OnboardingGuard and EntitlementGuard will handle routing based on entitlement status.
+      // If user has entitlement, they'll go to home. If not, they'll go to paywall.
 
       // Navigate to app. EntitlementGuard will catch any entitlement issues:
       // - If RevenueCat still loading → conservative: force to paywall
