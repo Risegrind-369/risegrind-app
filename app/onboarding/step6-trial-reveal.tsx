@@ -20,7 +20,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 import PaywallModal from "./paywall-modal";
-import { OnboardingDebugOverlay } from "@/components/onboarding-debug-overlay";
+
 
 
 const ICON_URL =

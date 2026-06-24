@@ -23,7 +23,7 @@ import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import * as Haptics from "expo-haptics";
 import { debugLog } from "@/lib/debug-logger";
-import { OnboardingDebugOverlay } from "@/components/onboarding-debug-overlay";
+
 import {
   requestNotificationPermission,
   loadNotificationSettings,
@@ -121,7 +121,7 @@ export default function Step7NotificationsScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
-      <OnboardingDebugOverlay />
+
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Icon */}
