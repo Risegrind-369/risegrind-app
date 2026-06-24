@@ -325,7 +325,7 @@ export default function Step5Graphs() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              router.replace("/onboarding/step7-notifications");
+              router.push("/onboarding/step7-notifications");
             }}
             style={({ pressed }) => [
               styles.button,
