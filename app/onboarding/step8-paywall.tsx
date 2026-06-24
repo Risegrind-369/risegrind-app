@@ -16,7 +16,12 @@ import * as Haptics from "expo-haptics";
 export default function Step8PaywallScreen() {
   const router = useRouter();
   const { dispatch } = useApp();
-  const [showPaywall, setShowPaywall] = useState(true);
+  const [showPaywall, setShowPaywall] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowPaywall(true), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handlePaywallClose = () => {
     dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
