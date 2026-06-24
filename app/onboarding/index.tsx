@@ -2,12 +2,11 @@
  * Onboarding Index — Redirect to New Flow
  *
  * The old 4-slide carousel has been replaced with a new psychology-driven flow.
- * This screen redirects to Step 1 (name + age collection), or resumes at currentOnboardingStep if force-quit.
+ * This screen redirects to Step 1 (name + age collection), or resumes at the correct step if force-quit.
  *
- * CRITICAL FIX: The redirect now runs EXACTLY ONCE on mount (cold launch only).
- * Previously, the dependency array [router, state.currentOnboardingStep] caused the redirect
- * to re-fire during forward navigation, yanking the user backward to a stale saved step.
- * Now uses empty dependency array [] + hasRedirected ref to ensure one-time execution.
+ * CRITICAL FIX: Resume logic now detects which steps have been completed based on
+ * state flags (generatedRoutine, userProfile, etc.) instead of relying on the stale
+ * currentOnboardingStep value for steps 5-7.
  */
 import React from "react";
 import { useRouter } from "expo-router";
@@ -21,7 +20,28 @@ export default function OnboardingScreen() {
   React.useEffect(() => {
     if (hasRedirected.current) return;
     hasRedirected.current = true;
-    const targetStep = state.currentOnboardingStep || "step1-name-age";
+
+    // Resume based on what's been completed, not a saved step
+    let targetStep = "step1-name-age";
+    if (state.currentOnboardingStep) {
+      targetStep = state.currentOnboardingStep;
+    }
+
+    // If routine was generated but currentOnboardingStep is still in early steps,
+    // resume at step5 (post-routine) since steps 5-7 don't save currentOnboardingStep
+    const earlySteps = [
+      "step1-name-age",
+      "step2-empathy",
+      "step3-goal",
+      "q4-goals",
+      "q5-problems",
+      "q6-waketime",
+      "q7-motivation",
+    ];
+    if (state.generatedRoutine && earlySteps.includes(targetStep)) {
+      targetStep = "step5-graphs";
+    }
+
     console.log(`[ONBOARDING] Resuming at step: ${targetStep}`);
     router.replace(`/onboarding/${targetStep}` as never);
     // eslint-disable-next-line react-hooks/exhaustive-deps

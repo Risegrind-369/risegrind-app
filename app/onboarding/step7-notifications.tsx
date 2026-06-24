@@ -46,10 +46,7 @@ export default function Step7NotificationsScreen() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
 
-  // Save current step on mount
-  useEffect(() => {
-    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step7-notifications" });
-  }, []);
+
 
   const handleRequestPermission = async () => {
     debugLog("STEP7_NOTIFICATIONS_REQUEST_PERMISSION", {});
