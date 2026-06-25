@@ -218,11 +218,22 @@ export async function completeLogout(
 
     // 2. Sign out from Supabase
     if (supabase) {
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.warn("[Auth] Supabase signOut error (non-fatal):", error);
-      } else {
-        console.log("[LOGOUT] STEP 2: Supabase signed out successfully");
+      try {
+        // Check if session exists before signing out
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          const { error } = await supabase.auth.signOut();
+          if (error) {
+            console.warn("[Auth] Supabase signOut error (non-fatal):", error);
+          } else {
+            console.log("[LOGOUT] STEP 2: Supabase signed out successfully");
+          }
+        } else {
+          console.log("[LOGOUT] STEP 2: No active session to sign out (null session)");
+        }
+      } catch (signOutError) {
+        console.warn("[Auth] Error during Supabase signOut (non-fatal):", signOutError);
+        // Continue with logout even if signOut fails
       }
     }
 
