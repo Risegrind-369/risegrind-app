@@ -64,7 +64,7 @@ export default function Step4cLoadingScreen() {
 
     // Navigate after 6 seconds (ensures RevenueCat finishes loading)
     const timer = setTimeout(() => {
-      router.replace("/paywall" as never);
+      router.replace("/onboarding/step7-notifications" as never);
     }, 6000);
 
     return () => clearTimeout(timer);

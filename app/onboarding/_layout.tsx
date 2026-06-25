@@ -42,6 +42,8 @@ export default function OnboardingLayout() {
       <Stack.Screen name="step4c-loading" />
       {/* Animated comparison graphs */}
       <Stack.Screen name="step5-graphs" />
+      {/* Notification permissions */}
+      <Stack.Screen name="step7-notifications" />
       {/* Final paywall before entering app */}
       <Stack.Screen name="step8-paywall" />
       {/* Setup (name confirmation) */}

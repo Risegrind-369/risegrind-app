@@ -104,8 +104,8 @@ export default function Step7NotificationsScreen() {
 
   const handleNavigateToPaywall = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Replace current screen with paywall (router.dismissAll not available in Expo Router 6)
-    router.replace("/onboarding/step8-paywall" as never);
+    // Navigate to root-level paywall (outside onboarding scope)
+    router.replace("/paywall" as never);
   };
 
   const handleSkip = handleNavigateToPaywall;
