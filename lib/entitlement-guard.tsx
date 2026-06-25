@@ -39,6 +39,13 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       segments: segments.join("/"),
     });
 
+    // Allow root-level paywall
+    if ((segments[0] as string) === "paywall") {
+      console.log("[ENTITLEMENT] Root-level paywall → allowing");
+      console.log("========== [ENTITLEMENT GUARD] EFFECT END (paywall allowed) ==========\n");
+      return;
+    }
+
     // Wait for auth to finish loading (required to know if user exists)
     if (authLoading) {
       console.log("[ENTITLEMENT] Waiting for auth to load");

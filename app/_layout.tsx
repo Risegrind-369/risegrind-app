@@ -87,6 +87,13 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       segments: segments.join("/"),
     });
 
+    // Allow root-level paywall
+    if ((segments[0] as string) === "paywall") {
+      console.log("[GUARD] Root-level paywall → allowing");
+      console.log("========== [ONBOARDING GUARD] EFFECT END (paywall allowed) ==========\n");
+      return;
+    }
+
     if (state.isLoading || !isLanguageLoaded) {
       console.log("[GUARD] Waiting for state/language to load");
       console.log("========== [ONBOARDING GUARD] EFFECT END (waiting) ==========\n");
