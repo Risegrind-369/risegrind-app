@@ -52,7 +52,11 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const inPaywall = (segments[0] as string) === "onboarding" && (segments[1] as string) === "step8-paywall";
+    const inPaywall = (segments[0] as string) === "onboarding" && 
+      ((segments[1] as string) === "step8-paywall" || 
+       (segments[1] as string) === "paywall");
+    const inLoadingScreen = (segments[0] as string) === "onboarding" && 
+      (segments[1] as string) === "step4c-loading";
     const inOnboarding = (segments[0] as string) === "onboarding";
     const inAuth = (segments[0] as string) === "auth";
 
@@ -82,10 +86,10 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
         inOnboarding,
       });
 
-      // Safe zones during uncertain state: allow if in paywall or onboarding
-      if (inPaywall || inOnboarding) {
-        debugLog("ENTITLEMENT_GUARD_UNCERTAIN_SAFE_ZONE", { segments: segments.join("/"), inPaywall, inOnboarding });
-        console.log("[ENTITLEMENT] Uncertain state but in safe zone (paywall/onboarding) → allowing");
+      // Safe zones during uncertain state: allow if in paywall, loading screen, or onboarding
+      if (inPaywall || inLoadingScreen || inOnboarding) {
+        debugLog("ENTITLEMENT_GUARD_UNCERTAIN_SAFE_ZONE", { segments: segments.join("/"), inPaywall, inLoadingScreen, inOnboarding });
+        console.log("[ENTITLEMENT] Uncertain state but in safe zone (paywall/loading/onboarding) → allowing");
         console.log("========== [ENTITLEMENT GUARD] EFFECT END (uncertain, safe zone) ==========\n");
         return;
       }
