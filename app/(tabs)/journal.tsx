@@ -473,37 +473,21 @@ export default function JournalScreen() {
               </View>
 
               {/* Voice Button */}
+              {/* Voice Button — Coming Soon for v1 */}
               <Pressable
-                onPress={handleVoicePress}
-                disabled={isTranscribing}
-                style={({ pressed }) => [
+                disabled={true}
+                style={[
                   styles.voiceButton,
                   {
-                    backgroundColor: isRecording ? colors.error + "15" : colors.foreground + "08",
-                    borderColor: isRecording ? colors.error : colors.border,
-                    transform: [{ scale: pressed ? 0.97 : 1 }],
+                    backgroundColor: colors.muted + "20",
+                    borderColor: colors.border,
+                    opacity: 0.6,
                   },
                 ]}
               >
-                {isTranscribing ? (
-                  <View style={styles.voiceButtonInner}>
-                    <ActivityIndicator size="small" color={colors.accent} />
-                    <Text style={[styles.voiceButtonText, { color: colors.muted }]}>
-                      {t("journal.transcribing", { defaultValue: "Transcribing..." })}
-                    </Text>
-                  </View>
-                ) : (
-                  <Text
-                    style={[
-                      styles.voiceButtonText,
-                      { color: isRecording ? colors.error : colors.muted },
-                    ]}
-                  >
-                    {isRecording
-                      ? `🔴 ${t("journal.recording", { defaultValue: "Recording..." })}`
-                      : `🎤 ${t("journal.speakToAI", { defaultValue: "Speak to AI" })}`}
-                  </Text>
-                )}
+                <Text style={[styles.voiceButtonText, { color: colors.muted }]}>
+                  🎤 {t("journal.comingSoon", { defaultValue: "Coming Soon" })}
+                </Text>
               </Pressable>
 
               {/* Text Editor */}
@@ -518,25 +502,20 @@ export default function JournalScreen() {
                 textAlignVertical="top"
               />
 
-              {/* AI Analysis Button — prominent, below text editor */}
+              {/* AI Analysis Button — Coming Soon for v1 */}
               <Pressable
-                onPress={handleAnalyzeAI}
-                disabled={!content.trim() || isAnalyzing || authLoading}
-                style={({ pressed }) => [
+                disabled={true}
+                style={[
                   styles.aiAnalysisButton,
                   {
-                    backgroundColor: colors.accent,
-                    opacity: pressed ? 0.85 : content.trim() && !isAnalyzing && !authLoading ? 1 : 0.5,
+                    backgroundColor: colors.muted + "20",
+                    opacity: 0.6,
                   },
                 ]}
               >
-                {isAnalyzing ? (
-                  <ActivityIndicator size="small" color="#fff" />
-                ) : (
-                  <Text style={styles.aiAnalysisButtonText}>
-                    ⚡ {t("journal.aiAnalysis", { defaultValue: "AI Analysis" })}
-                  </Text>
-                )}
+                <Text style={[styles.aiAnalysisButtonText, { color: colors.muted }]}>
+                  ⚡ {t("journal.comingSoon", { defaultValue: "Coming Soon" })}
+                </Text>
               </Pressable>
 
               {/* AI Response — shown BELOW the entry content */}
