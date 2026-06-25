@@ -48,6 +48,14 @@ export default function Step7NotificationsScreen() {
   const [permissionGranted, setPermissionGranted] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
+  // Force show paywall immediately when this screen mounts
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPaywall(true);
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
 
 
   const handleRequestPermission = async () => {
@@ -118,6 +126,18 @@ export default function Step7NotificationsScreen() {
 
   const handleSkip = handleNavigateToPaywall;
   const handleContinue = handleNavigateToPaywall;
+
+  // Show only paywall when active
+  if (showPaywall) {
+    return (
+      <PaywallModal
+        visible={true}
+        onClose={handlePaywallClose}
+        source="onboarding"
+        showBackButton={false}
+      />
+    );
+  }
 
   return (
     <>
