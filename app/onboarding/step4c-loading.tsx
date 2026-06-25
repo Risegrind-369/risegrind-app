@@ -2,7 +2,7 @@
  * Onboarding Step 4c: Loading/Transition Screen
  *
  * Displays animated progress bar and cycling text while initializing AI mentor.
- * Automatically navigates to step5-graphs after 3 seconds.
+ * Automatically navigates to step8-paywall after 6 seconds (ensures RevenueCat finishes loading).
  *
  * Features:
  * - Pulsing ghost emoji (RiseGrind branding)
@@ -27,6 +27,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useRevenueCat } from "@/lib/revenuecat-provider";
 
 const LOADING_PHRASES = [
   "Analyzing your goals...",
@@ -39,8 +40,9 @@ const LOADING_PHRASES = [
 export default function Step4cLoadingScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { isLoading: rcLoading } = useRevenueCat();
 
-  // Progress animation: 0 to 100 over 3000ms
+  // Progress animation: 0 to 100 over 6000ms
   const progressValue = useSharedValue(0);
 
   // Spinner rotation
@@ -53,17 +55,17 @@ export default function Step4cLoadingScreen() {
   const textOpacity = useSharedValue(1);
   const [currentPhraseIndex, setCurrentPhraseIndex] = useState(0);
 
-  // Start progress animation (0 → 100 over 3 seconds)
+  // Start progress animation (0 → 100 over 6 seconds)
   useEffect(() => {
     progressValue.value = withTiming(100, {
-      duration: 3000,
+      duration: 6000,
       easing: Easing.linear,
     });
 
-    // Navigate after 3 seconds
+    // Navigate after 6 seconds (ensures RevenueCat finishes loading)
     const timer = setTimeout(() => {
       router.replace("/onboarding/step8-paywall" as never);
-    }, 3000);
+    }, 6000);
 
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
