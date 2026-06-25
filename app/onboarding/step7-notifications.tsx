@@ -21,7 +21,9 @@ import { useTranslation } from "react-i18next";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import * as Haptics from "expo-haptics";
+import PaywallModal from "./paywall-modal";
 
 import {
   requestNotificationPermission,
@@ -40,9 +42,11 @@ export default function Step7NotificationsScreen() {
   const colors = useColors();
   const router = useRouter();
   const { t } = useTranslation();
+  const { dispatch } = useApp();
 
   const [isRequesting, setIsRequesting] = useState(false);
   const [permissionGranted, setPermissionGranted] = useState(false);
+  const [showPaywall, setShowPaywall] = useState(false);
 
 
 
@@ -102,17 +106,22 @@ export default function Step7NotificationsScreen() {
     }
   };
 
+  const handlePaywallClose = () => {
+    dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
+    router.replace("/(tabs)" as never);
+  };
+
   const handleNavigateToPaywall = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Navigate to root-level paywall (outside onboarding scope)
-    router.replace("/paywall" as never);
+    setShowPaywall(true);
   };
 
   const handleSkip = handleNavigateToPaywall;
   const handleContinue = handleNavigateToPaywall;
 
   return (
-    <ScreenContainer containerClassName="bg-background">
+    <>
+      <ScreenContainer containerClassName="bg-background">
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
           {/* Icon */}
@@ -213,6 +222,13 @@ export default function Step7NotificationsScreen() {
         </View>
       </ScrollView>
     </ScreenContainer>
+    <PaywallModal
+      visible={showPaywall}
+      onClose={handlePaywallClose}
+      source="onboarding"
+      showBackButton={false}
+    />
+    </>
   );
 }
 
