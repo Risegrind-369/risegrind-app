@@ -316,6 +316,7 @@ export default function RootLayout() {
                         <Stack.Screen name="(tabs)" />
                         <Stack.Screen name="onboarding" options={{ animation: "fade" }} />
                         <Stack.Screen name="auth" options={{ animation: "slide_from_right" }} />
+                        <Stack.Screen name="paywall" options={{ animation: "slide_from_bottom" }} />
                         <Stack.Screen name="ai-chat" options={{ animation: "slide_from_bottom", presentation: "modal" }} />
                         <Stack.Screen name="notifications" options={{ animation: "slide_from_right" }} />
                         <Stack.Screen name="oauth/callback" />
