@@ -85,9 +85,8 @@ export default function SignInScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      // Note: Do NOT restore isOnboarded flag here.
-      // OnboardingGuard and EntitlementGuard will handle routing based on entitlement status.
-      // If user has entitlement, they'll go to home. If not, they'll go to paywall.
+      // Mark user as onboarded so OnboardingGuard doesn't redirect them back
+      dispatch({ type: "SET_ONBOARDED", payload: { userName: "" } });
 
       // Navigate to app. EntitlementGuard will catch any entitlement issues:
       // - If RevenueCat still loading → conservative: force to paywall
