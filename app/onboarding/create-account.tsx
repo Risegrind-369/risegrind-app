@@ -308,7 +308,28 @@ export default function CreateAccountScreen() {
               </Pressable>
             </Animated.View>
             */}
-            {/* Sign In Link - Hidden for v1 (sign-up only) */}
+            {/* Sign In Link - Required by Apple for existing users */}
+            <Animated.View
+              entering={FadeInDown.delay(550).duration(600)}
+              style={styles.signInLinkGroup}
+            >
+              <Text style={[styles.signInLinkText, { color: colors.muted }]}>
+                {t("onboarding.createAccount.haveAccount", {
+                  defaultValue: "Already have an account? ",
+                })}
+              </Text>
+              <Pressable
+                onPress={handleSignIn}
+                disabled={loading}
+                style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+              >
+                <Text style={[styles.signInLink, { color: colors.accent }]}>
+                  {t("onboarding.createAccount.signIn", {
+                    defaultValue: "Sign in",
+                  })}
+                </Text>
+              </Pressable>
+            </Animated.View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
