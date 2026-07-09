@@ -94,6 +94,13 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Allow auth routes (signin-choice, signin, signin-apple, forgot-password, etc.)
+    if ((segments[0] as string) === "auth") {
+      console.log("[GUARD] Auth route → allowing");
+      console.log("========== [ONBOARDING GUARD] EFFECT END (auth allowed) ==========\n");
+      return;
+    }
+
     if (state.isLoading || !isLanguageLoaded) {
       console.log("[GUARD] Waiting for state/language to load");
       console.log("========== [ONBOARDING GUARD] EFFECT END (waiting) ==========\n");
