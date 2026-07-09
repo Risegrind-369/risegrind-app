@@ -9,6 +9,7 @@
  * currentOnboardingStep value for steps 5-7.
  */
 import React from "react";
+import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useApp } from "@/lib/app-context";
 
@@ -20,6 +21,14 @@ export default function OnboardingScreen() {
   React.useEffect(() => {
     if (hasRedirected.current) return;
     hasRedirected.current = true;
+
+    // DEBUG: Log current state values
+    console.log("[ONBOARDING INDEX] State at redirect:", {
+      currentOnboardingStep: state.currentOnboardingStep,
+      isOnboarded: state.isOnboarded,
+      generatedRoutine: !!state.generatedRoutine,
+      isLoading: state.isLoading,
+    });
 
     // Resume based on what's been completed, not a saved step
     let targetStep = "step1-name-age";
@@ -43,7 +52,14 @@ export default function OnboardingScreen() {
     }
 
     console.log(`[ONBOARDING] Resuming at step: ${targetStep}`);
-    router.replace(`/onboarding/${targetStep}` as never);
+    
+    // TEMPORARY DEBUG: Show state on screen before redirect
+    Alert.alert(
+      '[DEBUG] Onboarding Index State',
+      `currentOnboardingStep: ${state.currentOnboardingStep}\nisOnboarded: ${state.isOnboarded}\ntargetStep: ${targetStep}\ngeneratedRoutine: ${!!state.generatedRoutine}`,
+      [{ text: 'OK', onPress: () => router.replace(`/onboarding/${targetStep}` as never) }]
+    );
+    return;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
