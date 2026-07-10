@@ -74,7 +74,6 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
     const inLoadingScreen = (segments[0] as string) === "onboarding" && 
       (segments[1] as string) === "step4c-loading";
     const inOnboarding = (segments[0] as string) === "onboarding";
-    const inAuth = (segments[0] as string) === "auth";
 
     // Logic:
     // 1. If not signed in → allow onboarding/auth screens (no entitlement check needed yet)
