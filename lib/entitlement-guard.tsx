@@ -46,6 +46,15 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       return;
     }
 
+    // Allow auth routes (signin-choice, signin, signin-apple, forgot-password, etc.)
+    // Users must be able to reach auth screens regardless of entitlement state
+    const inAuth = (segments[0] as string) === "auth";
+    if (inAuth) {
+      console.log("[ENTITLEMENT] Auth route → allowing");
+      console.log("========== [ENTITLEMENT GUARD] EFFECT END (auth allowed) ==========\n");
+      return;
+    }
+
     // Wait for auth to finish loading (required to know if user exists)
     if (authLoading) {
       console.log("[ENTITLEMENT] Waiting for auth to load");
