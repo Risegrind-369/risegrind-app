@@ -85,7 +85,7 @@ export function PaywallTriggerProvider({ children }: PaywallTriggerProps) {
   const handleOpenPaywall = () => {
     setShowPaywall(false);
     // Navigate to the full paywall screen
-    router.push('/onboarding/paywall' as never);
+    router.push('/onboarding/step8-paywall' as never);
   };
 
   return (
