@@ -514,6 +514,10 @@ function appReducer(state: AppState, action: AppAction): AppState {
       return {
         ...state,
         ...loadedState,
+        // CRITICAL FIX: Never downgrade isOnboarded from true to false once a session is active.
+        // This prevents AsyncStorage hydration from overwriting a fresh sign-in (SET_ONBOARDED dispatch)
+        // with stale data from before the user authenticated.
+        isOnboarded: state.isOnboarded || loadedState.isOnboarded,
         // Ensure all array fields are never undefined after hydration (triple fallback)
         habits: loadedState.habits ?? state.habits ?? [],
         completions: loadedState.completions ?? state.completions ?? [],

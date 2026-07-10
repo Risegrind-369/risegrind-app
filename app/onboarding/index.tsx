@@ -9,7 +9,6 @@
  * currentOnboardingStep value for steps 5-7.
  */
 import React from "react";
-import { Alert } from "react-native";
 import { useRouter } from "expo-router";
 import { useApp } from "@/lib/app-context";
 
@@ -52,14 +51,7 @@ export default function OnboardingScreen() {
     }
 
     console.log(`[ONBOARDING] Resuming at step: ${targetStep}`);
-    
-    // TEMPORARY DEBUG: Show state on screen before redirect
-    Alert.alert(
-      '[DEBUG] Onboarding Index State',
-      `currentOnboardingStep: ${state.currentOnboardingStep}\nisOnboarded: ${state.isOnboarded}\ntargetStep: ${targetStep}\ngeneratedRoutine: ${!!state.generatedRoutine}`,
-      [{ text: 'OK', onPress: () => router.replace(`/onboarding/${targetStep}` as never) }]
-    );
-    return;
+    router.replace(`/onboarding/${targetStep}` as never);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

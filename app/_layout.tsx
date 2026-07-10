@@ -16,7 +16,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Alert } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import "react-native-reanimated";
 import { Platform } from "react-native";
@@ -134,14 +133,7 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     if (!state.isOnboarded && !inOnboarding) {
       console.log("[LOGOUT] GUARD DECISION: Not onboarded → starting onboarding flow");
       isNavigating.current = true;
-      
-      // TEMPORARY DEBUG: Show when OnboardingGuard redirects to onboarding
-      const targetRoute = language ? "/onboarding" : "/onboarding/language";
-      Alert.alert(
-        '[DEBUG] OnboardingGuard Redirect',
-        `Current segments: ${segments.join("/")}\nisOnboarded: ${state.isOnboarded}\ninOnboarding: ${inOnboarding}\nRedirecting to: ${targetRoute}`,
-        [{ text: 'OK', onPress: () => router.replace(targetRoute as never) }]
-      );
+      router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
       console.log("========== [ONBOARDING GUARD] EFFECT END (onboarding redirect) ==========\n");
     } else if (state.isOnboarded && inOnboarding && (segments[1] as string) !== "step8-paywall") {

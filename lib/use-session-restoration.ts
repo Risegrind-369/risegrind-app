@@ -1,5 +1,4 @@
 import { useEffect, useRef } from "react";
-import { Alert } from "react-native";
 import { useRouter, useSegments } from "expo-router";
 import { retrieveAuthTokens, clearAuthTokens } from "./supabase/auth";
 import { supabase } from "./supabase/client";
@@ -55,13 +54,7 @@ export function useSessionRestoration() {
           // Redirect to login if not already there
           const currentRoute = segments.join("/");
           if (!currentRoute.includes("auth")) {
-            // TEMPORARY DEBUG: Show redirect reason on screen
-            Alert.alert(
-              '[DEBUG] Session Restoration Redirect',
-              `Reason: Session refresh failed\nError: ${error?.message || 'Unknown error'}\nRedirecting to: /auth/signin`,
-              [{ text: 'OK', onPress: () => router.replace("/auth/signin") }]
-            );
-            return;
+            router.replace("/auth/signin");
           }
 
           hasRestoredSession.current = true;
@@ -81,13 +74,7 @@ export function useSessionRestoration() {
           await clearAuthTokens();
           const currentRoute = segments.join("/");
           if (!currentRoute.includes("auth")) {
-            // TEMPORARY DEBUG: Show redirect reason on screen
-            Alert.alert(
-              '[DEBUG] Session Restoration Error',
-              `Reason: Exception during session restoration\nError: ${error instanceof Error ? error.message : String(error)}\nRedirecting to: /auth/signin`,
-              [{ text: 'OK', onPress: () => router.replace("/auth/signin") }]
-            );
-            return;
+            router.replace("/auth/signin");
           }
         } catch (cleanupError) {
           console.error("[SessionRestoration] Cleanup error:", cleanupError);
