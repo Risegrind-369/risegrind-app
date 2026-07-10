@@ -54,6 +54,7 @@ export function useSessionRestoration() {
           // Redirect to login if not already there
           const currentRoute = segments.join("/");
           if (!currentRoute.includes("auth")) {
+            console.log("[SESSION RESTORATION] REDIRECT TO SIGNIN (invalid session)", { currentRoute });
             router.replace("/auth/signin");
           }
 
@@ -74,6 +75,7 @@ export function useSessionRestoration() {
           await clearAuthTokens();
           const currentRoute = segments.join("/");
           if (!currentRoute.includes("auth")) {
+            console.log("[SESSION RESTORATION] REDIRECT TO SIGNIN (error during restoration)", { currentRoute, error });
             router.replace("/auth/signin");
           }
         } catch (cleanupError) {

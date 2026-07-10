@@ -27,23 +27,11 @@ export default function SignInChoiceScreen() {
 
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  // Check if user already has a valid session
+  // REMOVED: Auto-redirect to home based on stored token
+  // This was breaking the sign-in flow by redirecting users away from the sign-in choice screen
+  // before they could complete authentication. The guards will handle entitlement checks.
   useEffect(() => {
-    const checkExistingSession = async () => {
-      try {
-        const { accessToken } = await retrieveAuthTokens();
-        if (accessToken) {
-          // User already has a session, redirect to home
-          router.replace("/(tabs)" as never);
-        }
-      } catch (error) {
-        console.error("[SignInChoice] Error checking session:", error);
-      } finally {
-        setIsCheckingSession(false);
-      }
-    };
-
-    checkExistingSession();
+    setIsCheckingSession(false);
   }, []);
 
   const handleEmailSignIn = () => {
@@ -66,7 +54,8 @@ export default function SignInChoiceScreen() {
     router.push("/onboarding/step1-name-age" as never);
   };
 
-  if (isCheckingSession) {
+  // No longer checking session on mount — let user choose sign-in method
+  if (false) {
     return (
       <ScreenContainer containerClassName="bg-background">
         <View className="flex-1 items-center justify-center">

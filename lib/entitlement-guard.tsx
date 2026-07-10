@@ -110,8 +110,15 @@ export function EntitlementGuard({ children }: { children: React.ReactNode }) {
       }
 
       // Trying to access app during uncertain state → force to paywall (conservative)
+      console.log("[ENTITLEMENT GUARD] FORCE TO PAYWALL (UNCERTAIN STATE)", {
+        segments: segments.join("/"),
+        isAuthenticated,
+        rcLoading,
+        inPaywall,
+        inLoadingScreen,
+        inOnboarding,
+      });
       debugLog("ENTITLEMENT_GUARD_UNCERTAIN_FORCE_PAYWALL", { segments: segments.join("/"), inPaywall, inOnboarding });
-      console.log("[ENTITLEMENT] Uncertain state, not in safe zone → forcing to paywall (conservative)");
       isNavigating.current = true;
       router.replace("/onboarding/step8-paywall" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);

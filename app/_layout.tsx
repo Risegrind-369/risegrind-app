@@ -131,7 +131,12 @@ function OnboardingGuard({ children }: { children: React.ReactNode }) {
     }
 
     if (!state.isOnboarded && !inOnboarding) {
-      console.log("[LOGOUT] GUARD DECISION: Not onboarded → starting onboarding flow");
+      console.log("[ONBOARDING GUARD] REDIRECT TO ONBOARDING", {
+        segments: segments.join("/"),
+        isOnboarded: state.isOnboarded,
+        inOnboarding,
+        isLoading: state.isLoading,
+      });
       isNavigating.current = true;
       router.replace(language ? "/onboarding" : "/onboarding/language" as never);
       setTimeout(() => { isNavigating.current = false; }, 500);
