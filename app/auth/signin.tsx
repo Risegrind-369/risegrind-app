@@ -99,11 +99,7 @@ export default function SignInScreen() {
     }
   };
 
-  const handleForgotPassword = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    // Navigate to forgot password screen
-    router.push("/auth/forgot-password" as never);
-  };
+
 
   const handleSignUpLink = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -184,22 +180,12 @@ export default function SignInScreen() {
 
           {/* Password Input */}
           <View className="gap-2">
-            <View className="flex-row justify-between items-center">
-              <Text
-                className="font-semibold text-foreground"
-                style={{ color: colors.foreground }}
-              >
-                Password
-              </Text>
-              <Pressable onPress={handleForgotPassword} disabled={isLoading}>
-                <Text
-                  className="text-sm font-semibold"
-                  style={{ color: colors.primary, opacity: isLoading ? 0.5 : 1 }}
-                >
-                  Forgot?
-                </Text>
-              </Pressable>
-            </View>
+            <Text
+              className="font-semibold text-foreground"
+              style={{ color: colors.foreground }}
+            >
+              Password
+            </Text>
             <View style={{
               flexDirection: "row",
               alignItems: "center",

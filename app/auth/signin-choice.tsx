@@ -3,7 +3,6 @@
  *
  * Entry point for returning users. Offers:
  * - Email/Password sign-in
- * - Sign in with Apple
  * - Link to sign up for new users
  */
 import { useState, useEffect } from "react";
@@ -13,7 +12,6 @@ import {
   Pressable,
   ScrollView,
   ActivityIndicator,
-  Platform,
 } from "react-native";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
@@ -37,16 +35,6 @@ export default function SignInChoiceScreen() {
   const handleEmailSignIn = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     router.push("/auth/signin" as never);
-  };
-
-  const handleAppleSignIn = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (Platform.OS !== "ios") {
-      // On non-iOS, just go to email sign-in
-      router.push("/auth/signin" as never);
-      return;
-    }
-    router.push("/auth/signin-apple" as never);
   };
 
   const handleSignUp = () => {
@@ -108,26 +96,6 @@ export default function SignInChoiceScreen() {
                 Sign In with Email
               </Text>
             </Pressable>
-
-            {/* Apple Sign In Button (iOS only) */}
-            {Platform.OS === "ios" && (
-              <Pressable
-                onPress={handleAppleSignIn}
-                style={({ pressed }) => [
-                  {
-                    backgroundColor: "#000",
-                    opacity: pressed ? 0.8 : 1,
-                    transform: [{ scale: pressed ? 0.98 : 1 }],
-                  },
-                ]}
-                className="py-4 rounded-lg items-center flex-row justify-center gap-2"
-              >
-                <Text className="text-2xl">🍎</Text>
-                <Text className="text-white font-semibold text-base">
-                  Sign In with Apple
-                </Text>
-              </Pressable>
-            )}
           </View>
 
           {/* Divider */}
