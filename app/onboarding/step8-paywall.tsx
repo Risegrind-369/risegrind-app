@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 import { useApp } from "@/lib/app-context";
 import PaywallModal from "./paywall-modal";
 import { View, Alert } from "react-native";
-import { signOut } from "@/lib/supabase/auth";
+import { completeLogout } from "@/lib/supabase/auth";
 import * as Haptics from "expo-haptics";
 
 
@@ -30,7 +30,7 @@ export default function Step8PaywallScreen() {
   const handleLogout = async () => {
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-      await signOut();
+      await completeLogout(dispatch);
       // Navigate back to auth choice screen
       router.replace("/auth" as never);
     } catch (error) {
