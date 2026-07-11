@@ -325,6 +325,8 @@ export default function Step5Graphs() {
           <Pressable
             onPress={() => {
               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              // Save step for resume functionality
+              dispatch({ type: "SET_ONBOARDING_STEP", payload: "step5-graphs" });
               router.push("/onboarding/step4c-loading");
             }}
             style={({ pressed }) => [

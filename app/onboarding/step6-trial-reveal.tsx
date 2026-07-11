@@ -43,6 +43,8 @@ export default function Step6TrialRevealScreen() {
 
   const handleStart = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Save step for resume functionality
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step6-trial-reveal" });
     // Navigate to notification permission screen
     router.replace("/onboarding/step7-notifications");
   };

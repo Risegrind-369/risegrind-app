@@ -80,6 +80,8 @@ export default function Step4AIMessageScreen() {
 
   const handleContinue = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    // Save step for resume functionality
+    dispatch({ type: "SET_ONBOARDING_STEP", payload: "step4-ai-message" });
     // Navigate to routine generation screen with all collected data
     router.push({
       pathname: "/onboarding/step4b-routine",
