@@ -19,6 +19,7 @@ import Animated, { FadeInDown, FadeIn } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 import { useLanguage } from "@/lib/language-context";
+import { useApp } from "@/lib/app-context";
 import { trpc } from "@/lib/trpc";
 import * as Haptics from "expo-haptics";
 
@@ -27,6 +28,7 @@ export default function Step4AIMessageScreen() {
   const router = useRouter();
   const { t } = useTranslation();
   const { language } = useLanguage();
+  const { dispatch } = useApp();
   const params = useLocalSearchParams<{
     name?: string;
     age?: string;

@@ -27,6 +27,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
+import { useApp } from "@/lib/app-context";
 import { useRevenueCat } from "@/lib/revenuecat-provider";
 
 const LOADING_PHRASES = [
@@ -40,6 +41,7 @@ const LOADING_PHRASES = [
 export default function Step4cLoadingScreen() {
   const colors = useColors();
   const router = useRouter();
+  const { dispatch } = useApp();
   const { isLoading: rcLoading } = useRevenueCat();
 
   // Progress animation: 0 to 100 over 6000ms
