@@ -51,7 +51,8 @@ export default function SignInChoiceScreen() {
 
   const handleSignUp = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push("/onboarding/step1-name-age" as never);
+    // Navigate directly to account creation (skip name/age collection for existing users)
+    router.push("/onboarding/create-account" as never);
   };
 
   // No longer checking session on mount — let user choose sign-in method

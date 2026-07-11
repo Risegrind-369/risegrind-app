@@ -37,23 +37,11 @@ export default function SignInScreen() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isCheckingSession, setIsCheckingSession] = useState(true);
 
-  // Check if user already has a valid session
+  // REMOVED: Auto-redirect to home based on stored token
+  // This was breaking the sign-in flow by redirecting users away from the sign-in form
+  // before they could enter their credentials. The guards will handle entitlement checks.
   useEffect(() => {
-    const checkExistingSession = async () => {
-      try {
-        const { accessToken } = await retrieveAuthTokens();
-        if (accessToken) {
-          // User already has a session, redirect to home
-          router.replace("/(tabs)" as never);
-        }
-      } catch (error) {
-        console.error("[SignIn] Error checking session:", error);
-      } finally {
-        setIsCheckingSession(false);
-      }
-    };
-
-    checkExistingSession();
+    setIsCheckingSession(false);
   }, []);
 
   const validateForm = () => {
@@ -128,7 +116,8 @@ export default function SignInScreen() {
     router.back();
   };
 
-  if (isCheckingSession) {
+  // No longer checking session on mount — let user enter credentials
+  if (false) {
     return (
       <ScreenContainer containerClassName="bg-background">
         <View className="flex-1 items-center justify-center">
