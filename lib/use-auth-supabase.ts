@@ -15,6 +15,11 @@ import { useSupabaseAuth } from "./supabase/auth-context";
 export function useAuth() {
   const { user, isLoading, isSignedIn, session } = useSupabaseAuth();
 
+  // TEMPORARY: Log JWT for deleteAccount testing
+  if (session?.access_token) {
+    console.log("[DEBUG-JWT] test50 access_token:", session.access_token);
+  }
+
   return {
     user: user
       ? {
