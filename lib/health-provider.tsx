@@ -142,14 +142,9 @@ export function HealthProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  // Auto-initialize on mount (iOS native builds only)
-  useEffect(() => {
-    if (isNativeBuild() && Platform.OS === "ios") {
-      requestPermissions().then((authorized) => {
-        if (authorized) refresh();
-      });
-    }
-  }, [requestPermissions, refresh]);
+  // Permission is now requested lazily (on-demand) rather than on app mount
+  // This allows us to show HealthPermissionSheet first, then trigger native dialog
+  // See ai-chat.tsx for the lazy permission request pattern
 
   return (
     <HealthContext.Provider value={{ ...data, requestPermissions, refresh }}>

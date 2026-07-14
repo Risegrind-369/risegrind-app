@@ -27,6 +27,7 @@ import { useApp } from "@/lib/app-context";
 import { useHealth } from "@/lib/health-provider";
 import { useLanguage } from "@/lib/language-context";
 import { trpc } from "@/lib/trpc";
+import { HealthPermissionSheet } from "@/app/components/health-permission-sheet";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -107,7 +108,9 @@ export default function AIChatScreen() {
   const { t, i18n } = useTranslation();
   const { language } = useLanguage();
   const { state } = useApp();
-  const { stepsToday, sleepLastNight } = useHealth();
+  const { stepsToday, sleepLastNight, requestPermissions, isAuthorized } = useHealth();
+  const [showHealthPermissionSheet, setShowHealthPermissionSheet] = useState(false);
+  const [healthPermissionRequested, setHealthPermissionRequested] = useState(false);
 
   const lang = (language || i18n.language || "en") as "en" | "fr" | "pt";
 
@@ -262,10 +265,21 @@ export default function AIChatScreen() {
         <Text style={[styles.contextItem, { color: colors.muted }]}>⚡ {state.xp} XP</Text>
         <Text style={[styles.contextItem, { color: colors.muted }]}>✅ {habitRate}%</Text>
         {stepsToday != null && (
-          <Text style={[styles.contextItem, { color: colors.muted }]}>👟 {stepsToday.toLocaleString()}</Text>
+          <Text style={[styles.contextItem, { color: colors.muted }]}>👟 {stepsToday.toLocaleString()} 🍎</Text>
         )}
         {sleepLastNight != null && (
-          <Text style={[styles.contextItem, { color: colors.muted }]}>😴 {sleepLastNight}h</Text>
+          <Text style={[styles.contextItem, { color: colors.muted }]}>😴 {sleepLastNight}h 🍎</Text>
+        )}
+        {(stepsToday === null || sleepLastNight === null) && !isAuthorized && !healthPermissionRequested && (
+          <Pressable
+            onPress={() => {
+              setHealthPermissionRequested(true);
+              setShowHealthPermissionSheet(true);
+            }}
+            style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
+          >
+            <Text style={[styles.contextItem, { color: colors.primary }]}>+ Health</Text>
+          </Pressable>
         )}
       </View>
 
@@ -315,6 +329,18 @@ export default function AIChatScreen() {
           />
         </View>
       )}
+
+      {/* Health Permission Sheet */}
+      <HealthPermissionSheet
+        visible={showHealthPermissionSheet}
+        onAllow={async () => {
+          await requestPermissions();
+          setShowHealthPermissionSheet(false);
+        }}
+        onSkip={() => {
+          setShowHealthPermissionSheet(false);
+        }}
+      />
 
       {/* Input bar */}
       <View
