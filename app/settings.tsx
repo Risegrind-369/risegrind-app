@@ -317,6 +317,18 @@ export default function SettingsScreen() {
               🗑️ Reset All Local Data
             </Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+              router.push("/settings/delete-account" as never);
+            }}
+            activeOpacity={0.7}
+            style={[styles.dangerButton, { backgroundColor: colors.error + "35", borderColor: colors.error, marginTop: 8 }]}
+          >
+            <Text style={[styles.dangerButtonText, { color: colors.error }]}>
+              ⚠️ Delete Account Permanently
+            </Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </ScreenContainer>
