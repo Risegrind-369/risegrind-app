@@ -240,12 +240,7 @@ export async function completeLogout(
     // 2. Clear stored tokens
     await clearAuthTokens();
     console.log("[LOGOUT] STEP 3: AsyncStorage cleared");
-
-    // 3. Clear Supabase session
-    if (supabase) {
-      await supabase.auth.setSession(null);
-      console.log("[Auth] Supabase session cleared");
-    }
+    // Note: signOut() above already clears the Supabase session, so no need to call setSession(null)
 
     // 4. Clear AsyncStorage (app state, user info, etc.)
     try {
