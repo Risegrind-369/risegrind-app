@@ -62,10 +62,10 @@ export default function DeleteAccountScreen() {
                 // Continue with navigation even if logout fails
               }
 
-              // Redirect to login after 2 seconds
+              // Redirect to onboarding after 2 seconds
               // By this time, auth context should have updated and guards will see no session
               setTimeout(() => {
-                router.push("/");
+                router.replace("/onboarding/language" as never);
               }, 2000);
             } catch (error) {
               console.error("[DeleteAccount] Error:", error);
