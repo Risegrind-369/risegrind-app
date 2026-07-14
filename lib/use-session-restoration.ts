@@ -63,7 +63,7 @@ export function useSessionRestoration() {
         }
 
         console.log("[SessionRestoration] Session restored successfully");
-        console.log("[SessionRestoration] User:", data.session.user?.email);
+        console.log("[SessionRestoration] User:", data.session?.user?.email);
 
         hasRestoredSession.current = true;
       } catch (error) {
