@@ -1,27 +1,35 @@
-/**
- * Health Permission Sheet
- * Requests Apple HealthKit permission with clear benefits explanation
- */
-
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  ScrollView,
+  ActivityIndicator,
+} from "react-native";
+import Animated, {
+  FadeIn,
+  FadeOut,
+  SlideInUp,
+  SlideOutDown,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useColors } from "@/hooks/use-colors";
-import Animated, { FadeIn, SlideInUp } from "react-native-reanimated";
 
 interface HealthPermissionSheetProps {
   visible: boolean;
   onAllow: () => Promise<void>;
   onSkip: () => void;
-  loading?: boolean;
 }
 
 export function HealthPermissionSheet({
   visible,
   onAllow,
   onSkip,
-  loading = false,
 }: HealthPermissionSheetProps) {
   const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const [loading, setLoading] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
 
   const handleAllow = async () => {
@@ -33,64 +41,69 @@ export function HealthPermissionSheet({
     }
   };
 
-  if (!visible) return null;
-
   return (
     <Animated.View
-      entering={FadeIn}
       style={[
         styles.overlay,
-        { backgroundColor: "rgba(0,0,0,0.5)" },
+        {
+          pointerEvents: visible ? "auto" : "none",
+        },
       ]}
+      entering={visible ? FadeIn.duration(200) : undefined}
+      exiting={!visible ? FadeOut.duration(200) : undefined}
     >
       <Animated.View
-        entering={SlideInUp.springify()}
         style={[
           styles.container,
-          { backgroundColor: colors.background, borderColor: colors.border },
+          {
+            backgroundColor: colors.background,
+            borderTopColor: colors.border,
+            paddingBottom: insets.bottom,
+          },
         ]}
+        entering={visible ? SlideInUp.springify() : undefined}
+        exiting={!visible ? SlideOutDown.springify() : undefined}
       >
         {/* Scrollable Content */}
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          showsVerticalScrollIndicator={false}
           style={styles.scrollView}
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: insets.bottom + 8 },
+          ]}
+          showsVerticalScrollIndicator={false}
         >
           {/* Header */}
           <View style={styles.header}>
-            <Text style={styles.headerEmoji}>❤️</Text>
+            <Text style={styles.headerEmoji}>🏃</Text>
             <Text style={[styles.headerTitle, { color: colors.foreground }]}>
-              Connect Apple Health
+              Unlock Personalized Insights
             </Text>
-            <Text style={[styles.headerSubtitle, { color: colors.muted }]}>
-              Get personalized routines based on your sleep & activity
+            <Text
+              style={[styles.headerSubtitle, { color: colors.muted }]}
+            >
+              Connect your health data to get smarter recommendations from your AI mentor.
             </Text>
           </View>
 
           {/* Benefits */}
           <View style={styles.benefits}>
             <BenefitItem
-              icon="😴"
-              title="Smart Sleep Tracking"
-              description="Your sleep data helps us adjust your routine difficulty"
-              colors={colors}
-            />
-            <BenefitItem
               icon="👟"
-              title="Activity Insights"
-              description="Steps and active energy inform your energy score"
+              title="Step Tracking"
+              description="Monitor your daily activity and movement patterns"
               colors={colors}
             />
             <BenefitItem
-              icon="⚡"
-              title="Energy Score"
-              description="See your daily energy level and get personalized recommendations"
+              icon="😴"
+              title="Sleep Analysis"
+              description="Track sleep duration and quality for better recovery insights"
               colors={colors}
             />
             <BenefitItem
               icon="🎯"
-              title="Adaptive Routines"
-              description="Your morning routine adjusts to your current energy level"
+              title="Smarter Advice"
+              description="Receive personalized recommendations based on your real data"
               colors={colors}
             />
           </View>
@@ -99,41 +112,49 @@ export function HealthPermissionSheet({
           <View
             style={[
               styles.privacyNotice,
-              { backgroundColor: `${colors.primary}15`, borderColor: colors.primary },
+              { borderColor: colors.border, backgroundColor: colors.surface },
             ]}
           >
-            <Text style={[styles.privacyTitle, { color: colors.primary }]}>
-              🔒 Your privacy is protected
+            <Text
+              style={[styles.privacyTitle, { color: colors.foreground }]}
+            >
+              🔒 Your Privacy Matters
             </Text>
             <Text style={[styles.privacyText, { color: colors.muted }]}>
-              We only read your health data. You control what RiseGrind can access, and you can
-              revoke access anytime in Settings.
+              We only read your steps and sleep data. Your data is never shared with third parties.
             </Text>
           </View>
 
           {/* Data Usage */}
           <View style={styles.dataUsage}>
-            <Text style={[styles.dataUsageTitle, { color: colors.foreground }]}>
-              What we use:
+            <Text
+              style={[styles.dataUsageTitle, { color: colors.foreground }]}
+            >
+              Data We Access:
             </Text>
-            <DataItem label="Sleep Analysis" colors={colors} />
-            <DataItem label="Step Count" colors={colors} />
+            <DataItem label="Daily Step Count" colors={colors} />
+            <DataItem label="Sleep Duration" colors={colors} />
             <DataItem label="Active Energy" colors={colors} />
           </View>
         </ScrollView>
 
-        {/* Call to Action */}
-        <View style={[styles.ctaSection, { borderBottomColor: colors.border }]}>
+        {/* Call to Action Section */}
+        <View
+          style={[
+            styles.ctaSection,
+            { borderBottomColor: colors.border },
+          ]}
+        >
           <Text style={[styles.ctaText, { color: colors.foreground }]}>
             Let RiseGrind see your steps and sleep so your AI mentor can give better advice.
           </Text>
         </View>
 
-        {/* Actions */}
+        {/* Actions Footer */}
         <View
           style={[
             styles.actions,
-            { borderTopColor: colors.border },
+            { borderTopColor: colors.border, paddingBottom: insets.bottom + 8 },
           ]}
         >
           <TouchableOpacity
@@ -148,7 +169,6 @@ export function HealthPermissionSheet({
               Skip for now
             </Text>
           </TouchableOpacity>
-
           <TouchableOpacity
             style={[
               styles.allowButton,
@@ -158,9 +178,13 @@ export function HealthPermissionSheet({
             onPress={handleAllow}
             disabled={loading || isRequesting}
           >
-            <Text style={styles.allowText}>
-              {isRequesting ? "Connecting..." : "Allow Access"}
-            </Text>
+            {isRequesting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.allowText}>
+                Allow Access
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
       </Animated.View>
@@ -214,11 +238,13 @@ function DataItem({ label, colors }: DataItemProps) {
 
 const styles = StyleSheet.create({
   overlay: {
-    flex: 1,
+    position: "absolute",
+    inset: 0,
     justifyContent: "flex-end",
+    zIndex: 1000,
   },
   container: {
-    flex: 1,
+    maxHeight: "95%",
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
     borderTopWidth: 1,
@@ -229,8 +255,8 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 24,
+    paddingTop: 12,
+    paddingBottom: 8,
   },
   header: {
     alignItems: "center",
@@ -330,6 +356,7 @@ const styles = StyleSheet.create({
     gap: 12,
     paddingHorizontal: 20,
     paddingVertical: 16,
+    paddingTop: 12,
     borderTopWidth: 1,
     flexShrink: 0,
   },
@@ -349,6 +376,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderRadius: 12,
     alignItems: "center",
+    justifyContent: "center",
   },
   allowButtonDisabled: {
     opacity: 0.6,
