@@ -120,6 +120,13 @@ export function HealthPermissionSheet({
           </View>
         </ScrollView>
 
+        {/* Call to Action */}
+        <View style={[styles.ctaSection, { borderBottomColor: colors.border }]}>
+          <Text style={[styles.ctaText, { color: colors.foreground }]}>
+            Let RiseGrind see your steps and sleep so your AI mentor can give better advice.
+          </Text>
+        </View>
+
         {/* Actions */}
         <View
           style={[
@@ -284,6 +291,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "600",
     marginBottom: 12,
+  },
+  ctaSection: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+  },
+  ctaText: {
+    fontSize: 14,
+    fontWeight: "600",
+    lineHeight: 20,
+    textAlign: "center",
   },
   dataItem: {
     flexDirection: "row",
