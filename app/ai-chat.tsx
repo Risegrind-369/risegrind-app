@@ -5,7 +5,8 @@
  * Supports visual reports (text-based charts), personalized responses
  * using the user's streak/XP/habit/health data, and full i18n.
  */
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
   View,
   Text,
@@ -109,8 +110,6 @@ export default function AIChatScreen() {
   const { language } = useLanguage();
   const { state } = useApp();
   const { stepsToday, sleepLastNight, requestPermissions, isAuthorized } = useHealth();
-  const [showHealthPermissionSheet, setShowHealthPermissionSheet] = useState(false);
-  const [healthPermissionRequested, setHealthPermissionRequested] = useState(false);
 
   const lang = (language || i18n.language || "en") as "en" | "fr" | "pt";
 
@@ -129,7 +128,22 @@ export default function AIChatScreen() {
   ]);
   const [input, setInput] = useState("");
   const [showQuickPrompts, setShowQuickPrompts] = useState(true);
+  const [showHealthPermissionSheet, setShowHealthPermissionSheet] = useState(false);
+  const [healthPermissionAsked, setHealthPermissionAsked] = useState(false);
   const flatListRef = useRef<FlatList>(null);
+
+  // Check if user has already been asked about health permissions
+  useEffect(() => {
+    const checkHealthPermissionStatus = async () => {
+      try {
+        const asked = await AsyncStorage.getItem("@healthPermissionAsked");
+        setHealthPermissionAsked(asked === "true");
+      } catch (e) {
+        console.warn("[HealthKit] Error checking permission status:", e);
+      }
+    };
+    checkHealthPermissionStatus();
+  }, []);
 
   // Compute user context for AI
   const todayStr = new Date().toISOString().split("T")[0];
@@ -202,11 +216,12 @@ export default function AIChatScreen() {
   const quickPrompts = QUICK_PROMPTS[lang] ?? QUICK_PROMPTS.en;
 
   return (
-    <KeyboardAvoidingView
-      style={[styles.root, { backgroundColor: colors.background }]}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-      keyboardVerticalOffset={0}
-    >
+    <View style={{ flex: 1 }}>
+      <KeyboardAvoidingView
+        style={[styles.root, { backgroundColor: colors.background }]}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={0}
+      >
       {/* Header */}
       <View
         style={[
@@ -270,10 +285,9 @@ export default function AIChatScreen() {
         {sleepLastNight != null && (
           <Text style={[styles.contextItem, { color: colors.muted }]}>😴 {sleepLastNight}h 🍎</Text>
         )}
-        {(stepsToday === null || sleepLastNight === null) && !isAuthorized && !healthPermissionRequested && (
+        {(stepsToday === null || sleepLastNight === null) && !healthPermissionAsked && (
           <Pressable
             onPress={() => {
-              setHealthPermissionRequested(true);
               setShowHealthPermissionSheet(true);
             }}
             style={({ pressed }) => [{ opacity: pressed ? 0.6 : 1 }]}
@@ -330,18 +344,6 @@ export default function AIChatScreen() {
         </View>
       )}
 
-      {/* Health Permission Sheet */}
-      <HealthPermissionSheet
-        visible={showHealthPermissionSheet}
-        onAllow={async () => {
-          await requestPermissions();
-          setShowHealthPermissionSheet(false);
-        }}
-        onSkip={() => {
-          setShowHealthPermissionSheet(false);
-        }}
-      />
-
       {/* Input bar */}
       <View
         style={[
@@ -385,6 +387,23 @@ export default function AIChatScreen() {
         </Pressable>
       </View>
     </KeyboardAvoidingView>
+
+    {/* Health Permission Sheet - Sibling to KeyboardAvoidingView */}
+    <HealthPermissionSheet
+      visible={showHealthPermissionSheet}
+      onAllow={async () => {
+        await requestPermissions();
+        await AsyncStorage.setItem("@healthPermissionAsked", "true");
+        setHealthPermissionAsked(true);
+        setShowHealthPermissionSheet(false);
+      }}
+      onSkip={() => {
+        AsyncStorage.setItem("@healthPermissionAsked", "true").catch(() => {});
+        setHealthPermissionAsked(true);
+        setShowHealthPermissionSheet(false);
+      }}
+    />
+    </View>
   );
 }
 
