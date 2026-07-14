@@ -527,7 +527,28 @@
     "light": "Light",
     "dark": "Dark",
     "lightMode": "Light",
-    "darkMode": "Dark"
+    "darkMode": "Dark",
+    "deleteAccount": {
+      "title": "Delete Account",
+      "subtitle": "This action is permanent and cannot be undone",
+      "warningTitle": "Warning",
+      "warningContent": "Deleting your account will permanently remove all your data. This cannot be reversed.",
+      "whatHappens": "What happens:",
+      "item1Title": "Your Progress",
+      "item1Desc": "All habits, streaks, XP, and journal entries will be permanently deleted.",
+      "item2Title": "Your Subscription",
+      "item2Desc": "Any active subscription will be cancelled immediately.",
+      "item3Title": "Your Account",
+      "item3Desc": "Your profile and login credentials will be permanently removed.",
+      "button": "Delete Account Permanently",
+      "confirmTitle": "Are you sure?",
+      "confirmMessage": "This is your last chance to cancel. This action cannot be undone.",
+      "confirm": "Yes, Delete My Account",
+      "error": "Something went wrong. Please try again or contact support.",
+      "goodbye": "Account Deleted",
+      "redirecting": "Redirecting you to the login screen...",
+      "info": "If you have questions, please contact support@risegrind.app"
+    }
   },
   "profile": {
     "resetTitle": "Reset All Data",

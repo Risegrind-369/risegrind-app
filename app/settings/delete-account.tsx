@@ -57,12 +57,19 @@ export default function DeleteAccountScreen() {
                 router.push("/");
               }, 2000);
             } catch (error) {
+              console.error("[DeleteAccount] Error:", error);
+              console.error("[DeleteAccount] Error details:", {
+                message: error instanceof Error ? error.message : String(error),
+                stack: error instanceof Error ? error.stack : undefined,
+              });
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              // TEMPORARY: Show actual error for debugging on TestFlight
+              const errorMessage = error instanceof Error ? error.message : String(error);
               Alert.alert(
-                t("common.error") || "Error",
-                t("settings.deleteAccount.error") ||
-                  "Failed to delete account. Please try again."
+                "Delete Failed",
+                `Error: ${errorMessage}`
               );
+              // TODO: Revert to user-friendly message after confirming the root cause
               setIsDeleting(false);
             }
           },
