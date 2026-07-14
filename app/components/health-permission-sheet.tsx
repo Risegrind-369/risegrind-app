@@ -43,12 +43,8 @@ export function HealthPermissionSheet({
 
   return (
     <Animated.View
-      style={[
-        styles.overlay,
-        {
-          pointerEvents: visible ? "auto" : "none",
-        },
-      ]}
+      pointerEvents={visible ? "auto" : "none"}
+      style={styles.overlay}
       entering={visible ? FadeIn.duration(200) : undefined}
       exiting={!visible ? FadeOut.duration(200) : undefined}
     >
