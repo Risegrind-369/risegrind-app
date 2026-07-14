@@ -50,9 +50,11 @@ export function HealthPermissionSheet({
           { backgroundColor: colors.background, borderColor: colors.border },
         ]}
       >
+        {/* Scrollable Content */}
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
+          style={styles.scrollView}
         >
           {/* Header */}
           <View style={styles.header}>
@@ -216,15 +218,19 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   container: {
+    flex: 1,
     borderTopLeftRadius: 24,
     borderTopRightRadius: 24,
-    maxHeight: "90%",
     borderTopWidth: 1,
+    flexDirection: "column",
+  },
+  scrollView: {
+    flex: 1,
   },
   scrollContent: {
     paddingHorizontal: 20,
     paddingTop: 24,
-    paddingBottom: 16,
+    paddingBottom: 24,
   },
   header: {
     alignItems: "center",
@@ -296,6 +302,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderBottomWidth: 1,
+    flexShrink: 0,
   },
   ctaText: {
     fontSize: 14,
@@ -324,6 +331,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderTopWidth: 1,
+    flexShrink: 0,
   },
   skipButton: {
     flex: 1,
