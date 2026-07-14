@@ -195,7 +195,8 @@ export default function AIChatScreen() {
         setMessages((prev) => [...prev, assistantMsg]);
         Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
         setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
-      } catch {
+      } catch (e) {
+        console.error("[AI Chat] sendMessage failed:", e);
         const errMsg: Message = {
           id: `err-${Date.now()}`,
           role: "assistant",
