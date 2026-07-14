@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   View,
   Text,
@@ -15,6 +15,7 @@ import { useApp } from "@/lib/app-context";
 import { useSupabaseAuth } from "@/lib/supabase/auth-context";
 import { trpc } from "@/lib/trpc";
 import * as Haptics from "expo-haptics";
+import { completeLogout } from "@/lib/supabase/auth";
 
 export default function DeleteAccountScreen() {
   const colors = useColors();
@@ -24,6 +25,7 @@ export default function DeleteAccountScreen() {
   const { dispatch } = useApp();
   const [isDeleting, setIsDeleting] = useState(false);
   const [step, setStep] = useState<"warning" | "confirm" | "deleted">("warning");
+  const isLoggingOutRef = useRef(false);
 
   const deleteAccountMutation = trpc.account.deleteAccount.useMutation();
 
@@ -49,10 +51,19 @@ export default function DeleteAccountScreen() {
               );
               setStep("deleted");
 
-              // Clear local state
-              dispatch({ type: "SET_LOADING", payload: true });
+              // CRITICAL: Use completeLogout() to properly clear all auth state
+              // This handles: Supabase signOut, token clearing, AsyncStorage isOnboarded patch,
+              // and in-memory state reset. The 2-second delay gives the auth context time to update.
+              try {
+                await completeLogout(dispatch, isLoggingOutRef, true);
+                console.log("[DeleteAccount] Auth state cleared via completeLogout, navigating to login");
+              } catch (logoutError) {
+                console.error("[DeleteAccount] completeLogout failed (non-fatal):", logoutError);
+                // Continue with navigation even if logout fails
+              }
 
               // Redirect to login after 2 seconds
+              // By this time, auth context should have updated and guards will see no session
               setTimeout(() => {
                 router.push("/");
               }, 2000);
