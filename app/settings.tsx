@@ -128,11 +128,17 @@ export default function SettingsScreen() {
               router.replace("/onboarding/language" as never);
             } catch (error) {
               const errorMessage = error instanceof Error ? error.message : String(error);
+              console.error("[Settings] LOGOUT CRASH - Full stack trace:");
+              console.error(error instanceof Error ? error.stack : String(error));
               console.error("[Settings] Logout error details:", {
                 message: errorMessage,
                 error,
                 stack: error instanceof Error ? error.stack : undefined,
               });
+              console.error("[Settings] Error type:", typeof error, "| Constructor:", error?.constructor?.name);
+              if (error instanceof Error && error.cause) {
+                console.error("[Settings] Error cause:", error.cause);
+              }
               Alert.alert(
                 "Logout Failed",
                 errorMessage || "An error occurred while logging out. Please try again."
