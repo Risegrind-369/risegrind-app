@@ -41,6 +41,8 @@ export function HealthPermissionSheet({
     }
   };
 
+  if (!visible) return null;
+
   return (
     <Animated.View
       pointerEvents={visible ? "auto" : "none"}
