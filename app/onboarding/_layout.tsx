@@ -16,6 +16,8 @@ export default function OnboardingLayout() {
       <Stack.Screen name="language" options={{ animation: "fade" }} />
       {/* Entry redirect */}
       <Stack.Screen name="index" />
+      {/* AI Data Consent (Apple Guideline 5.1.1(i)/5.1.2(i)) */}
+      <Stack.Screen name="ai-data-consent" />
       {/* Step 1: Name + Age */}
       <Stack.Screen name="step1-name-age" />
       {/* Account Creation */}
