@@ -30,7 +30,8 @@ export default function OnboardingScreen() {
     });
 
     // Resume based on what's been completed, not a saved step
-    let targetStep = "step1-name-age";
+    // Default to AI data consent (blocking step before name/age)
+    let targetStep = "ai-data-consent";
     if (state.currentOnboardingStep) {
       targetStep = state.currentOnboardingStep;
     }
@@ -38,6 +39,7 @@ export default function OnboardingScreen() {
     // If routine was generated but currentOnboardingStep is still in early steps,
     // resume at step5 (post-routine) since steps 5-7 don't save currentOnboardingStep
     const earlySteps = [
+      "ai-data-consent",
       "step1-name-age",
       "step2-empathy",
       "step3-goal",
