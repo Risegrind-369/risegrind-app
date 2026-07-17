@@ -26,7 +26,7 @@ const config: ExpoConfig = {
   userInterfaceStyle: "automatic",
   newArchEnabled: true,
   ios: {
-    supportsTablet: true,
+    supportsTablet: false,
     bundleIdentifier: bundleId,
     infoPlist: {
       ITSAppUsesNonExemptEncryption: false,
