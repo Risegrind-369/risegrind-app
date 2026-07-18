@@ -7,7 +7,9 @@ import {
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
+  ScrollView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -18,6 +20,7 @@ export default function SetupScreen() {
   const colors = useColors();
   const router = useRouter();
   const { dispatch } = useApp();
+  const insets = useSafeAreaInsets();
   const [name, setName] = useState("");
 
   const handleContinue = () => {
@@ -34,8 +37,14 @@ export default function SetupScreen() {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
       >
-        <View style={styles.container}>
-          <View style={styles.content}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: Math.max(insets.bottom + 16, 48) },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
             <Text style={styles.emoji}>👋</Text>
             <Text style={[styles.title, { color: colors.foreground }]}>
               What should we{"\n"}call you?
@@ -63,9 +72,7 @@ export default function SetupScreen() {
               onSubmitEditing={handleContinue}
               maxLength={30}
             />
-          </View>
 
-          <View style={styles.footer}>
             <Pressable
               onPress={handleContinue}
               style={({ pressed }) => [
@@ -79,22 +86,21 @@ export default function SetupScreen() {
               <Text style={styles.buttonText}>Start My Journey 🚀</Text>
             </Pressable>
           </View>
-        </View>
+        </ScrollView>
       </KeyboardAvoidingView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 40,
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
   },
-  content: {
+  container: {
     alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 40,
     gap: 20,
   },
   emoji: {
@@ -122,14 +128,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
     marginTop: 8,
   },
-  footer: {
-    gap: 12,
-  },
   button: {
+    width: "100%",
     height: 56,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
+    marginTop: 12,
   },
   buttonText: {
     color: "#fff",
