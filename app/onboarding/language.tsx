@@ -6,7 +6,9 @@ import {
   StyleSheet,
   Dimensions,
   Image,
+  ScrollView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -98,6 +100,7 @@ export default function LanguageScreen() {
   const router = useRouter();
   const { setLanguage } = useLanguage();
   const { t } = useTranslation();
+  const insets = useSafeAreaInsets();
   const [selected, setSelected] = useState<SupportedLanguage>("en");
 
   const handleContinue = async () => {
@@ -108,7 +111,13 @@ export default function LanguageScreen() {
 
   return (
     <ScreenContainer containerClassName="bg-background">
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          { paddingBottom: Math.max(insets.bottom + 16, 48) },
+        ]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* App icon */}
         <Animated.View entering={FadeIn.delay(100).duration(600)} style={styles.iconWrap}>
           <Image
@@ -162,17 +171,16 @@ export default function LanguageScreen() {
             <Text style={styles.continueBtnText}>{t("langScreen.continue")}</Text>
           </Pressable>
         </Animated.View>
-      </View>
+      </ScrollView>
     </ScreenContainer>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     paddingHorizontal: 28,
     paddingTop: 32,
-    paddingBottom: 48,
     justifyContent: "center",
     gap: 32,
   },
