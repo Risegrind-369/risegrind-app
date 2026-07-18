@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, Pressable, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, Pressable, StyleSheet, ActivityIndicator, ScrollView } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useTranslation } from "react-i18next";
 import { ScreenContainer } from "@/components/screen-container";
@@ -15,6 +16,7 @@ export default function TrialRevealScreen() {
   const { t } = useTranslation();
   const { state, dispatch } = useApp();
   const { packages, purchasePackage, isNativeBuild } = useRevenueCat();
+  const insets = useSafeAreaInsets();
   const [isLoading, setIsLoading] = useState(false);
   const [showPaywall, setShowPaywall] = useState(false);
 
@@ -53,89 +55,99 @@ export default function TrialRevealScreen() {
         allowTrial={true}
       />
       <ScreenContainer containerClassName="bg-background">
-        <View style={styles.container}>
-        {/* Icon */}
-        <Text style={styles.icon}>🎁</Text>
+        <ScrollView
+          contentContainerStyle={[
+            styles.scrollContent,
+            { paddingBottom: Math.max(insets.bottom + 16, 48) },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.container}>
+            {/* Icon */}
+            <Text style={styles.icon}>🎁</Text>
 
-        {/* Title */}
-        <Text style={[styles.title, { color: colors.foreground }]}>
-          {t("trial.title", { defaultValue: "Free Trial Unlocked" })}
-        </Text>
+            {/* Title */}
+            <Text style={[styles.title, { color: colors.foreground }]}>
+              {t("trial.title", { defaultValue: "Free Trial Unlocked" })}
+            </Text>
 
-        {/* Subtitle */}
-        <Text style={[styles.subtitle, { color: colors.muted }]}>
-          {t("trial.subtitle", { defaultValue: "3 Days of Full Access" })}
-        </Text>
+            {/* Subtitle */}
+            <Text style={[styles.subtitle, { color: colors.muted }]}>
+              {t("trial.subtitle", { defaultValue: "3 Days of Full Access" })}
+            </Text>
 
-        {/* Trial Duration */}
-        <View style={[styles.trialCard, { backgroundColor: colors.accent + "15", borderColor: colors.accent }]}>
-          <Text style={[styles.trialDays, { color: colors.accent }]}>3</Text>
-          <Text style={[styles.trialSubtext, { color: colors.muted }]}>
-            {t("trial.daysOfFullAccess", { defaultValue: "Days of full access to all premium features" })}
-          </Text>
-        </View>
-
-        {/* Features List */}
-        <View style={styles.featuresList}>
-          <Text style={[styles.featuresTitle, { color: colors.foreground }]}>
-            {t("trial.includes", { defaultValue: "Your trial includes:" })}
-          </Text>
-
-          {[
-            { icon: "📋", label: t("trial.unlimitedHabits", { defaultValue: "Unlimited habits & tracking" }) },
-            { icon: "📝", label: t("trial.aiJournal", { defaultValue: "AI-powered journal analysis" }) },
-            { icon: "🎤", label: t("trial.voiceEntry", { defaultValue: "Voice-to-text entries" }) },
-            { icon: "⚡", label: t("trial.sideQuests", { defaultValue: "Exclusive side quests" }) },
-            { icon: "📊", label: t("trial.advancedAnalytics", { defaultValue: "Advanced analytics & insights" }) },
-            { icon: "👥", label: t("trial.ghostCrew", { defaultValue: "Ghost Crew community access" }) },
-          ].map((feature, idx) => (
-            <View key={idx} style={styles.featureItem}>
-              <Text style={styles.featureIcon}>{feature.icon}</Text>
-              <Text style={[styles.featureLabel, { color: colors.foreground }]}>
-                {feature.label}
+            {/* Trial Duration */}
+            <View style={[styles.trialCard, { backgroundColor: colors.accent + "15", borderColor: colors.accent }]}>
+              <Text style={[styles.trialDays, { color: colors.accent }]}>3</Text>
+              <Text style={[styles.trialSubtext, { color: colors.muted }]}>
+                {t("trial.daysOfFullAccess", { defaultValue: "Days of full access to all premium features" })}
               </Text>
             </View>
-          ))}
-        </View>
 
-        {/* CTA Button */}
-        <Pressable
-          onPress={handleStartTrial}
-          disabled={isLoading}
-          style={({ pressed }) => [
-            styles.ctaButton,
-            {
-              backgroundColor: colors.accent,
-              opacity: isLoading ? 0.6 : pressed ? 0.9 : 1,
-              transform: [{ scale: pressed && !isLoading ? 0.97 : 1 }],
-            },
-          ]}
-        >
-          {isLoading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.ctaButtonText}>
-              {t("trial.viewPlans", { defaultValue: "View Plans" })}
+            {/* Features List */}
+            <View style={styles.featuresList}>
+              <Text style={[styles.featuresTitle, { color: colors.foreground }]}>
+                {t("trial.includes", { defaultValue: "Your trial includes:" })}
+              </Text>
+
+              {[
+                { icon: "📋", label: t("trial.unlimitedHabits", { defaultValue: "Unlimited habits & tracking" }) },
+                { icon: "📝", label: t("trial.aiJournal", { defaultValue: "AI-powered journal analysis" }) },
+                { icon: "🎤", label: t("trial.voiceEntry", { defaultValue: "Voice-to-text entries" }) },
+                { icon: "⚡", label: t("trial.sideQuests", { defaultValue: "Exclusive side quests" }) },
+                { icon: "📊", label: t("trial.advancedAnalytics", { defaultValue: "Advanced analytics & insights" }) },
+                { icon: "👥", label: t("trial.ghostCrew", { defaultValue: "Ghost Crew community access" }) },
+              ].map((feature, idx) => (
+                <View key={idx} style={styles.featureItem}>
+                  <Text style={styles.featureIcon}>{feature.icon}</Text>
+                  <Text style={[styles.featureLabel, { color: colors.foreground }]}>
+                    {feature.label}
+                  </Text>
+                </View>
+              ))}
+            </View>
+
+            {/* CTA Button */}
+            <Pressable
+              onPress={handleStartTrial}
+              disabled={isLoading}
+              style={({ pressed }) => [
+                styles.ctaButton,
+                {
+                  backgroundColor: colors.accent,
+                  opacity: isLoading ? 0.6 : pressed ? 0.9 : 1,
+                  transform: [{ scale: pressed && !isLoading ? 0.97 : 1 }],
+                },
+              ]}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.ctaButtonText}>
+                  {t("trial.viewPlans", { defaultValue: "View Plans" })}
+                </Text>
+              )}
+            </Pressable>
+
+            {/* Fine Print */}
+            <Text style={[styles.finePrint, { color: colors.muted }]}>
+              {t("trial.cancelAnytime", { defaultValue: "Cancel anytime. No credit card required." })}
             </Text>
-          )}
-        </Pressable>
-
-        {/* Fine Print */}
-        <Text style={[styles.finePrint, { color: colors.muted }]}>
-          {t("trial.cancelAnytime", { defaultValue: "Cancel anytime. No credit card required." })}
-        </Text>
-      </View>
-    </ScreenContainer>
+          </View>
+        </ScrollView>
+      </ScreenContainer>
     </>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+  },
   container: {
-    flex: 1,
     paddingHorizontal: 20,
     paddingVertical: 40,
-    justifyContent: "center",
     gap: 24,
   },
   icon: {
