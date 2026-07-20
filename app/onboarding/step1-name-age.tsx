@@ -93,6 +93,7 @@ export default function Step1NameAgeScreen() {
                 placeholderTextColor={colors.muted}
                 value={name}
                 onChangeText={setName}
+                onEndEditing={(e) => setName(e.nativeEvent.text)}
                 autoFocus
                 autoCapitalize="words"
                 maxLength={30}
@@ -117,6 +118,9 @@ export default function Step1NameAgeScreen() {
                 placeholderTextColor={colors.muted}
                 value={age}
                 onChangeText={setAge}
+                onEndEditing={(e) => setAge(e.nativeEvent.text)}
+                onSubmitEditing={() => handleContinue()}
+                returnKeyType="done"
                 keyboardType="number-pad"
                 maxLength={3}
               />
