@@ -25,6 +25,7 @@ interface PaywallModalProps {
   onClose: () => void;
   onBack?: () => void;
   onLogout?: () => void;
+  onSuccess?: (type: 'purchase' | 'restore') => void;
   source: 'onboarding' | 'mentor_limit' | 'trial_expired';
   allowTrial?: boolean;
   showBackButton?: boolean;
@@ -69,7 +70,7 @@ const PLANS: Record<PlanType, Plan> = {
   },
 };
 
-function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
+function PaywallModal({ visible, onClose, onBack, onLogout, onSuccess, source, allowTrial = true, showBackButton = false }: PaywallModalProps) {
   const router = useRouter();
   const { dispatch } = useApp();
   const colors = useColors();
@@ -222,16 +223,19 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
 
       if (purchaseResult?.customerInfo?.entitlements?.active?.['pro']) {
         // Purchase successful
-        console.log('[Paywall] Purchase confirmed, calling onClose()');
+        console.log('[Paywall] Purchase confirmed, calling onSuccess()');
         
-
         dispatch({ type: 'SET_PREMIUM', payload: true });
         
         try {
-          onClose();  // onClose() handles navigation
-          console.log('[Paywall] onClose() completed successfully');
+          if (onSuccess) {
+            onSuccess('purchase');
+          } else {
+            onClose();  // Fallback if onSuccess not provided
+          }
+          console.log('[Paywall] onSuccess() completed successfully');
         } catch (closeError) {
-          console.error('[Paywall] ERROR in onClose():', closeError);
+          console.error('[Paywall] ERROR in onSuccess():', closeError);
           throw closeError;
         }
       } else {
@@ -257,7 +261,11 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
       const customerInfo = await Purchases.restorePurchases();
       if (customerInfo?.entitlements?.active?.['pro']) {
         dispatch({ type: 'SET_PREMIUM', payload: true });
-        onClose();  // onClose() handles navigation
+        if (onSuccess) {
+          onSuccess('restore');
+        } else {
+          onClose();  // Fallback if onSuccess not provided
+        }
       } else {
         Alert.alert('No Purchases Found', 'No active subscriptions found.');
       }
@@ -419,10 +427,11 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
                       : 'border-border bg-surface'
                   )}
                 >
+                  {/* Left: Radio button + plan name/description */}
                   <View className="flex-row items-center gap-3 flex-1">
                     <View
                       className={cn(
-                        'w-5 h-5 rounded-full border-2',
+                        'w-5 h-5 rounded-full border-2 flex-shrink-0',
                         selectedPlan === plan.id
                           ? 'border-accent bg-accent'
                           : 'border-border'
@@ -439,18 +448,22 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
                       )}
                     </View>
                   </View>
-                  <View className="items-end">
-                    <Text className="text-foreground font-bold">{plan.price}</Text>
-                    <Text className="text-xs text-muted">{plan.period}</Text>
+
+                  {/* Right: Badge (if selected) + price/period */}
+                  <View className="items-end gap-2 ml-3">
+                    {plan.badge && selectedPlan === plan.id && (
+                      <View className="bg-primary px-2 py-1 rounded-full">
+                        <Text className="text-background text-xs font-bold">
+                          {plan.badge}
+                        </Text>
+                      </View>
+                    )}
+                    <View>
+                      <Text className="text-foreground font-bold text-right">{plan.price}</Text>
+                      <Text className="text-xs text-muted text-right">{plan.period}</Text>
+                    </View>
                   </View>
                 </View>
-                {plan.badge && selectedPlan === plan.id && (
-                  <View className="absolute top-2 right-2 bg-primary px-3 py-1 rounded-full">
-                    <Text className="text-background text-xs font-bold">
-                      {plan.badge}
-                    </Text>
-                  </View>
-                )}
               </Pressable>
             ))}
           </View>
@@ -492,7 +505,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
               <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
-                  Linking.openURL('https://risegrind-app.lovable.app/terms').catch(() => {
+                  Linking.openURL('https://risegrind-app.lovable.app/terms' ).catch(() => {
                     Alert.alert('Error', 'Could not open Terms of Service');
                   });
                 }}
@@ -502,7 +515,7 @@ function PaywallModal({ visible, onClose, onBack, onLogout, source, allowTrial =
               <Text className="text-xs text-border">·</Text>
               <Pressable
                 onPress={() => {
-                  Linking.openURL('https://risegrind-app.lovable.app/privacy').catch(() => {
+                  Linking.openURL('https://risegrind-app.lovable.app/privacy' ).catch(() => {
                     Alert.alert('Error', 'Could not open Privacy Policy');
                   });
                 }}
