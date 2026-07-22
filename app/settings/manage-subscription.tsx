@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Linking, Pressable, Text, StyleSheet, Alert } from "react-native";
+import { useRouter } from "expo-router";
 import PaywallModal from "@/app/onboarding/paywall-modal";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -15,6 +16,7 @@ import Animated, { FadeIn } from "react-native-reanimated";
  * - Handles purchase/restore success with appropriate confirmation screens
  */
 export default function ManageSubscriptionScreen() {
+  const router = useRouter();
   const colors = useColors();
   const { t } = useTranslation();
   const [isVisible, setIsVisible] = useState(true);
@@ -29,8 +31,8 @@ export default function ManageSubscriptionScreen() {
   const handleSuccessScreenDismiss = () => {
     setShowSuccessScreen(false);
     setSuccessType(null);
-    // Close the modal and return to settings
-    setIsVisible(false);
+    // Navigate back to Settings after successful purchase/restore
+    router.back();
   };
 
   const handlePaywallClose = () => {
